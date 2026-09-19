@@ -1,0 +1,29 @@
+# cat=basic; type=string; label=Vault secret identifier: The nr-vault identifier the Jev API token is stored under. Seed it with "vendor/bin/typo3 webcon-jev:token:import".
+tokenIdentifier = typesafe_api_key
+
+# cat=basic; type=string; label=Model: The Jev model id to ask. "jev-latest" follows the newest release.
+model = jev-latest
+
+# cat=basic; type=string; label=Endpoint: The System One endpoint.
+endpoint = https://api.typesafe.ai/v1/systemone
+
+# cat=basic; type=boolean; label=Enabled: Switch every decision off at once. Disabled decisions fall back to their configured default.
+enabled = 1
+
+# cat=advanced; type=int+; label=Timeout (seconds): How long to wait for an answer before falling back. Jev answers in 70-500ms, so this only trips on trouble.
+timeout = 5
+
+# cat=advanced; type=int+; label=Cache lifetime (seconds): How long an identical question about identical state reuses its answer. 0 disables caching.
+cacheLifetime = 300
+
+# cat=advanced; type=int+; label=Calls per minute: Budget guard. Decisions beyond this many calls a minute fall back instead of being sent. 0 disables the guard.
+maxCallsPerMinute = 120
+
+# cat=advanced; type=boolean; label=Log every run: Record decision, latency, tokens, cost and answer in the run log the backend module shows.
+logRuns = 1
+
+# cat=advanced; type=int+; label=Run log retention (days): How long run log rows are kept by "webcon-jev:log:prune".
+logRetentionDays = 30
+
+# cat=basic; type=int+; label=Storage page: Where decisions created in the backend module are stored. 0 keeps them at root level, like the Records module shows them.
+storagePid = 0

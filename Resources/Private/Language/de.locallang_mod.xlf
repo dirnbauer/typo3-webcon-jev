@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<xliff version="1.0">
+  <file source-language="en" target-language="de" datatype="plaintext" original="messages" date="2026-09-19T00:00:00Z" product-name="webcon_jev">
+    <header/>
+    <body>
+      <trans-unit id="mlang_tabs_tab" xml:space="preserve">
+        <source>Jev decisions</source>
+        <target>Jev-Entscheidungen</target>
+      </trans-unit>
+      <trans-unit id="mlang_labels_tablabel" xml:space="preserve">
+        <source>Typed decisions and what they cost</source>
+        <target>Typisierte Entscheidungen und was sie kosten</target>
+      </trans-unit>
+      <trans-unit id="mlang_labels_tabdescr" xml:space="preserve">
+        <source>Define the questions Jev answers about your content, try them against a sample, and see every call&#x27;s latency and cost.</source>
+        <target>Die Fragen definieren, die Jev zu Inhalten beantwortet, sie an einem Beispiel ausprobieren und Laufzeit und Kosten jedes Aufrufs sehen.</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

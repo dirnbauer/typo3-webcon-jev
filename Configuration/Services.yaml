@@ -1,0 +1,44 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  Webconsulting\WebconJev\:
+    resource: '../Classes/*'
+    exclude:
+      - '../Classes/Client/Dto/*'
+      - '../Classes/Domain/Model/*'
+      - '../Classes/Exception/*'
+      - '../Classes/Powermail/JevOperator.php'
+      - '../Classes/Powermail/RuleConfiguration.php'
+      # Defined in Services.php instead, conditionally on powermail being installed.
+      - '../Classes/Powermail/JevRuleListener.php'
+      - '../Classes/Powermail/MailRoutingListener.php'
+
+  cache.webcon_jev:
+    class: 'TYPO3\CMS\Core\Cache\Frontend\FrontendInterface'
+    factory: ['@TYPO3\CMS\Core\Cache\CacheManager', 'getCache']
+    arguments:
+      $identifier: 'webcon_jev'
+
+  Webconsulting\WebconJev\Client\JevClientInterface:
+    alias: Webconsulting\WebconJev\Client\HttpJevClient
+
+  Webconsulting\WebconJev\Service\DecisionRunner:
+    arguments:
+      $cache: '@cache.webcon_jev'
+
+  # FormEngine resolves an itemsProcFunc through the container, so it has to be reachable.
+  Webconsulting\WebconJev\Backend\ItemsProc\QuestionItems:
+    public: true
+
+  # Backend module and AJAX route targets are resolved from the container by name.
+  Webconsulting\WebconJev\Backend\Controller\JevModuleController:
+    public: true
+  Webconsulting\WebconJev\Backend\Controller\StatusApiController:
+    public: true
+  Webconsulting\WebconJev\Backend\Controller\DecisionApiController:
+    public: true
+  Webconsulting\WebconJev\Backend\Controller\PlaygroundApiController:
+    public: true

@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<xliff version="1.0">
+  <file source-language="en" datatype="plaintext" original="messages" date="2026-09-19T00:00:00Z" product-name="webcon_jev">
+    <header/>
+    <body>
+      <trans-unit id="tx_webconjev_decision" xml:space="preserve">
+        <source>Jev decision</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_decision.title" xml:space="preserve">
+        <source>Title</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_decision.identifier" xml:space="preserve">
+        <source>Identifier</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_decision.identifier.description" xml:space="preserve">
+        <source>How code refers to this decision. Stays the same when the title changes.</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_decision.description" xml:space="preserve">
+        <source>What this decides</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_decision.tab.state" xml:space="preserve">
+        <source>State</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_decision.tab.behaviour" xml:space="preserve">
+        <source>Behaviour</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_decision.stateTemplate" xml:space="preserve">
+        <source>State template</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_decision.stateTemplate.description" xml:space="preserve">
+        <source>What Jev gets to read, with {{field.marker}} for a form value. Leave empty to send every filled field as JSON.</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_decision.model" xml:space="preserve">
+        <source>Model</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_decision.model.description" xml:space="preserve">
+        <source>Leave empty to use the model from the extension configuration.</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_decision.confidenceThreshold" xml:space="preserve">
+        <source>Confidence threshold</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_decision.confidenceThreshold.description" xml:space="preserve">
+        <source>How certain an answer has to be before it is acted on. Below it, the default outcome is used and the submission is flagged for a human. 0.5 and below is a coin toss; above 0.9 is a clear read.</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_decision.defaultOutcome" xml:space="preserve">
+        <source>Default outcome</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_decision.defaultOutcome.description" xml:space="preserve">
+        <source>Used when Jev cannot answer or is not certain enough — for routing, the address that gets the mail anyway.</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_decision.cacheLifetime" xml:space="preserve">
+        <source>Cache lifetime (seconds)</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_decision.cacheLifetime.description" xml:space="preserve">
+        <source>How long an identical question about identical state reuses its answer. -1 follows the extension configuration, 0 never caches.</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_decision.questions" xml:space="preserve">
+        <source>Questions</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_question" xml:space="preserve">
+        <source>Question</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_question.name" xml:space="preserve">
+        <source>Name</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_question.name.description" xml:space="preserve">
+        <source>The key the answer comes back under. Conditions and the routing refer to it.</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_question.type" xml:space="preserve">
+        <source>Type</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_question.type.description" xml:space="preserve">
+        <source>What shape of answer this asks for.</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_question.type.choice" xml:space="preserve">
+        <source>Choice — pick one of several options</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_question.type.score" xml:space="preserve">
+        <source>Score — place it on an ordered scale</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_question.type.noul" xml:space="preserve">
+        <source>Noul — how likely a yes/no statement is true</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_question.instructions" xml:space="preserve">
+        <source>Question</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_question.instructions.description" xml:space="preserve">
+        <source>Put it as you would to a colleague who can only see the state — no background, no examples of the answer you want.</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_question.criteria" xml:space="preserve">
+        <source>Options</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_question.criteria.description" xml:space="preserve">
+        <source>A choice needs at least two options, a score at least two levels in order from lowest to highest, and a noul may describe what yes and no mean.</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_criterion" xml:space="preserve">
+        <source>Option</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_criterion.identifier" xml:space="preserve">
+        <source>Identifier</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_criterion.identifier.description" xml:space="preserve">
+        <source>What this option is called in the answer — for a noul, use yes and no. Ignored for a score, where the order decides.</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_criterion.description" xml:space="preserve">
+        <source>Meaning</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_criterion.description.description" xml:space="preserve">
+        <source>What this option means, in a sentence. This is what the model reads to tell the options apart.</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_criterion.outcomeValue" xml:space="preserve">
+        <source>Outcome</source>
+      </trans-unit>
+      <trans-unit id="tx_webconjev_criterion.outcomeValue.description" xml:space="preserve">
+        <source>What happens when this option wins — for the powermail routing, the email address that gets the submission.</source>
+      </trans-unit>
+      <trans-unit id="rule.operator.group" xml:space="preserve">
+        <source>Jev decision</source>
+      </trans-unit>
+      <trans-unit id="rule.operator.choiceIs" xml:space="preserve">
+        <source>Jev chose</source>
+      </trans-unit>
+      <trans-unit id="rule.operator.choiceIsNot" xml:space="preserve">
+        <source>Jev did not choose</source>
+      </trans-unit>
+      <trans-unit id="rule.operator.scoreAtLeast" xml:space="preserve">
+        <source>Jev scored at least</source>
+      </trans-unit>
+      <trans-unit id="rule.operator.scoreBelow" xml:space="preserve">
+        <source>Jev scored below</source>
+      </trans-unit>
+      <trans-unit id="rule.operator.noulAbove" xml:space="preserve">
+        <source>Jev says yes, at least</source>
+      </trans-unit>
+      <trans-unit id="rule.operator.noulBelow" xml:space="preserve">
+        <source>Jev says yes, below</source>
+      </trans-unit>
+      <trans-unit id="rule.decision" xml:space="preserve">
+        <source>Decision</source>
+      </trans-unit>
+      <trans-unit id="rule.decision.description" xml:space="preserve">
+        <source>Which decision this rule reads.</source>
+      </trans-unit>
+      <trans-unit id="rule.question" xml:space="preserve">
+        <source>Question</source>
+      </trans-unit>
+      <trans-unit id="rule.question.description" xml:space="preserve">
+        <source>Which of the decision&#x27;s questions this rule reads. Only questions matching the operator are offered.</source>
+      </trans-unit>
+      <trans-unit id="rule.expect" xml:space="preserve">
+        <source>Expected option</source>
+      </trans-unit>
+      <trans-unit id="rule.expect.description" xml:space="preserve">
+        <source>The option the answer is compared against.</source>
+      </trans-unit>
+      <trans-unit id="rule.threshold" xml:space="preserve">
+        <source>Threshold</source>
+      </trans-unit>
+      <trans-unit id="rule.threshold.description" xml:space="preserve">
+        <source>The number the answer is compared against — a score level, or a probability between 0 and 1.</source>
+      </trans-unit>
+      <trans-unit id="form.tab.jev" xml:space="preserve">
+        <source>Jev routing</source>
+      </trans-unit>
+      <trans-unit id="form.routingDecision" xml:space="preserve">
+        <source>Route through</source>
+      </trans-unit>
+      <trans-unit id="form.routingDecision.description" xml:space="preserve">
+        <source>Let a decision pick who receives a submission of this form. The form&#x27;s own receiver is used whenever the answer is missing or not certain enough.</source>
+      </trans-unit>
+      <trans-unit id="form.routingDecision.none" xml:space="preserve">
+        <source>No routing — use the form&#x27;s own receiver</source>
+      </trans-unit>
+      <trans-unit id="form.routingQuestion" xml:space="preserve">
+        <source>Deciding question</source>
+      </trans-unit>
+      <trans-unit id="form.routingQuestion.description" xml:space="preserve">
+        <source>Which question names the receiver. Its options carry the addresses.</source>
+      </trans-unit>
+      <trans-unit id="mail.routingSummary" xml:space="preserve">
+        <source>Jev routing</source>
+      </trans-unit>
+      <trans-unit id="mail.routingSummary.description" xml:space="preserve">
+        <source>What Jev answered when this submission was routed, and how certain it was.</source>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
