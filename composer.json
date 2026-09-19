@@ -1,61 +1,61 @@
 {
-	"name": "webconsulting/webcon-jev",
-	"description": "Typed decisions from TypeSafe AI's Jev model inside TYPO3: a decision editor and playground in the backend, a powermail_cond operator, and a powermail finisher that routes a submission to the right receiver",
-	"license": "GPL-2.0-or-later",
-	"type": "typo3-cms-extension",
-	"keywords": [
-		"TYPO3",
-		"extension",
-		"jev",
-		"typesafe",
-		"decision",
-		"powermail",
-		"AI"
-	],
-	"authors": [
-		{
-			"name": "Webconsulting",
-			"homepage": "https://github.com/dirnbauer",
-			"role": "Maintainer"
-		}
-	],
-	"homepage": "https://github.com/dirnbauer/typo3-jev",
-	"support": {
-		"issues": "https://github.com/dirnbauer/typo3-jev/issues",
-		"source": "https://github.com/dirnbauer/typo3-jev"
-	},
-	"require": {
-		"php": "^8.4",
-		"ext-json": "*",
-		"netresearch/nr-vault": "^0.16",
-		"psr/http-client": "^1.0",
-		"psr/http-message": "^2.0",
-		"psr/log": "^3.0",
-		"typo3/cms-backend": "^14.3",
-		"typo3/cms-core": "^14.3",
-		"typo3/cms-extbase": "^14.3",
-		"typo3/cms-frontend": "^14.3"
-	},
-	"suggest": {
-		"in2code/powermail": "Adds the Jev finisher that routes a submission to a receiver",
-		"in2code/powermail_cond": "Adds Jev rule operators to powermail conditions",
-		"webconsulting/typo3-shadcn-ui": "Provides the backend module's shadcn/ui runtime"
-	},
-	"autoload": {
-		"psr-4": {
-			"Webconsulting\\WebconJev\\": "Classes/"
-		}
-	},
-	"config": {
-		"allow-plugins": {
-			"typo3/class-alias-loader": true,
-			"typo3/cms-composer-installers": true
-		},
-		"sort-packages": true
-	},
-	"extra": {
-		"typo3/cms": {
-			"extension-key": "webcon_jev"
-		}
-	}
+    "name": "webconsulting/webcon-jev",
+    "description": "Typed decisions from TypeSafe AI's Jev model inside TYPO3: a decision editor and playground in the backend, a powermail_cond operator, and a powermail finisher that routes a submission to the right receiver",
+    "license": "GPL-2.0-or-later",
+    "type": "typo3-cms-extension",
+    "keywords": [
+        "TYPO3",
+        "extension",
+        "jev",
+        "typesafe",
+        "decision",
+        "powermail",
+        "AI"
+    ],
+    "authors": [
+        {
+            "name": "Webconsulting",
+            "homepage": "https://github.com/dirnbauer",
+            "role": "Maintainer"
+        }
+    ],
+    "homepage": "https://github.com/dirnbauer/typo3-webcon-jev",
+    "support": {
+        "issues": "https://github.com/dirnbauer/typo3-webcon-jev/issues",
+        "source": "https://github.com/dirnbauer/typo3-webcon-jev"
+    },
+    "require": {
+        "php": "^8.4",
+        "ext-json": "*",
+        "netresearch/nr-vault": "^0.16",
+        "psr/http-client": "^1.0",
+        "psr/http-message": "^2.0",
+        "psr/log": "^3.0",
+        "typo3/cms-backend": "^14.3",
+        "typo3/cms-core": "^14.3",
+        "typo3/cms-extbase": "^14.3",
+        "typo3/cms-frontend": "^14.3"
+    },
+    "suggest": {
+        "in2code/powermail": "Adds the Jev finisher that routes a submission to a receiver",
+        "in2code/powermail_cond": "Adds Jev rule operators to powermail conditions",
+        "webconsulting/typo3-shadcn-ui": "Provides the backend module's shadcn/ui runtime"
+    },
+    "autoload": {
+        "psr-4": {
+            "Webconsulting\\WebconJev\\": "Classes/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "typo3/class-alias-loader": true,
+            "typo3/cms-composer-installers": true
+        },
+        "sort-packages": true
+    },
+    "extra": {
+        "typo3/cms": {
+            "extension-key": "webcon_jev"
+        }
+    }
 }
