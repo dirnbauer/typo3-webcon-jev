@@ -39,10 +39,27 @@ Configuration
 
     Seconds to wait for an answer before falling back.
 
-    TypeSafe quote 70–500 ms. Measured from inside a container the round trip is **0.7–2.4 s**, and
-    it has exceeded five seconds — which is why the default is not five. A timeout costs a
-    decision and silently degrades the form, while the visitor is waiting on a background request
-    either way, so erring long is the cheaper mistake here.
+    TypeSafe quote 70–500 ms. That is not what a TYPO3 installation measures. Over a run of real
+    calls from a container:
+
+    ..  list-table::
+        :header-rows: 1
+
+        *   -   What
+            -   Observed
+        *   -   Typical Jev call
+            -   0.8–1.1 s
+        *   -   Tail, roughly one call in six
+            -   ~7 s
+        *   -   Worst seen
+            -   over 10 s (fell back)
+        *   -   Network alone (TLS + an unauthenticated 403)
+            -   0.85–1.1 s
+
+    So the tail is the model, not the network, and it is long enough to matter. Ten seconds catches
+    most of it; the rest falls back and says so in the run log. A timeout costs a decision and
+    degrades the form silently, while the visitor is waiting on a background request either way,
+    so erring long is the cheaper mistake.
 
     ..  warning::
 
@@ -90,6 +107,18 @@ Configuration
 
     Where decisions created in the backend module are stored. ``0`` keeps them at root level, which
     is where the :guilabel:`Records` module shows them.
+
+A cold cache costs more than the call
+=====================================
+
+The condition endpoint is uncached by design — powermail_cond needs the current answers on every
+keystroke — so each request is a full TYPO3 bootstrap. Measured on the same installation: a cold
+page with no Jev in it takes **4.3–5.1 s**, and a warm condition request with a real Jev call takes
+**0.8 s**. A cold condition request is both stacked, 6.7–10.7 s, and one connection died outright.
+
+That is the platform, not this extension, and it lands on whoever hits a form first after a deploy
+flushes the caches. If that matters for your site, warm the relevant pages after deploying rather
+than reaching for the timeout.
 
 What a call costs
 =================
