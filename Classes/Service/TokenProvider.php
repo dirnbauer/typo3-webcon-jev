@@ -69,6 +69,27 @@ final readonly class TokenProvider
     }
 
     /**
+     * Whether a frontend request would be able to read the token.
+     *
+     * This is the question that actually matters for the powermail integrations, and the one no
+     * other check answers: they run with no backend user, so they resolve the secret through its
+     * `frontend_accessible` flag and nothing else. A CLI check that reads as an admin or a
+     * technical actor proves the token exists and the API is reachable, and says nothing about
+     * whether a visitor filling in a form will get a decision or a fallback.
+     *
+     * Safe to call from anywhere: retrieveForFrontend() refuses a secret without the flag whoever
+     * asks, so this never reports more access than a real visitor would have.
+     */
+    public function isReadableByFrontend(): bool
+    {
+        try {
+            return Cast::trimmed($this->vault->retrieveForFrontend($this->settings->tokenIdentifier())) !== '';
+        } catch (Throwable) {
+            return false;
+        }
+    }
+
+    /**
      * Where the token that would be used right now comes from — for the module's status panel.
      */
     public function describeSource(): string

@@ -87,6 +87,9 @@ final class PingCommand extends Command
             ['Reading as' => $asProvisioner
                 ? $this->provisioner->describe()
                 : 'the ambient actor (add --as-provisioner on a server)'],
+            ['Frontend can read it' => $this->tokenProvider->isReadableByFrontend()
+                ? 'yes'
+                : 'NO — powermail conditions and routing will fall back'],
         );
 
         if (!$this->tokenProvider->hasToken()) {

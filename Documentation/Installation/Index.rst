@@ -124,6 +124,9 @@ Checking it afterwards takes the same flag:
 
     vendor/bin/typo3 webcon-jev:ping --as-provisioner
 
+Read the :guilabel:`Frontend can read it` line in its output. That is the one the powermail
+integrations depend on — everything else can be green while a visitor still gets a fallback.
+
 ..  warning::
 
     Without the flag on such a server, ``ping`` reports **no token** — and it is right, for that
