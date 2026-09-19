@@ -61,6 +61,19 @@ gives a low one.
     *   -   above 0.9
         -   Act automatically. The model has a clear read.
 
+..  warning::
+
+    A **noul carries no confidence of its own** — the probability is the answer — so this extension
+    derives one as ``|p - 0.5| * 2``. That interacts with the threshold in a way worth knowing
+    before you set one: a threshold of 0.75 can only ever be cleared by a probability at or beyond
+    0.125 / 0.875, and 0.9 needs 0.05 / 0.95.
+
+    Set a high threshold on a decision whose questions include a noul and the noul all but stops
+    answering. In a powermail **condition** this is handled for you: a noul rule already states the
+    certainty it wants — the threshold it compares against — so the decision's confidence gate is
+    not applied on top of it. **Routing is still gated**, which is where a wrong answer costs
+    something.
+
 Each decision carries its own threshold, because the right one depends on what the answer is used
 for. Hiding a field is cheap to get wrong; addressing somebody's job application is not. An answer
 below the threshold is not used: the decision's default outcome is, and the run is recorded as one

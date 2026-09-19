@@ -54,9 +54,22 @@ One call, however many rules
 Several rules reading the same decision cost one call: the outcome is memoised for the request. Six
 rules branching off one routing question is one round trip per keystroke, not six.
 
-A rule whose answer is missing, or below the decision's confidence threshold, simply does not apply.
-For a show/hide condition that is the harmless direction: the form stays as the editor built it
-rather than collapsing around an answer nobody trusts.
+A choice or score rule whose answer is missing, or below the decision's confidence threshold, simply
+does not apply. For a show/hide condition that is the harmless direction: the form stays as the
+editor built it rather than collapsing around an answer nobody trusts.
+
+A **noul** rule is judged on its own threshold instead — see the warning under
+:ref:`introduction`. Gating a derived confidence on top of the probability the rule already tests
+makes noul rules nearly unusable, and does it silently.
+
+..  note::
+
+    Write complementary conditions off **one** rule in the same direction, not as two opposite
+    "show when" conditions. Two opposite conditions both stop applying when the answer is unusable,
+    and both then negate — so a field and the notice explaining its absence can disappear together.
+    The quality-gate example does this deliberately: one ``ScoreBelow`` rule hides the submit
+    button and shows the notice, so an uncertain answer leaves the button and drops the notice
+    rather than leaving the visitor with neither.
 
 Routing a submission
 ====================

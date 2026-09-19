@@ -8,6 +8,8 @@ use In2code\PowermailCond\Event\EvaluateRuleEvent;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
+use Webconsulting\WebconJev\Client\Dto\Answer;
+use Webconsulting\WebconJev\Client\Dto\QuestionType;
 use Webconsulting\WebconJev\Domain\Repository\DecisionRepository;
 use Webconsulting\WebconJev\Service\DecisionOutcome;
 use Webconsulting\WebconJev\Service\DecisionRunner;
@@ -75,7 +77,7 @@ final class JevRuleListener
             sprintf('form %d, rule %d', $formUid, Cast::int($rule->getUid())),
         );
 
-        $answer = $outcome->confidentAnswer($configuration->questionName);
+        $answer = $this->usableAnswer($outcome, $operator, $configuration->questionName);
         if ($answer === null) {
             $event->setResult(false);
 
@@ -99,5 +101,32 @@ final class JevRuleListener
         $language = $request->getAttribute('language');
 
         return $language instanceof SiteLanguage ? $language->getLanguageId() : 0;
+    }
+
+    /**
+     * The answer, if this rule is allowed to act on it.
+     *
+     * Choice and score are gated on the decision's confidence, which is read off how concentrated
+     * their probability distribution is.
+     *
+     * A noul has no such distribution. Its confidence is derived as |p - 0.5| * 2, so a decision
+     * threshold of 0.75 can only ever be cleared by p <= 0.125 or p >= 0.875 — and a rule asking
+     * "is the answer below 0.4" would then silently discard every match between 0.125 and 0.4.
+     * Measured on the job application example: an applicant who wrote that they wanted to work
+     * fully remotely scored 0.17, and the note addressing remote work was withheld from the one
+     * person who had asked for it.
+     *
+     * A noul rule already states its own certainty — the threshold it compares against is the
+     * whole question. So that threshold is the gate, and the decision's is not applied on top.
+     * Routing is unaffected: {@see DecisionOutcome::outcomeFor()} still gates every outcome,
+     * which is where a wrong answer costs something.
+     */
+    private function usableAnswer(DecisionOutcome $outcome, JevOperator $operator, string $question): ?Answer
+    {
+        if ($operator->expects() === QuestionType::Noul) {
+            return $outcome->answer($question);
+        }
+
+        return $outcome->confidentAnswer($question);
     }
 }

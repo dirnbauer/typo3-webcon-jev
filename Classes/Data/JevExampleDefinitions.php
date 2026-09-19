@@ -283,19 +283,24 @@ final class JevExampleDefinitions
                     ],
                 ],
             ],
+            // Both conditions read the SAME rule, and both are the "hide" direction of it, so an
+            // answer too uncertain to use leaves the button visible and the notice away rather
+            // than hiding both. Written as two complementary "show when" conditions instead, a
+            // low-confidence answer negates both at once and strands the visitor with no send
+            // button and nothing explaining why — which is what this gate must never do.
             'conditions' => [
                 [
-                    'titleEn' => 'Hold the send button while there is nothing to answer',
-                    'titleDe' => 'Senden-Button zurückhalten, solange es nichts zu beantworten gibt',
+                    'titleEn' => 'Hold the send button only when there is confidently nothing to answer',
+                    'titleDe' => 'Senden-Button nur zurückhalten, wenn es sicher nichts zu beantworten gibt',
                     'target' => 'submit',
-                    'show' => true,
+                    'show' => false,
                     'rules' => [
-                        ['start' => 'message', 'operator' => JevOperator::ScoreAtLeast, 'question' => 'effort', 'expect' => '', 'threshold' => 1.5],
+                        ['start' => 'message', 'operator' => JevOperator::ScoreBelow, 'question' => 'effort', 'expect' => '', 'threshold' => 1.5],
                     ],
                 ],
                 [
-                    'titleEn' => 'Explain why the button is gone',
-                    'titleDe' => 'Erklären, warum der Button fehlt',
+                    'titleEn' => 'Explain why the button is gone, whenever it is gone',
+                    'titleDe' => 'Erklären, warum der Button fehlt, wann immer er fehlt',
                     'target' => 'thin',
                     'show' => true,
                     'rules' => [
@@ -534,8 +539,8 @@ final class JevExampleDefinitions
                             ['Self-taught', 'Autodidaktisch', 'self'],
                         ]]),
                         self::field('html', 'relocation_note', 'Location', 'Standort', [
-                            'textEn' => '<p>We read your letter as looking for remote work. That is fine — most of the team is in Vienna two days a week, and we will tell you honestly which roles work remotely before you spend any more time on this.</p>',
-                            'textDe' => '<p>Wir lesen Ihr Anschreiben so, dass Sie Remote-Arbeit suchen. Das ist in Ordnung — der größte Teil des Teams ist zwei Tage pro Woche in Wien, und wir sagen Ihnen ehrlich, welche Rollen remote funktionieren, bevor Sie hier mehr Zeit investieren.</p>',
+                            'textEn' => '<p><strong>Before you go further:</strong> most of the team is in Vienna two days a week. Some roles work fully remotely and some do not, and we would rather tell you which is which now than after three interviews. Say where you are based and we will be straight with you.</p>',
+                            'textDe' => '<p><strong>Bevor Sie weitermachen:</strong> der größte Teil des Teams ist zwei Tage pro Woche in Wien. Manche Rollen funktionieren vollständig remote, manche nicht, und wir sagen Ihnen das lieber jetzt als nach drei Gesprächen. Schreiben Sie uns, wo Sie sind, dann sind wir ehrlich zu Ihnen.</p>',
                         ]),
                         self::field('submit', 'next2', 'Continue', 'Weiter'),
                     ],
