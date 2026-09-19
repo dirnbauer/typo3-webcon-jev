@@ -107,6 +107,17 @@ argument would be an impersonation primitive for anyone with a shell.
 
 ``webcon-jev:vault:setup-provisioner`` does all three for you, idempotently.
 
+..  note::
+
+    On a container deployment, ``config/system/settings.php`` is usually part of the image rather
+    than a persistent volume, so the next deploy resets ``provisioningBeUserUid`` to 0. This
+    extension does not depend on it: it falls back to finding the ``vault_provisioner`` backend
+    user by name, and a backend user is a database row. Nothing needs re-running after a deploy.
+
+    If you want nr-vault's **own** ``vault:store --as-provisioner`` to keep working too, set the
+    uid somewhere the deploy preserves — an ``additional.php`` in the repository rather than the
+    generated settings file.
+
 Checking it afterwards takes the same flag:
 
 ..  code-block:: bash

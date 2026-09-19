@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webconsulting\WebconJev\Command;
 
-use Netresearch\NrVault\Configuration\ExtensionConfigurationInterface as VaultConfiguration;
 use Netresearch\NrVault\Security\TechnicalActorContextInterface;
 use Netresearch\NrVault\Service\VaultServiceInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -15,6 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Throwable;
 use Webconsulting\WebconJev\Configuration\Settings;
+use Webconsulting\WebconJev\Service\ProvisionerResolver;
 use Webconsulting\WebconJev\Service\TokenProvider;
 
 /**
@@ -37,7 +37,7 @@ final class ImportTokenCommand extends Command
         private readonly VaultServiceInterface $vault,
         private readonly Settings $settings,
         private readonly TechnicalActorContextInterface $technicalActor,
-        private readonly VaultConfiguration $vaultConfiguration,
+        private readonly ProvisionerResolver $provisioner,
     ) {
         parent::__construct();
     }
@@ -117,13 +117,9 @@ final class ImportTokenCommand extends Command
         };
 
         $asProvisioner = (bool)$input->getOption('as-provisioner');
-        $provisionerUid = $this->vaultConfiguration->getProvisioningBeUserUid();
+        $provisionerUid = $this->provisioner->resolve();
         if ($asProvisioner && $provisionerUid <= 0) {
-            $io->error(
-                'nr-vault has no provisioning backend user configured. Set "provisioningBeUserUid" in the'
-                . ' nr_vault extension configuration to a root-level, enabled backend user whose group carries'
-                . ' tx_nrvault:secret.create.',
-            );
+            $io->error('No provisioning backend user. Run "webcon-jev:vault:setup-provisioner" first.');
 
             return Command::FAILURE;
         }

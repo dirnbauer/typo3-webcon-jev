@@ -6,7 +6,6 @@ namespace Webconsulting\WebconJev\Command;
 
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Netresearch\NrVault\Configuration\ExtensionConfigurationInterface as VaultConfiguration;
 use Netresearch\NrVault\Security\TechnicalActorContextInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -17,6 +16,7 @@ use Webconsulting\WebconJev\Client\Dto\QuestionType;
 use Webconsulting\WebconJev\Client\JevClientInterface;
 use Webconsulting\WebconJev\Configuration\Settings;
 use Webconsulting\WebconJev\Exception\JevException;
+use Webconsulting\WebconJev\Service\ProvisionerResolver;
 use Webconsulting\WebconJev\Service\TokenProvider;
 use Webconsulting\WebconJev\Support\Cast;
 
@@ -34,7 +34,7 @@ final class PingCommand extends Command
         private readonly TokenProvider $tokenProvider,
         private readonly Settings $settings,
         private readonly TechnicalActorContextInterface $technicalActor,
-        private readonly VaultConfiguration $vaultConfiguration,
+        private readonly ProvisionerResolver $provisioner,
     ) {
         parent::__construct();
     }
@@ -59,12 +59,9 @@ final class PingCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $asProvisioner = (bool)$input->getOption('as-provisioner');
-        $provisionerUid = $this->vaultConfiguration->getProvisioningBeUserUid();
+        $provisionerUid = $this->provisioner->resolve();
         if ($asProvisioner && $provisionerUid <= 0) {
-            $io->error(
-                'nr-vault has no provisioning backend user configured.'
-                . ' Run "webcon-jev:vault:setup-provisioner" first.',
-            );
+            $io->error('No provisioning backend user. Run "webcon-jev:vault:setup-provisioner" first.');
 
             return Command::FAILURE;
         }
@@ -88,7 +85,7 @@ final class PingCommand extends Command
             ['Token' => $this->tokenProvider->describeSource()],
             ['Enabled' => $this->settings->isEnabled() ? 'yes' : 'no'],
             ['Reading as' => $asProvisioner
-                ? 'provisioning backend user ' . $provisionerUid
+                ? $this->provisioner->describe()
                 : 'the ambient actor (add --as-provisioner on a server)'],
         );
 

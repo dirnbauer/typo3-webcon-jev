@@ -112,6 +112,11 @@ final class SetupProvisionerCommand extends Command
             $userUid,
             $previous > 0 && $previous !== $userUid ? sprintf(' (was %d)', $previous) : '',
         ));
+        $io->note(
+            'This extension does not depend on that setting surviving: it finds the user by name if the'
+            . ' configuration is gone. On a container deployment config/system/settings.php is usually part'
+            . ' of the image rather than a volume, so the next deploy is likely to reset it.',
+        );
 
         return Command::SUCCESS;
     }

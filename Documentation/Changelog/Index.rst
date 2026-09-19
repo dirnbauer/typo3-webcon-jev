@@ -5,6 +5,16 @@
 Changelog
 =========
 
+0.1.7
+=====
+
+*   The provisioning identity is found by name when nr-vault's ``provisioningBeUserUid`` is gone.
+    Measured on a container deployment: the setting was written, the next deploy replaced
+    ``config/system/settings.php`` — part of the image, not a volume — and the uid was back to 0.
+    The token kept working, because it lives in the database, but the next rotation would have
+    failed months later with nothing obviously changed. A backend user is a database row and
+    survives.
+
 0.1.6
 =====
 
