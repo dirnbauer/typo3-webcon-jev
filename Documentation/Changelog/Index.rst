@@ -5,6 +5,19 @@
 Changelog
 =========
 
+0.1.11
+======
+
+*   A test suite and CI, where before there were only hand-run checks against the live API. Unit
+    coverage for parsing every primitive, the derived noul confidence, the six rule operators, the
+    state template, the confidence gate and every fallback path; functional coverage for the
+    translation overlay, the run log, the provisioning identity and its setup command.
+*   The first functional run found a real defect: **the extension did not boot without
+    shadcn_ui.** The module controller was registered unconditionally, so a container compile with
+    an optional dependency absent was fatal. Every service that needs an optional extension is now
+    defined behind a ``class_exists()`` guard, and the backend module and its import map are
+    registered only when the runtime is there.
+
 0.1.7
 =====
 

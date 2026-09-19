@@ -1,0 +1,6 @@
+"be_groups",,,,,
+,"uid","pid","title","custom_options","deleted"
+,7,0,"Vault provisioning","tx_nrvault:secret.create,tx_nrvault:secret.rotate",0
+"be_users",,,,,,,,
+,"uid","pid","username","password","admin","disable","usergroup","deleted"
+,20,0,"vault_provisioner","invalid-no-login",0,0,"7",0

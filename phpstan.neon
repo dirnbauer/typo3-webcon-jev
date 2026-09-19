@@ -1,0 +1,16 @@
+includes:
+    - .Build/vendor/saschaegerer/phpstan-typo3/extension.neon
+    - .Build/vendor/phpstan/phpstan-phpunit/extension.neon
+    - .Build/vendor/phpstan/phpstan-phpunit/rules.neon
+
+parameters:
+    level: 8
+    paths:
+        - Classes
+        - Configuration
+        - Tests
+    excludePaths:
+        analyseAndScan:
+            - Tests/Fixtures/*
+            - Tests/Functional/Fixtures/*
+    treatPhpDocTypesAsCertain: false

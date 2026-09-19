@@ -110,3 +110,26 @@ API. Empty values are dropped too: an untouched field costs nothing and suggests
 
 If a form has a field that must not leave the server, give the decision a state template naming only
 the fields it needs.
+
+Tests
+=====
+
+..  code-block:: bash
+
+    composer install          # the extension's own toolchain, into .Build/
+    composer ci               # phpstan (level 8) + coding standards + unit + functional
+    composer ci:tests:unit
+    composer ci:tests:functional
+
+The functional suite runs on sqlite locally and on MariaDB in CI. It loads only what
+:file:`composer.json` requires — nr-vault and this extension — so it proves the extension boots
+**without** powermail, powermail_cond and shadcn_ui, all of which are optional. That is not a
+convenience: every service that needs one of them is defined in :file:`Configuration/Services.php`
+behind a ``class_exists()`` guard, because a service in :file:`Services.yaml` whose constructor
+names a class the autoloader cannot find takes the whole container down while it compiles. The
+first run of this suite found exactly that, in the module controller.
+
+A second base case loads the optional extensions too and checks the guarded registrations appear.
+
+Live calls are deliberately not part of the suite. What the real API taught this extension is
+recorded in the changelog; a test that needs a token would be green on nobody's machine but one.

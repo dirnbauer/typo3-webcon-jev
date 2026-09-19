@@ -1,0 +1,108 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  # nr-vault comes from a VCS repository; the job token is for the API rate limit.
+  COMPOSER_AUTH: '{"github-oauth":{"github.com":"${{ github.token }}"}}'
+
+jobs:
+  lint:
+    name: Lint & coding standards
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+          tools: composer:v2
+          extensions: sodium
+      - run: composer install --no-interaction --no-progress
+      - name: Lint PHP
+        run: find Classes Configuration Tests -name '*.php' -print0 | xargs -0 -n1 -P4 php -l > /dev/null
+      - run: composer ci:cgl
+
+  phpstan:
+    name: Static analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+          tools: composer:v2
+          extensions: sodium
+      - run: composer install --no-interaction --no-progress
+      - run: composer ci:phpstan
+
+  unit:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+          tools: composer:v2
+          extensions: sodium
+      - run: composer install --no-interaction --no-progress
+      - run: composer ci:tests:unit
+
+  functional:
+    name: Functional tests (MariaDB 10.11)
+    runs-on: ubuntu-latest
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MARIADB_ROOT_PASSWORD: funcp
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    env:
+      typo3DatabaseDriver: mysqli
+      typo3DatabaseName: func_test
+      typo3DatabaseUsername: root
+      typo3DatabasePassword: funcp
+      typo3DatabaseHost: 127.0.0.1
+      typo3DatabasePort: 3306
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+          tools: composer:v2
+          extensions: intl, mbstring, pdo_mysql, mysqli, gd, zip, sodium
+      - run: composer install --no-interaction --no-progress
+      - run: composer ci:tests:functional
+
+  assets:
+    name: Frontend bundle
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+      # The bundle is committed because the backend loads it by URL. It is only
+      # trustworthy if it is the one the committed sources produce.
+      - name: The committed bundle matches its sources
+        run: git diff --exit-code Resources/Public/JavaScript/jev-module.js

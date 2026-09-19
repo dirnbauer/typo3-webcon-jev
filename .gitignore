@@ -1,3 +1,4 @@
 /node_modules/
 /.Build/
 /Documentation-GENERATED-temp/
+/.php-cs-fixer.cache

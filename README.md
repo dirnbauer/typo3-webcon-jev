@@ -166,6 +166,10 @@ if ($outcome->needsHumanReview()) {
 }
 ```
 
+```bash
+composer install && composer ci    # phpstan, coding standards, unit + functional tests
+```
+
 `DecisionRunner::run()` never throws. `JevClientInterface::ask()` does — use the runner unless you
 want to handle `JevException` yourself.
 

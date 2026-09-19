@@ -205,7 +205,6 @@ final class JevExampleDefinitions
         ];
     }
 
-
     /**
      * A gate: the submit button itself is what a decision controls.
      *

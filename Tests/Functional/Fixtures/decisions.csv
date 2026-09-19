@@ -1,0 +1,18 @@
+"tx_webconjev_decision",,,,,,,,,,,,
+,"uid","pid","sys_language_uid","l10n_parent","hidden","deleted","identifier","title","state_template","confidence_threshold","default_outcome","questions"
+,1,0,0,0,0,0,"routing","Contact routing","Message: {{field.message}}",0.6,"office@example.com",1
+,2,0,1,1,0,0,"routing","Kontakt-Routing","",0.6,"",1
+,3,0,0,0,1,0,"hidden_one","Hidden","",0.6,"",0
+,4,0,0,0,0,1,"deleted_one","Deleted","",0.6,"",0
+"tx_webconjev_question",,,,,,,,,,,,
+,"uid","pid","sys_language_uid","l10n_parent","hidden","deleted","decision","name","type","instructions","criteria","sorting"
+,1,0,0,0,0,0,1,"department","choice","Which department?",2,256
+,2,0,1,1,0,0,2,"department","choice","Welche Abteilung?",2,256
+,3,0,0,0,0,0,1,"is_bug","noul","Is it broken?",0,512
+,4,0,1,3,0,0,2,"is_bug","noul","",0,512
+"tx_webconjev_criterion",,,,,,,,,,,,
+,"uid","pid","sys_language_uid","l10n_parent","hidden","deleted","question","identifier","description","outcome_value","sorting",
+,1,0,0,0,0,0,1,"sales","Wants to buy","sales@example.com",256,
+,2,0,0,0,0,0,1,"support","Something is broken","support@example.com",512,
+,3,0,1,1,0,0,2,"sales","Will kaufen","",256,
+,4,0,1,2,0,0,2,"support","","",512,

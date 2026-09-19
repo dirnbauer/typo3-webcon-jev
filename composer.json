@@ -48,14 +48,104 @@
     },
     "config": {
         "allow-plugins": {
+            "phpstan/extension-installer": true,
             "typo3/class-alias-loader": true,
             "typo3/cms-composer-installers": true
         },
-        "sort-packages": true
+        "bin-dir": ".Build/bin",
+        "platform": {
+            "php": "8.4.0"
+        },
+        "sort-packages": true,
+        "vendor-dir": ".Build/vendor"
     },
     "extra": {
         "typo3/cms": {
-            "extension-key": "webcon_jev"
+            "extension-key": "webcon_jev",
+            "web-dir": ".Build/Web"
         }
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/netresearch/t3x-nr-vault.git",
+            "only": [
+                "netresearch/nr-vault"
+            ]
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/dirnbauer/powermail.git",
+            "only": [
+                "in2code/powermail"
+            ]
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/dirnbauer/powermail_cond.git",
+            "only": [
+                "in2code/powermail_cond"
+            ]
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/dirnbauer/typo3-shadcn-ui.git",
+            "only": [
+                "webconsulting/typo3-shadcn-ui"
+            ]
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/dirnbauer/typo3-mcp-server.git",
+            "only": [
+                "hn/typo3-mcp-server"
+            ]
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/dirnbauer/typo3-abilities.git",
+            "only": [
+                "webconsulting/typo3-abilities"
+            ]
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/netresearch/t3x-nr-llm.git",
+            "only": [
+                "netresearch/nr-llm"
+            ]
+        }
+    ],
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.94",
+        "in2code/powermail": "^14.0",
+        "in2code/powermail_cond": "dev-typo3-v14",
+        "phpstan/phpstan": "^2.1",
+        "phpstan/phpstan-phpunit": "^2.0",
+        "phpunit/phpunit": "^12.4 || ^13.0",
+        "saschaegerer/phpstan-typo3": "^3.0",
+        "typo3/coding-standards": "^0.9",
+        "typo3/testing-framework": "^9.5",
+        "webconsulting/typo3-shadcn-ui": "^1.0"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Webconsulting\\WebconJev\\Tests\\": "Tests/"
+        }
+    },
+    "scripts": {
+        "ci": [
+            "@ci:phpstan",
+            "@ci:cgl",
+            "@ci:tests"
+        ],
+        "ci:phpstan": ".Build/bin/phpstan analyse -c phpstan.neon --no-progress --memory-limit=1G",
+        "ci:cgl": ".Build/bin/php-cs-fixer fix --dry-run --diff",
+        "ci:tests": "php -d memory_limit=1G .Build/bin/phpunit -c Build/phpunit/UnitTests.xml && php -d memory_limit=1G .Build/bin/phpunit -c Build/phpunit/FunctionalTests.xml",
+        "ci:tests:unit": "php -d memory_limit=1G .Build/bin/phpunit -c Build/phpunit/UnitTests.xml",
+        "ci:tests:functional": "php -d memory_limit=1G .Build/bin/phpunit -c Build/phpunit/FunctionalTests.xml",
+        "fix:cgl": ".Build/bin/php-cs-fixer fix"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

@@ -124,9 +124,7 @@ final class SetupProvisionerCommand extends Command
     private function upsertGroup(int $now): int
     {
         $connection = $this->connectionPool->getConnectionForTable('be_groups');
-        $existing = Cast::int(
-            $connection->select(['uid'], 'be_groups', ['title' => self::GROUP_TITLE, 'deleted' => 0])->fetchOne(),
-        );
+        $existing = $this->existingUid('be_groups', 'title', self::GROUP_TITLE);
 
         if ($existing > 0) {
             $connection->update('be_groups', ['custom_options' => self::GRANTS, 'tstamp' => $now], ['uid' => $existing]);
@@ -151,9 +149,7 @@ final class SetupProvisionerCommand extends Command
     private function upsertUser(int $groupUid, int $now): int
     {
         $connection = $this->connectionPool->getConnectionForTable('be_users');
-        $existing = Cast::int(
-            $connection->select(['uid'], 'be_users', ['username' => self::USERNAME, 'deleted' => 0])->fetchOne(),
-        );
+        $existing = $this->existingUid('be_users', 'username', self::USERNAME);
 
         // The technical actor must be a root-level, enabled, non-admin user: nr-vault refuses to
         // resolve anything else, and an admin would bypass the grant this whole arrangement exists
@@ -185,5 +181,35 @@ final class SetupProvisionerCommand extends Command
         ]);
 
         return Cast::int($connection->lastInsertId());
+    }
+
+    /**
+     * The row as it is, hidden or not.
+     *
+     * Connection::select() and ::count() go through a QueryBuilder that applies TYPO3's default
+     * restrictions, and for be_users that includes the "disable" flag. Measured: a provisioning
+     * user somebody had disabled was invisible to the lookup, so this command created a second
+     * vault_provisioner instead of repairing the first — and two users of one name make the
+     * lookup by name ambiguous, which is the one thing it exists to avoid. An identity check has
+     * to see the disabled row, because repairing it is the point.
+     */
+    private function existingUid(string $table, string $column, string $value): int
+    {
+        $query = $this->connectionPool->getQueryBuilderForTable($table);
+        $query->getRestrictions()->removeAll();
+
+        return Cast::int(
+            $query
+                ->select('uid')
+                ->from($table)
+                ->where(
+                    $query->expr()->eq($column, $query->createNamedParameter($value)),
+                    $query->expr()->eq('deleted', $query->createNamedParameter(0, Connection::PARAM_INT)),
+                )
+                ->orderBy('uid')
+                ->setMaxResults(1)
+                ->executeQuery()
+                ->fetchOne(),
+        );
     }
 }
