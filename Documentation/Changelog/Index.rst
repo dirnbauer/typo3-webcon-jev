@@ -5,6 +5,14 @@
 Changelog
 =========
 
+0.1.3
+=====
+
+*   The job application example's noul asked two things at once — whether the writer would move
+    **or** was already nearby — and a letter saying "fully remotely from Graz" satisfied both,
+    answering 0.42 at confidence 0.16. Split into one question it answers 0.97 at 0.94 on the same
+    letter. The manual now says so, because a low confidence is usually a note about the wording.
+
 0.1.2
 =====
 

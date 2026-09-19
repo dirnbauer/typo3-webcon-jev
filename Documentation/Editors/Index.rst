@@ -23,6 +23,20 @@ Questions go underneath. Each needs a **name**, which is the key the answer come
 conditions and routing refer to, and a question phrased the way you would put it to a colleague who
 can only see the state — no background, no examples of the answer you want.
 
+..  tip::
+
+    **Ask about one thing.** A low confidence usually means the question is badly posed, not that
+    the text was ambiguous — and the playground is where you see it.
+
+    Measured on the job application example: asking *"is the writer willing to move **or** already
+    nearby?"* against a letter reading "an internship I can do fully remotely from Graz" satisfied
+    both halves at once and came back **0.42 at confidence 0.16**. Split into a single question —
+    *"does the letter ask to work remotely?"* — the same letter answered **0.97 at confidence
+    0.94**. Nothing else changed.
+
+    Treat a confidence below about 0.5 in the playground as a note about your wording, and split
+    the question before you reach for a lower threshold.
+
 For a choice, each option needs an id, a sentence saying what it means, and optionally an **outcome**:
 what should happen when that option wins. For the powermail routing, the outcome is the email address.
 
