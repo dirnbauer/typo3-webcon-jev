@@ -10,8 +10,8 @@ endpoint = https://api.typesafe.ai/v1/systemone
 # cat=basic; type=boolean; label=Enabled: Switch every decision off at once. Disabled decisions fall back to their configured default.
 enabled = 1
 
-# cat=advanced; type=int+; label=Timeout (seconds): How long to wait for an answer before falling back. Jev answers in 70-500ms, so this only trips on trouble.
-timeout = 5
+# cat=advanced; type=int+; label=Timeout (seconds): How long to wait for an answer before falling back. TypeSafe quote 70-500ms; measured from a container the round trip is 0.7-2.4s and has exceeded 5s, so this is deliberately generous - a timeout costs a decision, and the visitor is waiting on an AJAX call either way.
+timeout = 10
 
 # cat=advanced; type=int+; label=Cache lifetime (seconds): How long an identical question about identical state reuses its answer. 0 disables caching.
 cacheLifetime = 300

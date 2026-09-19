@@ -74,6 +74,18 @@ vendor/bin/typo3 webcon-jev:token:import
 vendor/bin/typo3 webcon-jev:ping
 ```
 
+**On a server**, leave nr-vault's `allowCliAccess` off — switching it on lets any CLI process on
+that host create, rotate and use *every* secret in the vault. Two commands instead:
+
+```bash
+vendor/bin/typo3 webcon-jev:vault:setup-provisioner
+vendor/bin/typo3 webcon-jev:token:import --as-provisioner
+```
+
+The first creates a non-admin backend user that cannot sign in, carrying exactly
+`tx_nrvault:secret.create` and `secret.rotate`, and points nr-vault's `provisioningBeUserUid` at
+it. The second writes the token as that user, so every write is attributed to it by name.
+
 The secret is stored **frontend-accessible**, because the powermail condition endpoint that consults
 Jev runs with no backend user. The token is read server-side and never reaches a browser — only the
 decision does. `TYPESAFE_API_KEY` stays as a development fallback; the vault is read first.
@@ -134,6 +146,7 @@ after the mail has already gone out, which is too late to address it.)
 ## Commands
 
 ```bash
+vendor/bin/typo3 webcon-jev:vault:setup-provisioner  # create the identity a server writes secrets as
 vendor/bin/typo3 webcon-jev:token:import     # move TYPESAFE_API_KEY into the vault
 vendor/bin/typo3 webcon-jev:ping             # one real call, to prove token + endpoint + network
 vendor/bin/typo3 webcon-jev:log:prune        # apply the run log retention (schedule this)

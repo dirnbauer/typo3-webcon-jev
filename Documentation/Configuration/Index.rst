@@ -35,10 +35,14 @@ Configuration
 
 ..  confval:: timeout
     :type: integer
-    :default: 5
+    :default: 10
 
-    Seconds to wait for an answer. Jev answers in 70–500 ms, so this only trips on trouble, and a
-    request that trips it falls back.
+    Seconds to wait for an answer before falling back.
+
+    TypeSafe quote 70–500 ms. Measured from inside a container the round trip is **0.7–2.4 s**, and
+    it has exceeded five seconds — which is why the default is not five. A timeout costs a
+    decision and silently degrades the form, while the visitor is waiting on a background request
+    either way, so erring long is the cheaper mistake here.
 
 ..  confval:: cacheLifetime
     :type: integer

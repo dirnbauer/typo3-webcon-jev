@@ -5,6 +5,15 @@
 Changelog
 =========
 
+0.1.5
+=====
+
+*   ``webcon-jev:vault:setup-provisioner`` creates the backend group and user nr-vault writes
+    secrets as, and points ``provisioningBeUserUid`` at it. Installing the token on a server is now
+    two commands rather than three steps in a production backend.
+*   The request timeout default goes from 5 to 10 seconds. Measured round trip from a container is
+    0.7–2.4 s against a quoted 70–500 ms, and a real request exceeded five seconds and fell back.
+
 0.1.4
 =====
 

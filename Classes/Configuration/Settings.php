@@ -53,7 +53,7 @@ final class Settings
 
     public function timeout(): int
     {
-        return max(1, $this->int('timeout', 5));
+        return max(1, $this->int('timeout', 10));
     }
 
     public function cacheLifetime(): int
