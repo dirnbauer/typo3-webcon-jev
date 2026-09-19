@@ -84,12 +84,19 @@ final class SetupProvisionerCommandTest extends AbstractJevTestCase
     #[Test]
     public function skippingTheConfigurationLeavesNrVaultAlone(): void
     {
+        // The test instance's settings.php outlives the tests in this class, and another test
+        // here writes the uid into it. Start from a known value rather than from whatever ran
+        // before — on MariaDB, where tables are truncated but files are kept, that is exactly
+        // what the previous test left behind.
+        $configuration = $this->get(ExtensionConfiguration::class);
+        $configuration->set('nr_vault', ['provisioningBeUserUid' => '0']);
         $tester = new CommandTester($this->command());
 
         self::assertSame(0, $tester->execute(['--skip-configuration' => true]), $tester->getDisplay());
 
-        $vault = $this->get(ExtensionConfiguration::class)->get('nr_vault');
-        self::assertTrue(!is_array($vault) || !isset($vault['provisioningBeUserUid']) || $vault['provisioningBeUserUid'] === '0');
+        $vault = $configuration->get('nr_vault');
+        self::assertIsArray($vault);
+        self::assertSame('0', (string)$vault['provisioningBeUserUid'], 'the setting was left as it was');
         self::assertStringContainsString('yourself', $tester->getDisplay());
     }
 
