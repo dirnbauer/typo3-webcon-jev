@@ -35,6 +35,14 @@ final readonly class TokenProvider
 
     public function getToken(): ?string
     {
+        return $this->fromVault() ?? $this->fromEnvironment();
+    }
+
+    /**
+     * The token as this context may read it, or null when it may not.
+     */
+    private function fromVault(): ?string
+    {
         $identifier = $this->settings->tokenIdentifier();
 
         try {
@@ -46,12 +54,13 @@ final readonly class TokenProvider
                 'identifier' => $identifier,
                 'exception' => $exception->getMessage(),
             ]);
-            $token = null;
+
+            return null;
         }
 
         $token = Cast::trimmed($token);
 
-        return $token !== '' ? $token : $this->fromEnvironment();
+        return $token !== '' ? $token : null;
     }
 
     public function hasToken(): bool
@@ -66,12 +75,27 @@ final readonly class TokenProvider
     {
         $identifier = $this->settings->tokenIdentifier();
 
+        // exists() needs no read permission and retrieve() does, so the two disagree in exactly
+        // the case worth naming: the secret is in the vault, and this context may not read it.
+        // Reporting only the first produced a status table that said the token was there directly
+        // above an error saying there was none.
+        $present = false;
         try {
-            if ($this->vault->exists($identifier)) {
+            $present = $this->vault->exists($identifier);
+        } catch (Throwable) {
+            // Treat an unreadable vault as absent and fall through to the environment.
+        }
+
+        if ($present) {
+            // Deliberately the vault read and not getToken(): the environment fallback would
+            // otherwise let this report "nr-vault" for a value that came from the environment.
+            if ($this->fromVault() !== null) {
                 return sprintf('nr-vault (%s)', $identifier);
             }
-        } catch (Throwable) {
-            // Fall through to the environment.
+
+            return $this->fromEnvironment() !== null
+                ? sprintf('environment (%s) — the vault has it too, unreadable from here', self::ENVIRONMENT_VARIABLE)
+                : sprintf('nr-vault (%s) — present, but not readable from here', $identifier);
         }
 
         return $this->fromEnvironment() !== null

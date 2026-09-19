@@ -105,6 +105,22 @@ setting. Set that up once:
 The uid comes from configuration and never from the command line: a flag that took it as an
 argument would be an impersonation primitive for anyone with a shell.
 
+``webcon-jev:vault:setup-provisioner`` does all three for you, idempotently.
+
+Checking it afterwards takes the same flag:
+
+..  code-block:: bash
+
+    vendor/bin/typo3 webcon-jev:ping --as-provisioner
+
+..  warning::
+
+    Without the flag on such a server, ``ping`` reports **no token** — and it is right, for that
+    actor. CLI *reads* are gated exactly like CLI writes, so the unattributed CLI actor may not
+    read a secret it may not have written. The frontend is unaffected: it resolves the token
+    through the secret's ``frontend_accessible`` flag and never through CLI access. Do not let a
+    red ping from a plain CLI run send you looking for a problem that is not there.
+
 ..  note::
 
     The secret ends up **owned by the provisioning user**, deliberately. Rotating a secret is a

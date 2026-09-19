@@ -5,6 +5,17 @@
 Changelog
 =========
 
+0.1.6
+=====
+
+*   ``webcon-jev:ping --as-provisioner`` verifies a server that keeps nr-vault's CLI access off.
+    Without it the check reported "No token" on an installation whose frontend was resolving the
+    token perfectly well: ``exists()`` needs no read permission and ``retrieve()`` does, so CLI
+    reads are gated exactly like CLI writes.
+*   The status line no longer contradicts the result. It said the token was in the vault directly
+    above an error saying there was none, and it credited nr-vault for a value that had actually
+    come from the environment.
+
 0.1.5
 =====
 

@@ -6,7 +6,10 @@ namespace Webconsulting\WebconJev\Command;
 
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Netresearch\NrVault\Configuration\ExtensionConfigurationInterface as VaultConfiguration;
+use Netresearch\NrVault\Security\TechnicalActorContextInterface;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Webconsulting\WebconJev\Client\Dto\Question;
@@ -30,23 +33,71 @@ final class PingCommand extends Command
         private readonly JevClientInterface $client,
         private readonly TokenProvider $tokenProvider,
         private readonly Settings $settings,
+        private readonly TechnicalActorContextInterface $technicalActor,
+        private readonly VaultConfiguration $vaultConfiguration,
     ) {
         parent::__construct();
+    }
+
+    protected function configure(): void
+    {
+        $this->addOption(
+            'as-provisioner',
+            null,
+            InputOption::VALUE_NONE,
+            'Read the token as nr-vault\'s provisioning backend user, for a server that keeps CLI vault access off',
+        )->setHelp(
+            'On a server with nr-vault\'s "allowCliAccess" off — which is the right default — the'
+            . ' unattributed CLI actor may not READ the token either, so a plain ping reports no token'
+            . ' even though the frontend resolves it perfectly well through its frontend_accessible'
+            . ' flag. Pass --as-provisioner there, and the check runs as the same identity that wrote it.',
+        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
+        $asProvisioner = (bool)$input->getOption('as-provisioner');
+        $provisionerUid = $this->vaultConfiguration->getProvisioningBeUserUid();
+        if ($asProvisioner && $provisionerUid <= 0) {
+            $io->error(
+                'nr-vault has no provisioning backend user configured.'
+                . ' Run "webcon-jev:vault:setup-provisioner" first.',
+            );
+
+            return Command::FAILURE;
+        }
+
+        // Everything that touches the vault runs inside the same scope, so the status line and the
+        // call itself cannot disagree about whether the token is readable.
+        $check = function () use ($io, $asProvisioner, $provisionerUid): int {
+            return $this->check($io, $asProvisioner, $provisionerUid);
+        };
+
+        return $asProvisioner
+            ? (int)$this->technicalActor->runAs($provisionerUid, $check)
+            : $check();
+    }
+
+    private function check(SymfonyStyle $io, bool $asProvisioner, int $provisionerUid): int
+    {
         $io->definitionList(
             ['Endpoint' => $this->settings->endpoint()],
             ['Model' => $this->settings->model()],
             ['Token' => $this->tokenProvider->describeSource()],
             ['Enabled' => $this->settings->isEnabled() ? 'yes' : 'no'],
+            ['Reading as' => $asProvisioner
+                ? 'provisioning backend user ' . $provisionerUid
+                : 'the ambient actor (add --as-provisioner on a server)'],
         );
 
         if (!$this->tokenProvider->hasToken()) {
-            $io->error('No token. Run "webcon-jev:token:import" after setting TYPESAFE_API_KEY.');
+            $io->error('No token this actor can read.');
+            $io->note($asProvisioner
+                ? 'Store one with "webcon-jev:token:import --as-provisioner" after setting TYPESAFE_API_KEY.'
+                : 'If the token is in the vault but this installation keeps nr-vault\'s CLI access off,'
+                    . ' re-run with --as-provisioner. Otherwise store one with "webcon-jev:token:import".');
 
             return Command::FAILURE;
         }
