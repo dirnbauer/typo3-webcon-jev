@@ -34,6 +34,8 @@ Changelog
     two commands rather than three steps in a production backend.
 *   The request timeout default goes from 5 to 10 seconds. Measured round trip from a container is
     0.7–2.4 s against a quoted 70–500 ms, and a real request exceeded five seconds and fell back.
+    **An installation that already stored a timeout keeps it** — check the value rather than
+    assuming this reached you.
 
 0.1.4
 =====

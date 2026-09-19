@@ -44,6 +44,17 @@ Configuration
     decision and silently degrades the form, while the visitor is waiting on a background request
     either way, so erring long is the cheaper mistake here.
 
+    ..  warning::
+
+        An installation that already **stored** a value keeps it: a changed default in
+        ``ext_conf_template.txt`` only applies where nothing has been written yet. If this
+        extension was installed before 0.1.5, check the value rather than assuming the new default
+        reached you — a stale 5 is exactly the setting that produces occasional, silent fallbacks.
+
+        A container deployment that regenerates ``config/system/settings.php`` from the image on
+        every start is the exception: there the template default does land, because nothing
+        persists to keep.
+
 ..  confval:: cacheLifetime
     :type: integer
     :default: 300
