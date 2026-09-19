@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Webconsulting\WebconJev\Command;
 
+use Netresearch\NrVault\Configuration\ExtensionConfigurationInterface as VaultConfiguration;
+use Netresearch\NrVault\Security\TechnicalActorContextInterface;
 use Netresearch\NrVault\Service\VaultServiceInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -27,9 +29,15 @@ use Webconsulting\WebconJev\Service\TokenProvider;
 )]
 final class ImportTokenCommand extends Command
 {
+    private const CREATED = 'created';
+    private const ROTATED = 'rotated';
+    private const SKIPPED = 'skipped';
+
     public function __construct(
         private readonly VaultServiceInterface $vault,
         private readonly Settings $settings,
+        private readonly TechnicalActorContextInterface $technicalActor,
+        private readonly VaultConfiguration $vaultConfiguration,
     ) {
         parent::__construct();
     }
@@ -38,11 +46,23 @@ final class ImportTokenCommand extends Command
     {
         $this
             ->addOption('force', 'f', InputOption::VALUE_NONE, 'Replace a token that is already stored')
+            ->addOption(
+                'as-provisioner',
+                null,
+                InputOption::VALUE_NONE,
+                'Write as nr-vault\'s configured provisioning backend user instead of the unattributed CLI actor',
+            )
             ->setHelp(
                 'Reads ' . TokenProvider::ENVIRONMENT_VARIABLE . ' and stores it under the identifier from the'
                 . ' extension configuration. The secret is marked frontend-accessible, because the powermail'
                 . ' condition endpoint that consults Jev runs with no backend user. The token itself is never'
-                . ' sent to a browser — only the decision it produced.',
+                . ' sent to a browser — only the decision it produced.'
+                . "\n\n"
+                . 'On an installation that keeps nr-vault\'s "allowCliAccess" switched off — which it should —'
+                . ' pass --as-provisioner. The write is then attributed to the backend user named by nr-vault\'s'
+                . ' "provisioningBeUserUid" setting, which needs a group carrying tx_nrvault:secret.create and'
+                . ' secret.rotate and nothing else. The UID comes from configuration, never from this command'
+                . ' line, so a shell alone cannot choose whose identity to write under.',
             );
     }
 
@@ -62,33 +82,79 @@ final class ImportTokenCommand extends Command
             return Command::FAILURE;
         }
 
-        try {
+        // Three outcomes, not two. Collapsing "already there, left alone" into the same falsy
+        // value as "created" made the command report a store it had not performed.
+        $write = function (bool $asProvisioner) use ($identifier, $token, $input): string {
             $exists = $this->vault->exists($identifier);
             if ($exists && !$input->getOption('force')) {
-                $io->warning(sprintf('"%s" is already in the vault. Pass --force to replace it.', $identifier));
-
-                return Command::SUCCESS;
+                return self::SKIPPED;
             }
 
             if ($exists) {
                 $this->vault->rotate($identifier, $token, 'Replaced from ' . TokenProvider::ENVIRONMENT_VARIABLE);
-            } else {
-                $this->vault->store($identifier, $token, [
-                    'owner' => 0,
-                    'frontendAccessible' => true,
-                    'description' => 'TypeSafe AI Jev API token, used by EXT:webcon_jev',
-                ]);
+
+                return self::ROTATED;
             }
-        } catch (Throwable $exception) {
-            $io->error('The vault refused the token: ' . $exception->getMessage());
+
+            $options = [
+                'frontendAccessible' => true,
+                'description' => 'TypeSafe AI Jev API token, used by EXT:webcon_jev',
+            ];
+
+            // Owned by whoever wrote it. Rotating a secret is a per-secret ACL decision, not a
+            // group permission, so a provisioner that handed ownership to uid 0 could create the
+            // token once and then be refused every rotation of it afterwards — the failure would
+            // surface the first time somebody tried to replace a leaked key, which is the worst
+            // possible moment. Omitting the option lets nr-vault default it to the acting
+            // identity; the unattributed CLI actor has none, so there it stays 0 as before.
+            if (!$asProvisioner) {
+                $options['owner'] = 0;
+            }
+
+            $this->vault->store($identifier, $token, $options);
+
+            return self::CREATED;
+        };
+
+        $asProvisioner = (bool)$input->getOption('as-provisioner');
+        $provisionerUid = $this->vaultConfiguration->getProvisioningBeUserUid();
+        if ($asProvisioner && $provisionerUid <= 0) {
+            $io->error(
+                'nr-vault has no provisioning backend user configured. Set "provisioningBeUserUid" in the'
+                . ' nr_vault extension configuration to a root-level, enabled backend user whose group carries'
+                . ' tx_nrvault:secret.create.',
+            );
 
             return Command::FAILURE;
         }
 
+        try {
+            $outcome = $asProvisioner
+                ? (string)$this->technicalActor->runAs($provisionerUid, static fn(): string => $write(true))
+                : $write(false);
+        } catch (Throwable $exception) {
+            $io->error('The vault refused the token: ' . $exception->getMessage());
+            if (!$asProvisioner && str_contains($exception->getMessage(), 'permission denied')) {
+                $io->note(
+                    'This installation keeps nr-vault\'s CLI access off, which is the right default.'
+                    . ' Re-run with --as-provisioner.',
+                );
+            }
+
+            return Command::FAILURE;
+        }
+
+        if ($outcome === self::SKIPPED) {
+            $io->warning(sprintf('"%s" is already in the vault. Pass --force to replace it.', $identifier));
+
+            return Command::SUCCESS;
+        }
+
         $io->success(sprintf(
-            '%s "%s" in the vault (%d characters, ending "%s").',
-            $exists ? 'Replaced' : 'Stored',
+            '%s "%s" in the vault as %s (%d characters, ending "%s").',
+            $outcome === self::ROTATED ? 'Replaced' : 'Stored',
             $identifier,
+            $asProvisioner ? 'provisioning backend user ' . $provisionerUid : 'the CLI actor',
             strlen($token),
             substr($token, -4),
         ));

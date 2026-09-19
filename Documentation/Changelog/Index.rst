@@ -5,6 +5,17 @@
 Changelog
 =========
 
+0.1.4
+=====
+
+*   ``webcon-jev:token:import --as-provisioner`` writes the token through nr-vault's technical
+    actor, so a server does not have to switch ``allowCliAccess`` on — which would hand every CLI
+    process on the host create/rotate/use over every secret in the vault. The secret is owned by
+    the provisioning user so the same command can rotate it later, and stays frontend-accessible,
+    because a technical actor is a trusted caller and is not coerced.
+*   The command no longer reports "Stored" for a secret it left alone. Skipping, creating and
+    rotating had been collapsed into one falsy value.
+
 0.1.3
 =====
 

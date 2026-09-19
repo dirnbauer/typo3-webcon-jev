@@ -80,3 +80,35 @@ never appears in a shell history, a process list or a terminal recording.
 
 The vault is read first and the environment variable is the development fallback, so a checkout
 works before anyone seeds the vault, and production does not depend on an environment variable.
+
+On a server, without switching CLI access on
+==============================================
+
+nr-vault ships with ``allowCliAccess`` off, and it should stay off: switching it on lets **any**
+CLI process on that host create, rotate and use **every** secret in the vault, unattributed — the
+OpenAI key and the Slack tokens next to this one. The import command therefore has a second mode
+that needs no such switch:
+
+..  code-block:: bash
+
+    vendor/bin/typo3 webcon-jev:token:import --as-provisioner
+
+The write is then attributed to the backend user named by nr-vault's ``provisioningBeUserUid``
+setting. Set that up once:
+
+#.  A backend group carrying the custom permission options
+    ``tx_nrvault:secret.create,tx_nrvault:secret.rotate`` — and nothing else.
+#.  A **non-admin** backend user at root level, in that group, with no usable password. It is an
+    identity for the audit log, not an account anybody signs into.
+#.  ``provisioningBeUserUid`` in the nr_vault extension configuration, set to that user's uid.
+
+The uid comes from configuration and never from the command line: a flag that took it as an
+argument would be an impersonation primitive for anyone with a shell.
+
+..  note::
+
+    The secret ends up **owned by the provisioning user**, deliberately. Rotating a secret is a
+    per-secret ACL decision rather than a group permission, so a provisioner that handed ownership
+    to uid 0 could create the token once and then be refused every rotation of it — a failure that
+    surfaces the first time somebody tries to replace a leaked key. Run without
+    ``--as-provisioner`` and ownership stays at 0, as before.
