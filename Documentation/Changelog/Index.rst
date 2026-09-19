@@ -18,6 +18,46 @@ Changelog
     defined behind a ``class_exists()`` guard, and the backend module and its import map are
     registered only when the runtime is there.
 
+*   ``class_exists()`` turned out to be the wrong guard for a *service* dependency: in Composer mode
+    an installed-but-inactive extension is still autoloadable, so the error merely changed to "no
+    such service exists". The controller now takes its renderer as an optional constructor
+    argument — how Symfony autowiring says "use it if some active extension defines it" — and the
+    module and its import map are registered only when the runtime is loaded.
+*   The suite found a second defect on its way to green: ``webcon-jev:vault:setup-provisioner``
+    could not see a provisioning user somebody had **disabled**, because ``Connection::select()``
+    applies TYPO3's default restrictions and ``disable`` is one of them. It then created a second
+    ``vault_provisioner`` instead of repairing the first, and two users of one name make the lookup
+    by name ambiguous. The identity lookup now reads the row as it is.
+
+0.1.10
+======
+
+*   Honest latency figures in the manual. The earlier "0.7–2.4 s" understated a tail of roughly
+    one call in six at ~7 s and one over 10 s, and the timeout guidance depends on that number
+    being right. Also records what a cold cache adds: a page with no Jev in it takes 4.3–5.1 s on
+    the same installation, so a first request after a deploy is the platform's bootstrap plus the
+    model, not this extension being slow.
+
+0.1.9
+=====
+
+*   ``webcon-jev:ping`` reports whether a **frontend** request could read the token. No other check
+    answered that, and it is the only one the powermail integrations depend on: they run with no
+    backend user and resolve the secret through its ``frontend_accessible`` flag alone. A ping that
+    succeeds as an admin or a provisioner proves the token exists and the API is reachable, and
+    says nothing about whether a visitor gets a decision or a fallback.
+*   Two live calls during the same runs took 5.8 s and 6.8 s — both would have failed under the
+    5-second timeout shipped until 0.1.5.
+
+0.1.8
+=====
+
+*   Documentation only: a changed default in ``ext_conf_template.txt`` does **not** reach an
+    installation that already stored a value. Raising the timeout to 10 s in 0.1.5 left this
+    installation on 5 s, and the next request timed out at exactly 5001 ms. Check the stored value
+    on every long-lived install; a container that regenerates ``settings.php`` from the image is
+    the one that does not need checking.
+
 0.1.7
 =====
 
