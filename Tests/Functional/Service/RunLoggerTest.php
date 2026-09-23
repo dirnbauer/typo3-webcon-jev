@@ -77,8 +77,12 @@ final class RunLoggerTest extends AbstractJevTestCase
 
         self::assertSame(3, $totals['runs']);
         self::assertSame(1, $totals['calls'], 'only the uncached, non-fallback run reached the API');
+        self::assertSame(1, $totals['cached']);
         self::assertSame(1, $totals['fallbacks']);
-        self::assertSame(200, $totals['inputTokens'], 'the cached row still reports the tokens it cost the first time');
+        self::assertSame(100, $totals['inputTokens'], 'a reused answer is not billed again');
+        self::assertEqualsWithDelta(100 * 0.042 / 1_000_000, $totals['costUsd'], 1e-12);
+        self::assertSame(200.0, $totals['avgDurationMs'], 'nor does it count towards the latency');
+        self::assertSame(100, (int)$this->row(RunLogger::TABLE, 2)['input_tokens'], 'the cached row keeps what its answer was computed on');
         self::assertCount(3, $this->runLogger->recent());
         self::assertCount(3, $this->runLogger->recent(decisionUid: 1));
         self::assertCount(0, $this->runLogger->recent(decisionUid: 99));

@@ -39,7 +39,7 @@
     <div class="card-container">
         <section class="card card-size-medium" aria-labelledby="webcon-jev-connection-api">
             <div class="card-header">
-                <div class="card-icon"><core:icon identifier="webcon-jev-connection" size="medium" /></div>
+                <div class="card-icon"><core:icon identifier="webcon-jev-connection" size="medium" alternativeMarkupIdentifier="inline" /></div>
                 <div class="card-header-body">
                     <h2 class="card-title" id="webcon-jev-connection-api"><f:translate key="connection.api.title" domain="webcon_jev.module" /></h2>
                     <span class="card-subtitle"><f:translate key="connection.api.subtitle" domain="webcon_jev.module" /></span>
@@ -114,7 +114,7 @@
 
         <section class="card card-size-medium" aria-labelledby="webcon-jev-connection-cost">
             <div class="card-header">
-                <div class="card-icon"><core:icon identifier="tx_webconjev_run" size="medium" /></div>
+                <div class="card-icon"><core:icon identifier="tx_webconjev_run" size="medium" alternativeMarkupIdentifier="inline" /></div>
                 <div class="card-header-body">
                     <h2 class="card-title" id="webcon-jev-connection-cost"><f:translate key="connection.cost.title" domain="webcon_jev.module" /></h2>
                     <span class="card-subtitle"><f:translate key="connection.cost.subtitle" domain="webcon_jev.module" /></span>
@@ -141,6 +141,11 @@
                                 <th scope="row"><f:translate key="connection.cost.calls" domain="webcon_jev.module" /></th>
                                 <td class="text-end"><jev:format.number value="{totals.day.calls}" /></td>
                                 <td class="text-end"><jev:format.number value="{totals.month.calls}" /></td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><f:translate key="connection.cost.cached" domain="webcon_jev.module" /></th>
+                                <td class="text-end"><jev:format.number value="{totals.day.cached}" /></td>
+                                <td class="text-end"><jev:format.number value="{totals.month.cached}" /></td>
                             </tr>
                             <tr>
                                 <th scope="row"><f:translate key="connection.cost.fallbacks" domain="webcon_jev.module" /></th>

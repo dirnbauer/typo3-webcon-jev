@@ -174,19 +174,26 @@ final readonly class RunLogger
     /**
      * Totals since a point in time, for the module's cost panel.
      *
-     * @return array{runs: int, calls: int, fallbacks: int, inputTokens: int, costUsd: float, avgDurationMs: float}
+     * Tokens, cost and latency count the calls that reached the API and nothing else. A cached row
+     * keeps the tokens its answer was computed on, but reusing that answer was free and instant;
+     * counting it again overstated the bill and pulled the average latency towards a number no
+     * visitor waited for.
+     *
+     * @return array{runs: int, calls: int, cached: int, fallbacks: int, inputTokens: int, costUsd: float, avgDurationMs: float}
      */
     public function totalsSince(int $timestamp): array
     {
         $query = $this->connectionPool->getQueryBuilderForTable(self::TABLE);
+        $called = 'from_cache = 0 AND is_fallback = 0';
         $row = $query
             ->selectLiteral(
                 'COUNT(*) AS runs',
-                'SUM(CASE WHEN from_cache = 0 AND is_fallback = 0 THEN 1 ELSE 0 END) AS calls',
+                'SUM(CASE WHEN ' . $called . ' THEN 1 ELSE 0 END) AS calls',
+                'SUM(CASE WHEN from_cache = 1 AND is_fallback = 0 THEN 1 ELSE 0 END) AS cached',
                 'SUM(is_fallback) AS fallbacks',
-                'SUM(input_tokens) AS input_tokens',
-                'SUM(cost_usd) AS cost_usd',
-                'AVG(NULLIF(duration_ms, 0)) AS avg_duration',
+                'SUM(CASE WHEN ' . $called . ' THEN input_tokens ELSE 0 END) AS input_tokens',
+                'SUM(CASE WHEN ' . $called . ' THEN cost_usd ELSE 0 END) AS cost_usd',
+                'AVG(CASE WHEN ' . $called . ' AND duration_ms > 0 THEN duration_ms END) AS avg_duration',
             )
             ->from(self::TABLE)
             ->where($query->expr()->gte('crdate', $query->createNamedParameter($timestamp, Connection::PARAM_INT)))
@@ -198,6 +205,7 @@ final readonly class RunLogger
         return [
             'runs' => Cast::int($row['runs'] ?? null),
             'calls' => Cast::int($row['calls'] ?? null),
+            'cached' => Cast::int($row['cached'] ?? null),
             'fallbacks' => Cast::int($row['fallbacks'] ?? null),
             'inputTokens' => Cast::int($row['input_tokens'] ?? null),
             'costUsd' => Cast::float($row['cost_usd'] ?? null),

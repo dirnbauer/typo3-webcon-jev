@@ -798,6 +798,9 @@
       <trans-unit id="connection.cost.calls" resname="connection.cost.calls" xml:space="preserve">
         <source>Reached the API</source>
       </trans-unit>
+      <trans-unit id="connection.cost.cached" resname="connection.cost.cached" xml:space="preserve">
+        <source>Answered from the cache</source>
+      </trans-unit>
       <trans-unit id="connection.cost.fallbacks" resname="connection.cost.fallbacks" xml:space="preserve">
         <source>Fell back</source>
       </trans-unit>
@@ -811,7 +814,7 @@
         <source>Average latency</source>
       </trans-unit>
       <trans-unit id="connection.cost.note" resname="connection.cost.note" xml:space="preserve">
-        <source>Cached runs cost nothing. Fallbacks are counted next to calls because a form that quietly fell back for a week looks exactly like one that worked.</source>
+        <source>Tokens, cost and latency count the calls that reached the API: an answer from the cache is free. Fallbacks are counted next to calls because a form that quietly fell back for a week looks exactly like one that worked.</source>
       </trans-unit>
       <trans-unit id="connection.cost.runLog" resname="connection.cost.runLog" xml:space="preserve">
         <source>Open the run log</source>

@@ -98,15 +98,22 @@ final readonly class TokenProvider
      * whether a visitor filling in a form will get a decision or a fallback.
      *
      * Safe to call from anywhere: retrieveForFrontend() refuses a secret without the flag whoever
-     * asks, so this never reports more access than a real visitor would have.
+     * asks, so this never reports more access than a real visitor would have. The environment
+     * fallback counts too, because a frontend request falls back to it exactly like any other —
+     * leaving it out reported "no" on every development machine whose token was only in the
+     * environment, directly above a working test call.
      */
     public function isReadableByFrontend(): bool
     {
         try {
-            return Cast::trimmed($this->vault->retrieveForFrontend($this->settings->tokenIdentifier())) !== '';
+            if (Cast::trimmed($this->vault->retrieveForFrontend($this->settings->tokenIdentifier())) !== '') {
+                return true;
+            }
         } catch (Throwable) {
-            return false;
+            // Not readable through the vault; the environment may still provide one.
         }
+
+        return $this->fromEnvironment() !== null;
     }
 
     /**

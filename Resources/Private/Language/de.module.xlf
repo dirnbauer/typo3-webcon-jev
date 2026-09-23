@@ -1063,6 +1063,10 @@
         <source>Reached the API</source>
         <target state="final">Bei der API angekommen</target>
       </trans-unit>
+      <trans-unit id="connection.cost.cached" resname="connection.cost.cached" xml:space="preserve">
+        <source>Answered from the cache</source>
+        <target state="final">Aus dem Cache beantwortet</target>
+      </trans-unit>
       <trans-unit id="connection.cost.fallbacks" resname="connection.cost.fallbacks" xml:space="preserve">
         <source>Fell back</source>
         <target state="final">Zurückgefallen</target>
@@ -1080,8 +1084,8 @@
         <target state="final">Mittlere Dauer</target>
       </trans-unit>
       <trans-unit id="connection.cost.note" resname="connection.cost.note" xml:space="preserve">
-        <source>Cached runs cost nothing. Fallbacks are counted next to calls because a form that quietly fell back for a week looks exactly like one that worked.</source>
-        <target state="final">Aufrufe aus dem Cache kosten nichts. Rückfälle stehen neben den Aufrufen, weil ein Formular, das eine Woche lang still zurückfiel, genauso aussieht wie eines, das funktioniert hat.</target>
+        <source>Tokens, cost and latency count the calls that reached the API: an answer from the cache is free. Fallbacks are counted next to calls because a form that quietly fell back for a week looks exactly like one that worked.</source>
+        <target state="final">Tokens, Kosten und Dauer zählen die Aufrufe, die bei der API ankamen: Eine Antwort aus dem Cache ist kostenlos. Rückfälle stehen neben den Aufrufen, weil ein Formular, das eine Woche lang still zurückfiel, genauso aussieht wie eines, das funktioniert hat.</target>
       </trans-unit>
       <trans-unit id="connection.cost.runLog" resname="connection.cost.runLog" xml:space="preserve">
         <source>Open the run log</source>

@@ -110,14 +110,24 @@
                                         </f:else>
                                     </f:if>
                                 </td>
-                                <td class="text-end text-nowrap">
-                                    <f:if condition="{item.run.durationMs} >= 1">
-                                        <f:then><jev:format.number value="{item.run.durationMs}" />&nbsp;ms</f:then>
-                                        <f:else><span class="text-variant">—</span></f:else>
-                                    </f:if>
-                                </td>
-                                <td class="text-end"><jev:format.number value="{item.run.inputTokens}" /></td>
-                                <td class="text-end text-nowrap"><jev:format.number value="{item.run.costUsd}" style="usd" /></td>
+                                <f:if condition="{item.run.cached}">
+                                    <f:then>
+                                        <f:comment>A reused answer took no time and cost nothing; its row only keeps what it was computed on.</f:comment>
+                                        <td class="text-end text-variant">—</td>
+                                        <td class="text-end text-variant">—</td>
+                                        <td class="text-end text-variant">—</td>
+                                    </f:then>
+                                    <f:else>
+                                        <td class="text-end text-nowrap">
+                                            <f:if condition="{item.run.durationMs} >= 1">
+                                                <f:then><jev:format.number value="{item.run.durationMs}" />&nbsp;ms</f:then>
+                                                <f:else><span class="text-variant">—</span></f:else>
+                                            </f:if>
+                                        </td>
+                                        <td class="text-end"><jev:format.number value="{item.run.inputTokens}" /></td>
+                                        <td class="text-end text-nowrap"><jev:format.number value="{item.run.costUsd}" style="usd" /></td>
+                                    </f:else>
+                                </f:if>
                             </tr>
                         </f:for>
                     </tbody>
@@ -142,7 +152,6 @@
                     <f:be.infobox
                         state="{f:constant(name: 'TYPO3\CMS\Core\Type\ContextualFeedbackSeverity::INFO')}"
                         title="{f:translate(key: 'runs.empty.title', domain: 'webcon_jev.module')}"
-                        iconName="tx_webconjev_run"
                     >
                         <p><f:translate key="runs.empty.message" domain="webcon_jev.module" /></p>
                         <a class="btn btn-primary" href="{decisionsUrl}"><f:translate key="runs.empty.action" domain="webcon_jev.module" /></a>
