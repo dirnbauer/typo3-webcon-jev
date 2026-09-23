@@ -1,6 +1,6 @@
 {
     "name": "webconsulting/webcon-jev",
-    "description": "Typed decisions from TypeSafe AI's Jev model inside TYPO3: a decision editor and playground in the backend, a powermail_cond operator, and a powermail finisher that routes a submission to the right receiver",
+    "description": "Typed decisions from TypeSafe AI's Jev model inside TYPO3: a native backend module to write and try decisions, a powermail_cond rule operator, and powermail routing that addresses a submission to the right receiver",
     "license": "GPL-2.0-or-later",
     "type": "typo3-cms-extension",
     "keywords": [
@@ -26,20 +26,17 @@
     },
     "require": {
         "php": "^8.4",
-        "ext-json": "*",
-        "netresearch/nr-vault": "^0.16",
-        "psr/http-client": "^1.0",
+        "ext-intl": "*",
+        "netresearch/nr-vault": "^0.16 || ^1.0",
         "psr/http-message": "^2.0",
         "psr/log": "^3.0",
         "typo3/cms-backend": "^14.3",
         "typo3/cms-core": "^14.3",
-        "typo3/cms-extbase": "^14.3",
-        "typo3/cms-frontend": "^14.3"
+        "typo3/cms-fluid": "^14.3"
     },
     "suggest": {
-        "in2code/powermail": "Adds the Jev finisher that routes a submission to a receiver",
-        "in2code/powermail_cond": "Adds Jev rule operators to powermail conditions",
-        "webconsulting/typo3-shadcn-ui": "Provides the backend module's shadcn/ui runtime"
+        "in2code/powermail": "Routes a submission to the receiver a decision names (needs the TYPO3 v14 fork, github.com/dirnbauer/powermail)",
+        "in2code/powermail_cond": "Adds Jev rule operators to powermail conditions (needs the TYPO3 v14 fork, github.com/dirnbauer/powermail_cond)"
     },
     "autoload": {
         "psr-4": {
@@ -54,7 +51,7 @@
         },
         "bin-dir": ".Build/bin",
         "platform": {
-            "php": "8.4.0"
+            "php": "8.4.1"
         },
         "sort-packages": true,
         "vendor-dir": ".Build/vendor"
@@ -68,13 +65,6 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/netresearch/t3x-nr-vault.git",
-            "only": [
-                "netresearch/nr-vault"
-            ]
-        },
-        {
-            "type": "vcs",
             "url": "https://github.com/dirnbauer/powermail.git",
             "only": [
                 "in2code/powermail"
@@ -86,47 +76,18 @@
             "only": [
                 "in2code/powermail_cond"
             ]
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/dirnbauer/typo3-shadcn-ui.git",
-            "only": [
-                "webconsulting/typo3-shadcn-ui"
-            ]
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/dirnbauer/typo3-mcp-server.git",
-            "only": [
-                "hn/typo3-mcp-server"
-            ]
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/dirnbauer/typo3-abilities.git",
-            "only": [
-                "webconsulting/typo3-abilities"
-            ]
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/netresearch/t3x-nr-llm.git",
-            "only": [
-                "netresearch/nr-llm"
-            ]
         }
     ],
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.94",
+        "friendsofphp/php-cs-fixer": "^3.95",
         "in2code/powermail": "^14.0",
         "in2code/powermail_cond": "dev-typo3-v14",
-        "phpstan/phpstan": "^2.1",
+        "phpstan/phpstan": "^2.2",
         "phpstan/phpstan-phpunit": "^2.0",
-        "phpunit/phpunit": "^12.4 || ^13.0",
-        "saschaegerer/phpstan-typo3": "^3.0",
+        "phpunit/phpunit": "^13.3",
+        "saschaegerer/phpstan-typo3": "^3.1",
         "typo3/coding-standards": "^0.9",
-        "typo3/testing-framework": "^9.5",
-        "webconsulting/typo3-shadcn-ui": "^1.0"
+        "typo3/testing-framework": "^9.7"
     },
     "autoload-dev": {
         "psr-4": {

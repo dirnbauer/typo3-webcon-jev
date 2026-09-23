@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 env:
-  # nr-vault comes from a VCS repository; the job token is for the API rate limit.
+  # The powermail forks come from VCS repositories; the job token is for the API rate limit.
   COMPOSER_AUTH: '{"github-oauth":{"github.com":"${{ github.token }}"}}'
 
 jobs:
@@ -17,49 +17,64 @@ jobs:
     name: Lint & coding standards
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
           coverage: none
           tools: composer:v2
-          extensions: sodium
+          extensions: intl, sodium
+      - run: composer validate --strict
       - run: composer install --no-interaction --no-progress
       - name: Lint PHP
         run: find Classes Configuration Tests -name '*.php' -print0 | xargs -0 -n1 -P4 php -l > /dev/null
       - run: composer ci:cgl
+      # The backend module's JavaScript is plain ES modules, loaded as they are through the import
+      # map: there is no build that would catch a syntax error before a browser does.
+      - name: Lint JavaScript
+        run: for file in Resources/Public/JavaScript/*.js; do node --input-type=module --check < "$file" || exit 1; done
+      - name: Lint XLIFF
+        run: find Resources/Private/Language -name '*.xlf' -print0 | xargs -0 -n1 php -r 'libxml_use_internal_errors(false); exit(simplexml_load_file($argv[1]) === false ? 1 : 0);'
 
   phpstan:
     name: Static analysis
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
           coverage: none
           tools: composer:v2
-          extensions: sodium
+          extensions: intl, sodium
       - run: composer install --no-interaction --no-progress
       - run: composer ci:phpstan
 
   unit:
-    name: Unit tests
+    name: Unit tests (PHP ${{ matrix.php }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.4', '8.5']
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: ${{ matrix.php }}
           coverage: none
           tools: composer:v2
-          extensions: sodium
+          extensions: intl, sodium
       - run: composer install --no-interaction --no-progress
       - run: composer ci:tests:unit
 
   functional:
-    name: Functional tests (MariaDB 10.11)
+    name: Functional tests (PHP ${{ matrix.php }}, MariaDB 10.11)
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.4', '8.5']
     services:
       mariadb:
         image: mariadb:10.11
@@ -80,29 +95,12 @@ jobs:
       typo3DatabaseHost: 127.0.0.1
       typo3DatabasePort: 3306
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: ${{ matrix.php }}
           coverage: none
           tools: composer:v2
           extensions: intl, mbstring, pdo_mysql, mysqli, gd, zip, sodium
       - run: composer install --no-interaction --no-progress
       - run: composer ci:tests:functional
-
-  assets:
-    name: Frontend bundle
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-          cache: npm
-      - run: npm ci
-      - run: npm run lint
-      - run: npm run build
-      # The bundle is committed because the backend loads it by URL. It is only
-      # trustworthy if it is the one the committed sources produce.
-      - name: The committed bundle matches its sources
-        run: git diff --exit-code Resources/Public/JavaScript/jev-module.js
