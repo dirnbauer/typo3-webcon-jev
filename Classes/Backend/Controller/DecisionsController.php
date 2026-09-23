@@ -147,13 +147,15 @@ final readonly class DecisionsController
 
     private function editorButtons(ModuleTemplate $view, ?Decision $decision, string $listUrl): void
     {
+        // The core's buttons, with this extension's labels: the core's own come from its language
+        // packs, and without them a German editor reads "Close" and "Save" next to "Löschen".
         $view->addButtonToButtonBar(
-            $this->componentFactory->createCloseButton($listUrl),
+            $this->componentFactory->createCloseButton($listUrl)->setTitle($this->labels->get('editor.close')),
             ButtonBar::BUTTON_POSITION_LEFT,
             1,
         );
         $view->addButtonToButtonBar(
-            $this->componentFactory->createSaveButton(self::FORM_ID),
+            $this->componentFactory->createSaveButton(self::FORM_ID)->setTitle($this->labels->get('editor.save')),
             ButtonBar::BUTTON_POSITION_LEFT,
             2,
         );

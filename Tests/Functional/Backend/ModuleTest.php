@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Webconsulting\WebconJev\Tests\Functional\Backend;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Backend\Module\ModuleRegistry;
 use TYPO3\CMS\Backend\Routing\Router;
+use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use Webconsulting\WebconJev\Backend\Controller\ConnectionController;
 use Webconsulting\WebconJev\Backend\Controller\DecisionsController;
 use Webconsulting\WebconJev\Backend\Controller\RunLogController;
@@ -106,6 +108,39 @@ final class ModuleTest extends AbstractJevTestCase
         self::assertStringContainsString('/webcon-jev/decision/save', urldecode($config['urls']['save']));
         self::assertStringContainsString('form="' . DecisionsController::FORM_ID . '"', $html, 'the DocHeader save button submits the editor');
         self::assertStringContainsString('data-webcon-jev-action="delete"', $html);
+    }
+
+    /**
+     * @return iterable<string, array{string, array<string, mixed>, list<string>}>
+     */
+    public static function docHeaderButtons(): iterable
+    {
+        yield 'decision list' => [DecisionsController::MODULE, [], ['Neue Entscheidung']];
+        yield 'decision editor' => [DecisionsController::EDIT_ROUTE, ['decision' => 1], ['Schließen', 'Speichern', 'Löschen', 'Datensatz-Editor']];
+        yield 'new decision' => [DecisionsController::EDIT_ROUTE, [], ['Schließen', 'Speichern']];
+        yield 'run log' => [RunLogController::MODULE, [], []];
+        yield 'connection' => [ConnectionController::MODULE, [], []];
+    }
+
+    /**
+     * The core labels its own buttons from its language packs, which an installation may not have;
+     * a German editor then read "Close" and "Save" next to "Löschen". Every button this extension
+     * puts in the document header carries a label of its own, in the editor's language.
+     *
+     * @param array<string, mixed> $query
+     * @param list<string>         $expected
+     */
+    #[Test]
+    #[DataProvider('docHeaderButtons')]
+    public function everyDocHeaderButtonIsLabelledInTheEditorsLanguage(string $route, array $query, array $expected): void
+    {
+        $this->signInAsAdministrator();
+        $GLOBALS['LANG'] = $this->get(LanguageServiceFactory::class)->create('de');
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/decisions.csv');
+
+        $html = $this->render($route, $query);
+
+        self::assertSame($expected, self::docHeaderButtonLabels($html));
     }
 
     #[Test]
@@ -216,6 +251,32 @@ final class ModuleTest extends AbstractJevTestCase
         self::assertStringContainsString('No API token', $html);
         self::assertStringContainsString('data-webcon-jev-ping=', $html);
         self::assertStringContainsString('Last 30 days', $html);
+    }
+
+    /**
+     * The labels of the document header's buttons, left to right — without the reload button and
+     * the share menu the core adds to every module and labels itself.
+     *
+     * @return list<string>
+     */
+    private static function docHeaderButtonLabels(string $html): array
+    {
+        self::assertSame(1, preg_match('/<div class="module-docheader\b.*?<div class="module-body/s', $html, $docHeader));
+        preg_match_all(
+            '/<(?:a role="button"|button)\s[^>]*\btitle="([^"]*)"[^>]*>\s*<span[^>]*\bdata-identifier="([^"]*)"/',
+            $docHeader[0],
+            $buttons,
+            PREG_SET_ORDER,
+        );
+
+        $labels = [];
+        foreach ($buttons as [, $title, $icon]) {
+            if (!in_array($icon, ['actions-refresh', 'actions-share-alt'], true)) {
+                $labels[] = html_entity_decode($title, ENT_QUOTES | ENT_HTML5);
+            }
+        }
+
+        return $labels;
     }
 
     /**

@@ -207,6 +207,14 @@
         <source>Decision %d does not exist any more. It may have been deleted meanwhile.</source>
         <target state="final">Entscheidung %d gibt es nicht mehr. Vielleicht wurde sie inzwischen gelöscht.</target>
       </trans-unit>
+      <trans-unit id="editor.close" resname="editor.close" xml:space="preserve">
+        <source>Close</source>
+        <target state="final">Schließen</target>
+      </trans-unit>
+      <trans-unit id="editor.save" resname="editor.save" xml:space="preserve">
+        <source>Save</source>
+        <target state="final">Speichern</target>
+      </trans-unit>
       <trans-unit id="editor.delete" resname="editor.delete" xml:space="preserve">
         <source>Delete</source>
         <target state="final">Löschen</target>
