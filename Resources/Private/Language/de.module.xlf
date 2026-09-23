@@ -795,6 +795,10 @@
         <source>Deleted decision</source>
         <target state="final">Gelöschte Entscheidung</target>
       </trans-unit>
+      <trans-unit id="runs.decision.adHoc" resname="runs.decision.adHoc" xml:space="preserve">
+        <source>Ad-hoc decision</source>
+        <target state="final">Ad-hoc-Entscheidung</target>
+      </trans-unit>
       <trans-unit id="runs.retention" resname="runs.retention" xml:space="preserve">
         <source>Rows older than the configured retention are removed by vendor/bin/typo3 webcon-jev:log:prune — run it as a scheduled task.</source>
         <target state="final">Zeilen, die älter als die konfigurierte Aufbewahrung sind, entfernt vendor/bin/typo3 webcon-jev:log:prune — als geplante Aufgabe ausführen.</target>

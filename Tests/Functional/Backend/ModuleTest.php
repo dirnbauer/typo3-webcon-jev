@@ -14,6 +14,7 @@ use Webconsulting\WebconJev\Client\Dto\Answer;
 use Webconsulting\WebconJev\Client\Dto\DecisionResult;
 use Webconsulting\WebconJev\Client\Dto\QuestionType;
 use Webconsulting\WebconJev\Client\Dto\Usage;
+use Webconsulting\WebconJev\Domain\Model\Decision;
 use Webconsulting\WebconJev\Domain\Repository\DecisionRepository;
 use Webconsulting\WebconJev\Service\RunLogger;
 use Webconsulting\WebconJev\Tests\Functional\AbstractJevTestCase;
@@ -137,6 +138,27 @@ final class ModuleTest extends AbstractJevTestCase
         self::assertStringContainsString('the API was slow', $html);
         self::assertStringContainsString('Contact routing', $html);
         self::assertStringContainsString('Condition', $html);
+    }
+
+    #[Test]
+    public function theRunLogTellsAdHocDecisionsFromDeletedOnesAndLabelsIntegrationContexts(): void
+    {
+        $this->signInAsAdministrator();
+        $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['webcon_jev']['runContexts']['my_extension_import']
+            = 'LLL:EXT:webcon_jev/Tests/Functional/Fixtures/Language/contexts.xlf:jev.context';
+        $logger = $this->get(RunLogger::class);
+        $logger->log(new Decision(0, 'my_extension.content_type', '', '', '', '', 0.6, -1, 'text', []), DecisionResult::fallback('built in code'), 'my_extension_import');
+        $logger->log(new Decision(99, 'retired', '', '', '', '', 0.6, -1, '', []), DecisionResult::fallback('stored once'), 'somebody_elses');
+
+        $html = $this->render(RunLogController::MODULE);
+
+        self::assertSame(1, substr_count($html, 'Ad-hoc decision'), 'uid 0: built in code, never stored');
+        self::assertStringContainsString('my_extension.content_type', $html);
+        self::assertSame(1, substr_count($html, 'Deleted decision'), 'only the stored decision that is gone');
+        self::assertSame(2, substr_count($html, 'Document import'), 'the label the integration registered, in the row and the filter');
+        self::assertStringNotContainsString('>my_extension_import<', $html);
+        self::assertStringContainsString('<option value="my_extension_import"', $html, 'the filter still selects by the context itself');
+        self::assertStringContainsString('>somebody_elses<', $html, 'a context nobody labelled is shown as written');
     }
 
     #[Test]

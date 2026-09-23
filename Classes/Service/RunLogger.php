@@ -20,6 +20,11 @@ use Webconsulting\WebconJev\Support\Cast;
  *
  * The log is the only place a fallback is visible after the fact — a form that quietly routed to
  * its default receiver for a week looks exactly like a form that worked.
+ *
+ * A decision need not be stored: one an integration builds in code for the occasion carries uid 0,
+ * and its runs are recorded under uid 0 and its identifier — the run log shows them as ad-hoc
+ * decisions. The context names where a run came from; see RunContextLabels for how an integration
+ * labels its own.
  */
 final readonly class RunLogger
 {
@@ -53,11 +58,13 @@ final readonly class RunLogger
             'pid' => 0,
             'crdate' => $now,
             'tstamp' => $now,
-            'decision' => $decision->uid,
-            'decision_identifier' => $decision->identifier,
-            'context' => $context,
+            // Cut to the columns rather than refused by them: the identifier and the context come
+            // from integrations, and a log row that fails to insert must not break the call it logs.
+            'decision' => max(0, $decision->uid),
+            'decision_identifier' => mb_substr($decision->identifier, 0, 64),
+            'context' => mb_substr($context, 0, 32),
             'origin' => mb_substr($origin, 0, 250),
-            'model' => $result->model,
+            'model' => mb_substr($result->model, 0, 64),
             'state_hash' => $stateHash,
             'question_count' => count($decision->questions),
             'duration_ms' => $result->durationMs,

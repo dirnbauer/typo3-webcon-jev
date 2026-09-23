@@ -29,7 +29,7 @@
                 <select class="form-select" id="webcon-jev-filter-context" name="filter[context]">
                     <option value=""><f:translate key="runs.filter.context.all" domain="webcon_jev.module" /></option>
                     <f:for each="{contexts}" as="context">
-                        <option value="{context}" {f:if(condition: '{context} == {filter.context}', then: 'selected')}><f:translate key="context.{context}" domain="webcon_jev.module" default="{context}" /></option>
+                        <option value="{context.value}" {f:if(condition: '{context.value} == {filter.context}', then: 'selected')}>{context.label}</option>
                     </f:for>
                 </select>
             </div>
@@ -79,12 +79,13 @@
                                 <td>
                                     <f:if condition="{item.decisionUrl}">
                                         <f:then><a href="{item.decisionUrl}">{item.decisionTitle}</a></f:then>
+                                        <f:else if="{item.run.adHoc}"><span class="text-variant"><f:translate key="runs.decision.adHoc" domain="webcon_jev.module" /></span></f:else>
                                         <f:else><span class="text-variant"><f:translate key="runs.decision.gone" domain="webcon_jev.module" /></span></f:else>
                                     </f:if>
                                     <div class="webcon-jev-mono text-variant">{item.run.decisionIdentifier}</div>
                                 </td>
                                 <td>
-                                    <span class="badge badge-default"><f:translate key="context.{item.run.context}" domain="webcon_jev.module" default="{item.run.context}" /></span>
+                                    <span class="badge badge-default">{item.contextLabel}</span>
                                     <f:if condition="{item.run.cached}">
                                         <span class="badge badge-info"><f:translate key="outcome.cached" domain="webcon_jev.module" /></span>
                                     </f:if>

@@ -29,6 +29,16 @@ final readonly class Labels
         return $label === null ? $key : (string)$label;
     }
 
+    /**
+     * A label reference from outside this extension's domain — an LLL: reference, a domain
+     * reference, or plain text, which comes back as it is. An LLL: reference that does not resolve
+     * comes back empty.
+     */
+    public function resolve(string $reference): string
+    {
+        return $this->languageService()->sL($reference);
+    }
+
     private function languageService(): LanguageService
     {
         $languageService = $GLOBALS['LANG'] ?? null;

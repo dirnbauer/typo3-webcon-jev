@@ -597,6 +597,9 @@
       <trans-unit id="runs.decision.gone" resname="runs.decision.gone" xml:space="preserve">
         <source>Deleted decision</source>
       </trans-unit>
+      <trans-unit id="runs.decision.adHoc" resname="runs.decision.adHoc" xml:space="preserve">
+        <source>Ad-hoc decision</source>
+      </trans-unit>
       <trans-unit id="runs.retention" resname="runs.retention" xml:space="preserve">
         <source>Rows older than the configured retention are removed by vendor/bin/typo3 webcon-jev:log:prune — run it as a scheduled task.</source>
       </trans-unit>

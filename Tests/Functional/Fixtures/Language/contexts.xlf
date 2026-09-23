@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" datatype="plaintext" original="EXT:webcon_jev/Tests/Functional/Fixtures/Language/contexts.xlf" date="2026-09-23T00:00:00Z" product-name="webcon_jev">
+    <header/>
+    <body>
+      <trans-unit id="jev.context" resname="jev.context">
+        <source>Document import</source>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

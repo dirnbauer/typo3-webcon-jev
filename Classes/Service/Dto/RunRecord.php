@@ -58,6 +58,15 @@ final readonly class RunRecord
         );
     }
 
+    /**
+     * A run of a decision an integration built in code for the occasion (uid 0), rather than of one
+     * stored in the decision table.
+     */
+    public function isAdHoc(): bool
+    {
+        return $this->decision === 0;
+    }
+
     public function isFallback(): bool
     {
         return $this->outcome === RunOutcome::Fallback;

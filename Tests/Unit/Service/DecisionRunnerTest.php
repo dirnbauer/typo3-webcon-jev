@@ -158,6 +158,59 @@ final class DecisionRunnerTest extends TestCase
         self::assertStringContainsString('budget guard', (string)$third->result->fallbackReason);
     }
 
+    #[Test]
+    public function aDecisionBuiltInCodeIsAnsweredCachedAndMappedLikeAStoredOne(): void
+    {
+        $client = new FakeJevClient(self::answered('sales'));
+        $runner = self::runner($client, new ArrayCache(), cacheLifetime: 300);
+
+        $first = $runner->run(self::builtInCode(), ['part' => 'We would like to buy'], 'my_extension_import');
+        $second = $runner->run(self::builtInCode(), ['part' => 'We would like to buy'], 'my_extension_import');
+
+        self::assertFalse($first->isFallback());
+        self::assertSame(0, $first->decision->uid);
+        self::assertSame('sales@example.com', $first->outcomeFor('department'), 'the option\'s outcome value');
+        self::assertSame(['part' => 'We would like to buy'], $client->lastState);
+        self::assertSame(['department'], array_keys($client->lastQuestions));
+        self::assertTrue($second->result->fromCache, 'the identical question reuses its answer');
+        self::assertSame(1, $client->calls);
+    }
+
+    #[Test]
+    public function aDecisionBuiltInCodeFallsBackForEveryReasonAStoredOneDoes(): void
+    {
+        $context = ['part' => 'We would like to buy'];
+        $outcomes = [
+            'switched off' => self::runner(new FakeJevClient(self::answered('sales')), new ArrayCache(), enabled: false)
+                ->run(self::builtInCode(), $context),
+            'no token' => self::runner(new FakeJevClient(self::answered('sales'), configured: false), new ArrayCache())
+                ->run(self::builtInCode(), $context),
+            'client failure' => self::runner(new FakeJevClient(new RateLimitException('busy')), new ArrayCache())
+                ->run(self::builtInCode(), $context),
+        ];
+        $budgeted = self::runner(new FakeJevClient(self::answered('sales')), new ArrayCache(), maxCallsPerMinute: 1);
+        $budgeted->run(self::builtInCode(), ['part' => 'first']);
+        $outcomes['budget spent'] = $budgeted->run(self::builtInCode(), ['part' => 'second']);
+
+        foreach ($outcomes as $reason => $outcome) {
+            self::assertTrue($outcome->isFallback(), $reason);
+            self::assertSame('office@example.com', $outcome->outcomeFor('department'), $reason);
+        }
+    }
+
+    #[Test]
+    public function anotherModelIsAnotherQuestion(): void
+    {
+        $client = new FakeJevClient(self::answered('sales'));
+        $runner = self::runner($client, new ArrayCache(), cacheLifetime: 300);
+        $decision = self::decision();
+
+        $runner->run($decision, ['field' => ['message' => 'Buy']]);
+        $runner->run(new Decision(1, 'routing', 'Routing', '', '', 'jev-large', 0.6, Decision::CACHE_LIFETIME_INHERIT, 'office@example.com', $decision->questions), ['field' => ['message' => 'Buy']]);
+
+        self::assertSame(2, $client->calls, 'an answer one model gave is not reused for another');
+    }
+
     private static function runner(
         JevClientInterface $client,
         FrontendInterface $cache,
@@ -204,6 +257,19 @@ final class DecisionRunnerTest extends TestCase
         ]);
 
         return new Decision(1, 'routing', 'Routing', '', '', '', 0.6, Decision::CACHE_LIFETIME_INHERIT, 'office@example.com', [$question]);
+    }
+
+    /**
+     * A decision an integration builds for the occasion: nothing stored, so every uid is 0.
+     */
+    private static function builtInCode(): Decision
+    {
+        $question = new DecisionQuestion(0, 'department', QuestionType::Choice, 'Which department should answer this part?', [
+            new Criterion(0, 'sales', 'Buying', 'sales@example.com'),
+            new Criterion(0, 'support', 'Broken', 'support@example.com'),
+        ]);
+
+        return new Decision(0, 'my_extension.department', 'Department', '', '', '', 0.6, Decision::CACHE_LIFETIME_INHERIT, 'office@example.com', [$question]);
     }
 
     private static function answered(string $choice): DecisionResult

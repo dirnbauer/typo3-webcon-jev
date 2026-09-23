@@ -13,6 +13,7 @@ use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Pagination\QueryBuilderPaginator;
 use TYPO3\CMS\Core\Pagination\SimplePagination;
 use Webconsulting\WebconJev\Backend\Labels;
+use Webconsulting\WebconJev\Backend\RunContextLabels;
 use Webconsulting\WebconJev\Domain\Model\Decision;
 use Webconsulting\WebconJev\Domain\Repository\DecisionRepository;
 use Webconsulting\WebconJev\Service\Dto\RunLogFilter;
@@ -40,6 +41,7 @@ final readonly class RunLogController
         private DecisionRepository $decisions,
         private RunLogger $runLogger,
         private Labels $labels,
+        private RunContextLabels $contextLabels,
     ) {}
 
     public function listAction(ServerRequestInterface $request): ResponseInterface
@@ -86,6 +88,7 @@ final readonly class RunLogController
                 'decisionUrl' => isset($titles[$run->decision])
                     ? $this->url(DecisionsController::EDIT_ROUTE, ['decision' => $run->decision])
                     : '',
+                'contextLabel' => $this->contextLabels->label($run->context),
             ], $runs),
             'filter' => [
                 'decision' => $filter->decision,
@@ -97,7 +100,10 @@ final readonly class RunLogController
                 static fn(Decision $decision): array => ['uid' => $decision->uid, 'title' => $titles[$decision->uid] ?? ''],
                 $decisions,
             ),
-            'contexts' => $this->runLogger->contexts(),
+            'contexts' => array_map(
+                fn(string $context): array => ['value' => $context, 'label' => $this->contextLabels->label($context)],
+                $this->runLogger->contexts(),
+            ),
             'outcomes' => array_map(static fn(RunOutcome $outcome): string => $outcome->value, RunOutcome::cases()),
             'paginator' => $paginator,
             'pagination' => $pagination,

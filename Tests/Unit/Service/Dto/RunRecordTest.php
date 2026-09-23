@@ -39,6 +39,8 @@ final class RunRecordTest extends TestCase
         ]);
 
         self::assertSame(12, $record->uid);
+        self::assertFalse($record->isAdHoc(), 'a stored decision');
+        self::assertTrue(RunRecord::fromRow(['decision' => '0', 'decision_identifier' => 'my_extension.department'])->isAdHoc());
         self::assertSame(RunOutcome::Answered, $record->outcome);
         self::assertFalse($record->isFallback());
         self::assertSame(356, $record->inputTokens);

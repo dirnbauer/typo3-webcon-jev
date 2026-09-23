@@ -24,6 +24,10 @@ use Webconsulting\WebconJev\Support\Cast;
  *
  * Nothing here ever throws at the integration. A form must not break because a model is having a
  * bad minute, so every failure becomes a fallback result the caller can still act on.
+ *
+ * The decision may be one an integration built in code for the occasion — uid 0, questions it only
+ * knows at run time. It goes through the same switch, token check, cache, budget guard, fallback
+ * and run log as a stored one.
  */
 final readonly class DecisionRunner
 {
@@ -131,9 +135,12 @@ final readonly class DecisionRunner
      */
     private function hash(Decision $decision, array $questions, string|array $state): string
     {
+        // Everything the answer depends on. The model is part of it: an answer one model gave is not
+        // the answer to ask another for, and nothing flushes the cache when a decision's model changes.
         return hash('xxh128', json_encode([
             'decision' => $decision->uid,
             'language' => $decision->languageId,
+            'model' => $decision->model,
             'questions' => array_map(static fn(Question $question): array => $question->toPayload(), $questions),
             'state' => $state,
         ], JSON_THROW_ON_ERROR));

@@ -9,7 +9,10 @@ use Webconsulting\WebconJev\Client\Dto\Answer;
 use Webconsulting\WebconJev\Client\Dto\DecisionResult;
 use Webconsulting\WebconJev\Client\Dto\QuestionType;
 use Webconsulting\WebconJev\Client\Dto\Usage;
+use Webconsulting\WebconJev\Domain\Model\Criterion;
 use Webconsulting\WebconJev\Domain\Model\Decision;
+use Webconsulting\WebconJev\Domain\Model\DecisionQuestion;
+use Webconsulting\WebconJev\Service\DecisionRunner;
 use Webconsulting\WebconJev\Service\RunLogger;
 use Webconsulting\WebconJev\Tests\Functional\AbstractJevTestCase;
 
@@ -64,6 +67,37 @@ final class RunLoggerTest extends AbstractJevTestCase
     }
 
     #[Test]
+    public function aDecisionBuiltInCodeIsLoggedUnderUidZeroAndItsIdentifier(): void
+    {
+        // Run for real: with no token configured, the runner falls back — and logs it.
+        $outcome = $this->get(DecisionRunner::class)->run(self::builtInCode(), ['part' => 'text'], 'my_extension_import', 'page 42');
+
+        self::assertTrue($outcome->isFallback());
+        $row = $this->row(RunLogger::TABLE, 1);
+        self::assertSame(0, (int)$row['decision']);
+        self::assertSame('my_extension.content_type', $row['decision_identifier']);
+        self::assertSame('my_extension_import', $row['context']);
+        self::assertSame('page 42', $row['origin']);
+        self::assertSame(2, (int)$row['question_count']);
+        self::assertSame('no API token is configured', $row['fallback_reason']);
+    }
+
+    #[Test]
+    public function whatDoesNotFitItsColumnIsCutRatherThanRefused(): void
+    {
+        // On MariaDB in strict mode an over-long value fails the insert — and with it the run.
+        $decision = new Decision(0, str_repeat('i', 80), '', '', '', '', 0.6, -1, '', []);
+        $result = new DecisionResult([], str_repeat('m', 80), new Usage());
+
+        $this->runLogger->log($decision, $result, str_repeat('c', 40));
+
+        $row = $this->row(RunLogger::TABLE, 1);
+        self::assertSame(str_repeat('i', 64), $row['decision_identifier']);
+        self::assertSame(str_repeat('c', 32), $row['context']);
+        self::assertSame(str_repeat('m', 64), $row['model']);
+    }
+
+    #[Test]
     public function totalsSeparateRealCallsFromCachedAndFallenBack(): void
     {
         $decision = self::decision();
@@ -105,5 +139,15 @@ final class RunLoggerTest extends AbstractJevTestCase
     private static function decision(): Decision
     {
         return new Decision(1, 'routing', 'Routing', '', '', '', 0.6, -1, 'office@example.com', []);
+    }
+
+    private static function builtInCode(): Decision
+    {
+        $options = [new Criterion(0, 'text', 'Running text', 'text'), new Criterion(0, 'table', 'Rows and columns', 'table')];
+
+        return new Decision(0, 'my_extension.content_type', 'Content type', '', '', '', 0.6, -1, 'text', [
+            new DecisionQuestion(0, 'part_1', QuestionType::Choice, 'Which content element fits this part?', $options),
+            new DecisionQuestion(0, 'part_2', QuestionType::Choice, 'Which content element fits this part?', $options),
+        ]);
     }
 }
