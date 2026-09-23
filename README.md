@@ -16,13 +16,13 @@ This extension is the TYPO3 end of that.
 
 **A decision.** A named set of questions about one kind of state, a confidence threshold, and what
 to do when the answer does not clear it. Decisions are ordinary TYPO3 records, so they are
-translatable, versionable and editable by an editor.
+translatable, keep a record history, and are edited by editors rather than developers.
 
-**A backend module** (Admin Tools → Jev decisions), built on
-[shadcn/ui for the TYPO3 backend](https://github.com/dirnbauer/typo3-shadcn-ui): write the
-questions, run one against a state you paste in and see the probability distribution behind the
-answer, read every call that has been made with its latency and its cost, and check whether the API
-is reachable at all.
+**A backend module** (Admin → Jev decisions), built from TYPO3's own backend components and
+labelled in English and German. Write the questions; try them in the playground next to the form —
+before saving, against a sample of every value the decision reads — and see the probability
+distribution behind each answer and where a submission would have gone; read every call that has
+been made with its latency and its cost; and check whether the API is reachable at all.
 
 **Two optional powermail integrations.** Rule operators so a
 [powermail condition](https://github.com/dirnbauer/powermail_cond) can consult a decision — show
@@ -46,10 +46,13 @@ a clear read. Each decision sets its own threshold, and an answer that does not 
 | --- | --- |
 | TYPO3 | 14.3 LTS |
 | PHP | 8.4+ |
-| netresearch/nr-vault | ^0.16 — holds the API token |
-| in2code/powermail | optional — enables the routing |
-| in2code/powermail_cond | optional — enables the rule operators (needs the v14 fork) |
-| webconsulting/typo3-shadcn-ui | optional — provides the backend module's runtime |
+| netresearch/nr-vault | ^0.16 or ^1.0 — holds the API token |
+| in2code/powermail | optional — enables the routing (needs the [v14 fork](https://github.com/dirnbauer/powermail)) |
+| in2code/powermail_cond | optional — enables the rule operators (needs the [v14 fork](https://github.com/dirnbauer/powermail_cond)) |
+
+Upgrading from 0.1: the module no longer needs `webconsulting/typo3-shadcn-ui` — remove it if
+nothing else uses it — and it moved from Admin Tools to Admin → Jev decisions. Old bookmarks still
+arrive there; nothing in the database changes.
 
 ## Install
 
@@ -92,7 +95,7 @@ decision does. `TYPESAFE_API_KEY` stays as a development fallback; the vault is 
 
 ## Configure
 
-**Admin Tools → Settings → Extension Configuration → webcon_jev**
+**System → Settings → Extension Configuration → webcon_jev**
 
 | Key | Default | What it does |
 | --- | --- | --- |
@@ -100,7 +103,7 @@ decision does. `TYPESAFE_API_KEY` stays as a development fallback; the vault is 
 | `model` | `jev-latest` | Which model to ask |
 | `endpoint` | `https://api.typesafe.ai/v1/systemone` | The System One endpoint |
 | `enabled` | `1` | Switch every decision off at once; they fall back to their defaults |
-| `timeout` | `5` | Seconds to wait. Jev answers in 70–500 ms, so this only trips on trouble |
+| `timeout` | `10` | Seconds to wait before falling back. Measured from a container, a call takes 0.7–2.4 s and has taken over 5 s |
 | `cacheLifetime` | `300` | How long an identical question about identical state reuses its answer |
 | `maxCallsPerMinute` | `120` | Budget guard; calls beyond it fall back instead of being sent |
 | `logRuns` | `1` | Record every call in the run log |
@@ -115,7 +118,8 @@ saying why. A form never breaks because a model is having a bad minute.
 
 That also means a silent failure is possible — a form that quietly routed everything to its default
 receiver for a week looks exactly like a form that worked. The run log is where you see it, and the
-module's cost panel counts fallbacks next to calls for exactly that reason.
+module counts fallbacks next to runs — per decision in the list, and in total on the connection page
+— for exactly that reason.
 
 ## powermail conditions
 
@@ -169,6 +173,9 @@ if ($outcome->needsHumanReview()) {
 ```bash
 composer install && composer ci    # phpstan, coding standards, unit + functional tests
 ```
+
+The module's JavaScript is plain ES modules served through TYPO3's import map — there is no npm and
+no build step.
 
 `DecisionRunner::run()` never throws. `JevClientInterface::ask()` does — use the runner unless you
 want to handle `JevException` yourself.

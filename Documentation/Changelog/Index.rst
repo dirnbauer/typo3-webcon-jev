@@ -5,6 +5,99 @@
 Changelog
 =========
 
+0.2.0 — 2026-09-23
+==================
+
+A native backend module, and the defects that rebuilding it uncovered. **Breaking**: the module no
+longer runs on ``webconsulting/typo3-shadcn-ui``, its identifier changed, and its AJAX routes changed.
+
+Added
+-----
+
+*   The backend module is built from TYPO3's own backend components: Fluid templates on the
+    ``Module`` layout, a document header with a module menu, cards, tables and callouts, and two Lit
+    elements that render into the page. It follows the backend's colour scheme and is labelled in
+    English and German. Three pages under :guilabel:`Admin > Jev decisions`: :guilabel:`Decisions`,
+    :guilabel:`Run log` and :guilabel:`Connection`.
+*   **The playground runs the editor's unsaved state.** Trying a new wording no longer means putting
+    it in front of every visitor first. It asks for a sample of every value the state template
+    reads — the old playground only ever sent ``field.message``, so a decision reading
+    ``{{field.company}}`` and ``{{field.project}}`` could not be tried at all — and shows which
+    choice would have routed where, and whether the default stood in.
+*   **Validation where an editor can act on it.** A save names each problem next to its field and
+    lists them above the form: a choice with one option, two questions of one name, two options of
+    one id, a taken identifier, a threshold outside 0 to 1.
+*   The decision list shows, per decision, how many forms route through it and how many condition
+    rules read it, how often it ran in the last thirty days and how often it fell back. Deleting a
+    decision names what still uses it.
+*   The run log has a filter (decision, where from, result) that is part of the address, and
+    pagination.
+*   The connection page shows whether a **frontend** request can read the token — the one check the
+    powermail integrations depend on — and the run log's retention.
+*   Keyboard: :kbd:`Ctrl`/:kbd:`⌘` + :kbd:`S` saves, :kbd:`Ctrl`/:kbd:`⌘` + :kbd:`Enter` runs the
+    playground; questions and options move with buttons, a removed question can be restored, and
+    leaving with unsaved changes asks first.
+*   A decision can be switched off from the editor.
+
+Changed
+-------
+
+*   The module moved from :guilabel:`Admin Tools` (``tools_webconjev``) to a group ``webcon_jev``
+    under :guilabel:`Admin`, with the pages ``webcon_jev_decisions``, ``webcon_jev_runs`` and
+    ``webcon_jev_connection``. ``tools_webconjev`` is an alias of the group, so old bookmarks work.
+*   The module and its AJAX routes are available in the live workspace only: the decision tables
+    are not workspace-aware.
+*   The AJAX routes are ``webcon_jev_decision_save``, ``webcon_jev_decision_delete``,
+    ``webcon_jev_playground`` (now takes a ``draft``) and ``webcon_jev_ping``. ``webcon_jev_status``,
+    ``webcon_jev_runs`` and ``webcon_jev_decisions`` are gone; the pages render that data themselves.
+*   The decision identifier is unique across the table (``eval: unique``) rather than per site: code
+    finds a decision by identifier alone.
+*   The TCA uses the v14 translation domains, and the core now adds the language and visibility
+    columns from the ``ctrl`` section.
+*   ``netresearch/nr-vault`` ``^0.16 || ^1.0`` (1.0.0 in the extension's own lock). The development
+    toolchain moves to PHPUnit 13, PHPStan 2.2 and PHP-CS-Fixer 3.95; CI runs PHP 8.4 and 8.5.
+*   PHP 8.4 throughout: typed class constants, ``#[Override]``, ``array_find()``, enums for the token
+    import outcome and the token source.
+
+Removed
+-------
+
+*   The dependency on ``webconsulting/typo3-shadcn-ui`` and its VCS graph (``hn/typo3-mcp-server``,
+    ``webconsulting/typo3-abilities``, ``netresearch/nr-llm``), and with it React, Tailwind, the
+    TypeScript sources, Vite and every npm dependency. ``typo3/cms-extbase``, ``typo3/cms-frontend``,
+    ``psr/http-client`` and ``ext-json`` were required but never used.
+
+Fixed
+-----
+
+*   **A question or option removed in the module came back.** The DataHandler does not delete an
+    inline child that is merely left out of its parent's list, so the module's save left removed
+    questions attached — and still asked at runtime. A save now deletes what the editor removed,
+    with its translations.
+*   **A decision the API would refuse threw at the form.** A choice left with one option — possible
+    through the record editor — made ``DecisionRunner::run()`` throw before it reached its own
+    fallback handling, straight through the powermail condition endpoint and the routing. It falls
+    back now, with the reason in the run log.
+*   **The record editor showed raw label keys** for every field of the three decision tables
+    (``locallang_db.xlfx_webconjev_decision.title`` and so on): the paths were broken when the TCA
+    was written.
+*   A submitted question uid that belongs to another decision is treated as new rather than moved.
+*   **"What it has cost" counted cached answers again.** A cached row keeps the tokens its answer
+    was computed on, and the totals summed them — with their cost and their original latency — as
+    if the API had been asked. Tokens, cost and average latency now count the calls that reached
+    the API; the run log shows a cached run without any, and the connection page counts cached
+    answers on a line of their own.
+*   **"Frontend can read it" said no whenever the token came from the environment**, although a
+    frontend request falls back to ``TYPESAFE_API_KEY`` like any other. The ping command and the
+    connection page now report what a visitor would actually get.
+
+Security
+--------
+
+*   The AJAX routes inherit the module's access. Before, any signed-in backend user could call
+    them: run the playground — which spends money — and ping, and attempt saves and deletes that
+    only the DataHandler's table permissions stood in front of.
+
 0.1.11
 ======
 

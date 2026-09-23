@@ -5,7 +5,7 @@
 Configuration
 =============
 
-:guilabel:`Admin Tools > Settings > Extension Configuration > webcon_jev`
+:guilabel:`System > Settings > Extension Configuration > webcon_jev`
 
 ..  confval:: tokenIdentifier
     :type: string

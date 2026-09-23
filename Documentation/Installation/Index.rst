@@ -21,17 +21,23 @@ Requirements
         -   8.4+
         -
     *   -   ``netresearch/nr-vault``
-        -   ^0.16
+        -   ^0.16 or ^1.0
         -   Holds the API token, encrypted and audited
     *   -   ``in2code/powermail``
         -   optional
-        -   Enables routing a submission to a department
+        -   Enables routing a submission to a department. Needs the TYPO3 v14 fork
     *   -   ``in2code/powermail_cond``
         -   optional
         -   Enables the Jev rule operators. Needs the TYPO3 v14 fork
-    *   -   ``webconsulting/typo3-shadcn-ui``
-        -   optional
-        -   Provides the backend module's runtime
+
+The backend module needs nothing else: it is built from TYPO3's own backend components.
+
+..  note::
+
+    **Upgrading from 0.1.** The module no longer needs ``webconsulting/typo3-shadcn-ui``; remove it
+    if nothing else uses it. The module moved from :guilabel:`Admin Tools` into
+    :guilabel:`Admin > Jev decisions`; bookmarks made to the old one still arrive there. Nothing in
+    the database changes, and no upgrade wizard is needed — flush the caches.
 
 Install
 =======
