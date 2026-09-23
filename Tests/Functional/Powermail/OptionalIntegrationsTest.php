@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Webconsulting\WebconJev\Tests\Functional\Powermail;
 
 use PHPUnit\Framework\Attributes\Test;
-use TYPO3\CMS\Backend\Module\ModuleRegistry;
 use TYPO3\CMS\Core\EventDispatcher\ListenerProvider;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
+use Webconsulting\WebconJev\Editing\DecisionUsage;
 use Webconsulting\WebconJev\Powermail\JevRuleListener;
 use Webconsulting\WebconJev\Powermail\MailRoutingListener;
 
@@ -56,11 +56,15 @@ final class OptionalIntegrationsTest extends FunctionalTestCase
     }
 
     #[Test]
-    public function theBackendModuleIsAbsentWithoutItsRuntime(): void
+    public function theModuleCountsTheFormsAndConditionRulesUsingADecision(): void
     {
-        // shadcn_ui is not loaded here either, so the module must stay out of the registry
-        // rather than be a backend entry whose controller cannot be built.
-        self::assertFalse($this->get(ModuleRegistry::class)->hasModule('tools_webconjev'));
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/usage.csv');
+
+        self::assertSame(
+            [1 => ['forms' => 2, 'rules' => 1], 2 => ['forms' => 0, 'rules' => 0]],
+            $this->get(DecisionUsage::class)->countFor([1, 2]),
+            'a hidden form still routes through it; a deleted rule no longer reads it',
+        );
     }
 
     /**

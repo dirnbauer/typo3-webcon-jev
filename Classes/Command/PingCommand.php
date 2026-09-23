@@ -5,17 +5,16 @@ declare(strict_types=1);
 namespace Webconsulting\WebconJev\Command;
 
 use Netresearch\NrVault\Security\TechnicalActorContextInterface;
+use Override;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Webconsulting\WebconJev\Client\Dto\Question;
-use Webconsulting\WebconJev\Client\Dto\QuestionType;
-use Webconsulting\WebconJev\Client\JevClientInterface;
 use Webconsulting\WebconJev\Configuration\Settings;
 use Webconsulting\WebconJev\Exception\JevException;
+use Webconsulting\WebconJev\Service\ConnectionProbe;
 use Webconsulting\WebconJev\Service\ProvisionerResolver;
 use Webconsulting\WebconJev\Service\TokenProvider;
 use Webconsulting\WebconJev\Support\Cast;
@@ -30,7 +29,7 @@ use Webconsulting\WebconJev\Support\Cast;
 final class PingCommand extends Command
 {
     public function __construct(
-        private readonly JevClientInterface $client,
+        private readonly ConnectionProbe $probe,
         private readonly TokenProvider $tokenProvider,
         private readonly Settings $settings,
         private readonly TechnicalActorContextInterface $technicalActor,
@@ -39,6 +38,7 @@ final class PingCommand extends Command
         parent::__construct();
     }
 
+    #[Override]
     protected function configure(): void
     {
         $this->addOption(
@@ -54,6 +54,7 @@ final class PingCommand extends Command
         );
     }
 
+    #[Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -68,12 +69,10 @@ final class PingCommand extends Command
 
         // Everything that touches the vault runs inside the same scope, so the status line and the
         // call itself cannot disagree about whether the token is readable.
-        $check = function () use ($io, $asProvisioner, $provisionerUid): int {
-            return $this->check($io, $asProvisioner, $provisionerUid);
-        };
+        $check = fn(): int => $this->check($io, $asProvisioner, $provisionerUid);
 
         return $asProvisioner
-            ? (int)$this->technicalActor->runAs($provisionerUid, $check)
+            ? $this->technicalActor->runAs($provisionerUid, $check)
             : $check();
     }
 
@@ -103,28 +102,14 @@ final class PingCommand extends Command
         }
 
         try {
-            $result = $this->client->ask(
-                'The delivery arrived three days late and the box was crushed.',
-                [
-                    'mood' => new Question(
-                        name: 'mood',
-                        type: QuestionType::Choice,
-                        instructions: 'How does the writer feel about what happened?',
-                        criteria: [
-                            'happy' => 'Pleased with how it went',
-                            'annoyed' => 'Unhappy about a problem',
-                            'neutral' => 'Reporting without feeling either way',
-                        ],
-                    ),
-                ],
-            );
+            $result = $this->probe->ask();
         } catch (JevException $exception) {
             $io->error($exception->getMessage());
 
             return Command::FAILURE;
         }
 
-        $answer = $result->get('mood');
+        $answer = $result->get(ConnectionProbe::QUESTION);
         $io->success(sprintf(
             'Jev answered in %d ms: mood=%s, confidence %.2f (model %s, %d input tokens, $%.6f).',
             (int)$result->durationMs,

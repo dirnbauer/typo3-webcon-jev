@@ -7,11 +7,14 @@ services:
   Webconsulting\WebconJev\:
     resource: '../Classes/*'
     exclude:
+      - '../Classes/Backend/RequestPayload.php'
       - '../Classes/Client/Dto/*'
       - '../Classes/Domain/Model/*'
+      - '../Classes/Editing/Dto/*'
       - '../Classes/Exception/*'
       - '../Classes/Powermail/JevOperator.php'
       - '../Classes/Powermail/RuleConfiguration.php'
+      - '../Classes/Service/Dto/*'
       # Defined in Services.php instead, conditionally on powermail being installed.
       - '../Classes/Powermail/JevRuleListener.php'
       - '../Classes/Powermail/MailRoutingListener.php'
@@ -30,15 +33,6 @@ services:
       $cache: '@cache.webcon_jev'
 
   # FormEngine resolves an itemsProcFunc through the container, so it has to be reachable.
+  # The module and AJAX controllers are made public by their #[AsController] attribute.
   Webconsulting\WebconJev\Backend\ItemsProc\QuestionItems:
-    public: true
-
-  # Backend module and AJAX route targets are resolved from the container by name.
-  Webconsulting\WebconJev\Backend\Controller\JevModuleController:
-    public: true
-  Webconsulting\WebconJev\Backend\Controller\StatusApiController:
-    public: true
-  Webconsulting\WebconJev\Backend\Controller\DecisionApiController:
-    public: true
-  Webconsulting\WebconJev\Backend\Controller\PlaygroundApiController:
     public: true

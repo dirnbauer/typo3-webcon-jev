@@ -1,0 +1,46 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+<f:if condition="{paginator.numberOfPages} > 1">
+    <nav class="pagination-wrap" aria-label="{f:translate(key: 'pagination.label', domain: 'webcon_jev.module')}">
+        <ul class="pagination">
+            <f:render section="link" arguments="{url: pageUrls.first, icon: 'actions-chevron-bar-start', label: 'pagination.first'}" />
+            <f:render section="link" arguments="{url: pageUrls.previous, icon: 'actions-chevron-start', label: 'pagination.previous'}" />
+            <li class="page-item">
+                <span class="page-link">
+                    <f:translate
+                        key="pagination.position"
+                        domain="webcon_jev.module"
+                        arguments="{0: pagination.startRecordNumber, 1: pagination.endRecordNumber, 2: paginator.currentPageNumber, 3: paginator.numberOfPages}"
+                    />
+                </span>
+            </li>
+            <f:render section="link" arguments="{url: pageUrls.next, icon: 'actions-chevron-end', label: 'pagination.next'}" />
+            <f:render section="link" arguments="{url: pageUrls.last, icon: 'actions-chevron-bar-end', label: 'pagination.last'}" />
+        </ul>
+    </nav>
+</f:if>
+
+<f:section name="link">
+    <f:variable name="text"><f:translate key="{label}" domain="webcon_jev.module" /></f:variable>
+    <f:if condition="{url}">
+        <f:then>
+            <li class="page-item">
+                <a class="page-link" href="{url}" title="{text}">
+                    <core:icon identifier="{icon}" />
+                    <span class="visually-hidden">{text}</span>
+                </a>
+            </li>
+        </f:then>
+        <f:else>
+            <li class="page-item disabled" aria-hidden="true">
+                <span class="page-link"><core:icon identifier="{icon}" /></span>
+            </li>
+        </f:else>
+    </f:if>
+</f:section>
+
+</html>

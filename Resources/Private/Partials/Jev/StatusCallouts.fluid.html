@@ -1,0 +1,26 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+<f:if condition="!{enabled}">
+    <f:be.infobox
+        state="{f:constant(name: 'TYPO3\CMS\Core\Type\ContextualFeedbackSeverity::WARNING')}"
+        title="{f:translate(key: 'status.disabled.title', domain: 'webcon_jev.module')}"
+    >
+        <p><f:translate key="status.disabled.message" domain="webcon_jev.module" /></p>
+    </f:be.infobox>
+</f:if>
+<f:if condition="!{tokenPresent}">
+    <f:be.infobox
+        state="{f:constant(name: 'TYPO3\CMS\Core\Type\ContextualFeedbackSeverity::WARNING')}"
+        title="{f:translate(key: 'status.noToken.title', domain: 'webcon_jev.module')}"
+    >
+        <p><f:translate key="status.noToken.message" domain="webcon_jev.module" /></p>
+        <f:if condition="{connectionUrl}">
+            <a class="btn btn-default" href="{connectionUrl}"><f:translate key="status.noToken.action" domain="webcon_jev.module" /></a>
+        </f:if>
+    </f:be.infobox>
+</f:if>
+
+</html>

@@ -1,0 +1,25 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+<f:layout name="Module" />
+
+<f:section name="Content">
+    <f:asset.css identifier="webcon-jev-module" href="EXT:webcon_jev/Resources/Public/Css/module.css" />
+    <f:asset.module identifier="@webconsulting/webcon-jev/decision-editor.js" />
+
+    <f:comment>
+        The editor renders the form into this element (no shadow root, so the backend's own styles
+        apply). The DocHeader's save button submits it by id.
+    </f:comment>
+    <webcon-jev-decision-editor config="{config -> f:format.json()}">
+        <div class="webcon-jev-loading" role="status">
+            <core:icon identifier="spinner-circle" />
+            <f:translate key="editor.loading" domain="webcon_jev.module" />
+        </div>
+    </webcon-jev-decision-editor>
+</f:section>
+
+</html>

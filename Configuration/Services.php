@@ -14,8 +14,8 @@ use Webconsulting\WebconJev\Powermail\MailRoutingListener;
  * class_exists() is the right guard for these and the wrong one for a SERVICE dependency. It
  * tests autoloadability, and in Composer mode every installed package is autoloadable whether or
  * not TYPO3 has it active. For a listener that only means an inert registration for an event
- * that never fires. For a constructor argument it meant a container that would not compile — see
- * the note on JevModuleController, which takes its renderer as an optional argument instead.
+ * that never fires. For a constructor argument it means a container that does not compile — a
+ * service that may be absent has to be an optional (nullable, null-default) argument instead.
  * ExtensionManagementUtility::isLoaded() is not an option here: bootstrap builds the container
  * before it hands the package manager to that class.
  *

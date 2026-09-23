@@ -1,0 +1,896 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" datatype="plaintext" original="EXT:webcon_jev/Resources/Private/Language/module.xlf" date="2026-09-23T00:00:00Z" product-name="webcon_jev">
+    <header/>
+    <body>
+      <trans-unit id="module.title" resname="module.title" xml:space="preserve">
+        <source>Jev decisions</source>
+      </trans-unit>
+      <trans-unit id="status.disabled.title" resname="status.disabled.title" xml:space="preserve">
+        <source>Decisions are switched off</source>
+      </trans-unit>
+      <trans-unit id="status.disabled.message" resname="status.disabled.message" xml:space="preserve">
+        <source>The extension configuration switches Jev off, so every decision uses its default outcome without asking.</source>
+      </trans-unit>
+      <trans-unit id="status.noToken.title" resname="status.noToken.title" xml:space="preserve">
+        <source>No API token</source>
+      </trans-unit>
+      <trans-unit id="status.noToken.message" resname="status.noToken.message" xml:space="preserve">
+        <source>Until a token is stored, every decision falls back to its default outcome. The Connection page shows how to add one.</source>
+      </trans-unit>
+      <trans-unit id="status.noToken.action" resname="status.noToken.action" xml:space="preserve">
+        <source>Open Connection</source>
+      </trans-unit>
+      <trans-unit id="decisions.title" resname="decisions.title" xml:space="preserve">
+        <source>Decisions</source>
+      </trans-unit>
+      <trans-unit id="decisions.intro" resname="decisions.intro" xml:space="preserve">
+        <source>A decision is a set of typed questions Jev answers about one kind of state — a form submission, say — and what happens when the answer is not certain enough to act on.</source>
+      </trans-unit>
+      <trans-unit id="decisions.new" resname="decisions.new" xml:space="preserve">
+        <source>New decision</source>
+      </trans-unit>
+      <trans-unit id="decisions.caption" resname="decisions.caption" xml:space="preserve">
+        <source>Decisions, with their questions, where they are used and how often they ran</source>
+      </trans-unit>
+      <trans-unit id="decisions.column.type" resname="decisions.column.type" xml:space="preserve">
+        <source>Type</source>
+      </trans-unit>
+      <trans-unit id="decisions.column.title" resname="decisions.column.title" xml:space="preserve">
+        <source>Decision</source>
+      </trans-unit>
+      <trans-unit id="decisions.column.questions" resname="decisions.column.questions" xml:space="preserve">
+        <source>Questions</source>
+      </trans-unit>
+      <trans-unit id="decisions.column.threshold" resname="decisions.column.threshold" xml:space="preserve">
+        <source>Threshold</source>
+      </trans-unit>
+      <trans-unit id="decisions.column.default" resname="decisions.column.default" xml:space="preserve">
+        <source>Default outcome</source>
+      </trans-unit>
+      <trans-unit id="decisions.column.usage" resname="decisions.column.usage" xml:space="preserve">
+        <source>Used by</source>
+      </trans-unit>
+      <trans-unit id="decisions.column.runs" resname="decisions.column.runs" xml:space="preserve">
+        <source>Last 30 days</source>
+      </trans-unit>
+      <trans-unit id="decisions.column.actions" resname="decisions.column.actions" xml:space="preserve">
+        <source>Actions</source>
+      </trans-unit>
+      <trans-unit id="decisions.disabled" resname="decisions.disabled" xml:space="preserve">
+        <source>Disabled</source>
+      </trans-unit>
+      <trans-unit id="decisions.disabled.description" resname="decisions.disabled.description" xml:space="preserve">
+        <source>Forms treat a disabled decision as absent: conditions do not apply and mail goes to the form's own receiver.</source>
+      </trans-unit>
+      <trans-unit id="decisions.noQuestions" resname="decisions.noQuestions" xml:space="preserve">
+        <source>No questions</source>
+      </trans-unit>
+      <trans-unit id="decisions.usage.forms" resname="decisions.usage.forms" xml:space="preserve">
+        <source>{count, plural, one {# form} other {# forms}}</source>
+      </trans-unit>
+      <trans-unit id="decisions.usage.rules" resname="decisions.usage.rules" xml:space="preserve">
+        <source>{count, plural, one {# condition rule} other {# condition rules}}</source>
+      </trans-unit>
+      <trans-unit id="decisions.usage.none" resname="decisions.usage.none" xml:space="preserve">
+        <source>Not used by any form</source>
+      </trans-unit>
+      <trans-unit id="decisions.runs.count" resname="decisions.runs.count" xml:space="preserve">
+        <source>{count, plural, one {# run} other {# runs}}</source>
+      </trans-unit>
+      <trans-unit id="decisions.runs.fallbacks" resname="decisions.runs.fallbacks" xml:space="preserve">
+        <source>{count, plural, one {# fallback} other {# fallbacks}}</source>
+      </trans-unit>
+      <trans-unit id="decisions.runs.none" resname="decisions.runs.none" xml:space="preserve">
+        <source>No runs</source>
+      </trans-unit>
+      <trans-unit id="decisions.actions.label" resname="decisions.actions.label" xml:space="preserve">
+        <source>Actions for %s</source>
+      </trans-unit>
+      <trans-unit id="decisions.action.edit" resname="decisions.action.edit" xml:space="preserve">
+        <source>Edit</source>
+      </trans-unit>
+      <trans-unit id="decisions.action.try" resname="decisions.action.try" xml:space="preserve">
+        <source>Try in the playground</source>
+      </trans-unit>
+      <trans-unit id="decisions.action.runs" resname="decisions.action.runs" xml:space="preserve">
+        <source>Run log</source>
+      </trans-unit>
+      <trans-unit id="decisions.action.record" resname="decisions.action.record" xml:space="preserve">
+        <source>Open in the record editor</source>
+      </trans-unit>
+      <trans-unit id="decisions.action.delete" resname="decisions.action.delete" xml:space="preserve">
+        <source>Delete</source>
+      </trans-unit>
+      <trans-unit id="decisions.empty.title" resname="decisions.empty.title" xml:space="preserve">
+        <source>No decisions yet</source>
+      </trans-unit>
+      <trans-unit id="decisions.empty.message" resname="decisions.empty.message" xml:space="preserve">
+        <source>Write the first one and try it in the playground before any form uses it.</source>
+      </trans-unit>
+      <trans-unit id="decisions.empty.action" resname="decisions.empty.action" xml:space="preserve">
+        <source>Create the first decision</source>
+      </trans-unit>
+      <trans-unit id="delete.title" resname="delete.title" xml:space="preserve">
+        <source>Delete this decision?</source>
+      </trans-unit>
+      <trans-unit id="delete.message" resname="delete.message" xml:space="preserve">
+        <source>“%s” is deleted together with its questions and options.</source>
+      </trans-unit>
+      <trans-unit id="delete.usage" resname="delete.usage" xml:space="preserve">
+        <source>{forms, plural, =0 {} one {One form routes through it. } other {# forms route through it. }}{rules, plural, =0 {} one {One condition rule reads it. } other {# condition rules read it. }}They stop consulting Jev once it is gone.</source>
+      </trans-unit>
+      <trans-unit id="delete.confirm" resname="delete.confirm" xml:space="preserve">
+        <source>Delete</source>
+      </trans-unit>
+      <trans-unit id="delete.cancel" resname="delete.cancel" xml:space="preserve">
+        <source>Cancel</source>
+      </trans-unit>
+      <trans-unit id="delete.done" resname="delete.done" xml:space="preserve">
+        <source>Decision deleted</source>
+      </trans-unit>
+      <trans-unit id="delete.failed" resname="delete.failed" xml:space="preserve">
+        <source>The decision was not deleted</source>
+      </trans-unit>
+      <trans-unit id="editor.loading" resname="editor.loading" xml:space="preserve">
+        <source>Loading the editor…</source>
+      </trans-unit>
+      <trans-unit id="editor.title.new" resname="editor.title.new" xml:space="preserve">
+        <source>New decision</source>
+      </trans-unit>
+      <trans-unit id="editor.title.edit" resname="editor.title.edit" xml:space="preserve">
+        <source>Edit decision: %s</source>
+      </trans-unit>
+      <trans-unit id="editor.untitled" resname="editor.untitled" xml:space="preserve">
+        <source>Untitled decision</source>
+      </trans-unit>
+      <trans-unit id="editor.unsaved" resname="editor.unsaved" xml:space="preserve">
+        <source>Unsaved changes</source>
+      </trans-unit>
+      <trans-unit id="editor.intro" resname="editor.intro" xml:space="preserve">
+        <source>What a decision asks, what it reads, and what happens when the answer is not certain enough. Try it in the playground before you save.</source>
+      </trans-unit>
+      <trans-unit id="editor.notFound.title" resname="editor.notFound.title" xml:space="preserve">
+        <source>Decision not found</source>
+      </trans-unit>
+      <trans-unit id="editor.notFound.message" resname="editor.notFound.message" xml:space="preserve">
+        <source>Decision %d does not exist any more. It may have been deleted meanwhile.</source>
+      </trans-unit>
+      <trans-unit id="editor.delete" resname="editor.delete" xml:space="preserve">
+        <source>Delete</source>
+      </trans-unit>
+      <trans-unit id="editor.recordEditor" resname="editor.recordEditor" xml:space="preserve">
+        <source>Record editor</source>
+      </trans-unit>
+      <trans-unit id="editor.section.decision" resname="editor.section.decision" xml:space="preserve">
+        <source>Decision</source>
+      </trans-unit>
+      <trans-unit id="editor.section.decision.description" resname="editor.section.decision.description" xml:space="preserve">
+        <source>What it is called, and whether forms use it.</source>
+      </trans-unit>
+      <trans-unit id="editor.section.state" resname="editor.section.state" xml:space="preserve">
+        <source>What Jev reads</source>
+      </trans-unit>
+      <trans-unit id="editor.section.state.description" resname="editor.section.state.description" xml:space="preserve">
+        <source>The state every question is answered about.</source>
+      </trans-unit>
+      <trans-unit id="editor.section.behaviour" resname="editor.section.behaviour" xml:space="preserve">
+        <source>When the answer is unclear</source>
+      </trans-unit>
+      <trans-unit id="editor.section.behaviour.description" resname="editor.section.behaviour.description" xml:space="preserve">
+        <source>How sure an answer has to be, and what happens when it is not.</source>
+      </trans-unit>
+      <trans-unit id="editor.section.questions" resname="editor.section.questions" xml:space="preserve">
+        <source>Questions</source>
+      </trans-unit>
+      <trans-unit id="editor.section.questions.description" resname="editor.section.questions.description" xml:space="preserve">
+        <source>All questions go over in one request and are answered in one pass, so asking four costs barely more than asking one.</source>
+      </trans-unit>
+      <trans-unit id="editor.questions.empty" resname="editor.questions.empty" xml:space="preserve">
+        <source>No questions yet. A decision without one never asks Jev — every run falls back to the default outcome.</source>
+      </trans-unit>
+      <trans-unit id="editor.addQuestion" resname="editor.addQuestion" xml:space="preserve">
+        <source>Add a question</source>
+      </trans-unit>
+      <trans-unit id="editor.question.number" resname="editor.question.number" xml:space="preserve">
+        <source>Question %d</source>
+      </trans-unit>
+      <trans-unit id="editor.question.actions" resname="editor.question.actions" xml:space="preserve">
+        <source>Actions for question %d</source>
+      </trans-unit>
+      <trans-unit id="editor.question.moveUp" resname="editor.question.moveUp" xml:space="preserve">
+        <source>Move question %d up</source>
+      </trans-unit>
+      <trans-unit id="editor.question.moveDown" resname="editor.question.moveDown" xml:space="preserve">
+        <source>Move question %d down</source>
+      </trans-unit>
+      <trans-unit id="editor.question.remove" resname="editor.question.remove" xml:space="preserve">
+        <source>Remove question %d</source>
+      </trans-unit>
+      <trans-unit id="editor.question.added" resname="editor.question.added" xml:space="preserve">
+        <source>Question %d added</source>
+      </trans-unit>
+      <trans-unit id="editor.question.removed" resname="editor.question.removed" xml:space="preserve">
+        <source>Question %d removed</source>
+      </trans-unit>
+      <trans-unit id="editor.question.removedHint" resname="editor.question.removedHint" xml:space="preserve">
+        <source>Nothing is stored until you save.</source>
+      </trans-unit>
+      <trans-unit id="editor.question.restored" resname="editor.question.restored" xml:space="preserve">
+        <source>Question %d restored</source>
+      </trans-unit>
+      <trans-unit id="editor.question.moved" resname="editor.question.moved" xml:space="preserve">
+        <source>Question moved from position %d to %d</source>
+      </trans-unit>
+      <trans-unit id="editor.undo" resname="editor.undo" xml:space="preserve">
+        <source>Undo</source>
+      </trans-unit>
+      <trans-unit id="editor.hidden.description" resname="editor.hidden.description" xml:space="preserve">
+        <source>Disabled in the record editor: this question is not asked until it is enabled again.</source>
+      </trans-unit>
+      <trans-unit id="editor.problems" resname="editor.problems" xml:space="preserve">
+        <source>{count, plural, one {# problem} other {# problems}}</source>
+      </trans-unit>
+      <trans-unit id="editor.criteria.choice" resname="editor.criteria.choice" xml:space="preserve">
+        <source>Options</source>
+      </trans-unit>
+      <trans-unit id="editor.criteria.choice.help" resname="editor.criteria.choice.help" xml:space="preserve">
+        <source>Every option needs an id and a sentence saying what it means — that sentence is what Jev reads to tell the options apart. The outcome is what happens when the option wins: for the powermail routing, the address that gets the mail.</source>
+      </trans-unit>
+      <trans-unit id="editor.criteria.choice.empty" resname="editor.criteria.choice.empty" xml:space="preserve">
+        <source>No options yet — a choice needs at least two.</source>
+      </trans-unit>
+      <trans-unit id="editor.criteria.score" resname="editor.criteria.score" xml:space="preserve">
+        <source>Levels, lowest first</source>
+      </trans-unit>
+      <trans-unit id="editor.criteria.score.help" resname="editor.criteria.score.help" xml:space="preserve">
+        <source>List the levels from lowest to highest. The answer can land between two of them, so the position decides: levels have no id and no outcome.</source>
+      </trans-unit>
+      <trans-unit id="editor.criteria.score.empty" resname="editor.criteria.score.empty" xml:space="preserve">
+        <source>No levels yet — a score needs at least two.</source>
+      </trans-unit>
+      <trans-unit id="editor.criteria.noul" resname="editor.criteria.noul" xml:space="preserve">
+        <source>What yes and no mean (optional)</source>
+      </trans-unit>
+      <trans-unit id="editor.criteria.noul.help" resname="editor.criteria.noul.help" xml:space="preserve">
+        <source>Jev answers how likely the statement is true. Optionally describe both sides, with the ids yes and no.</source>
+      </trans-unit>
+      <trans-unit id="editor.criteria.noul.empty" resname="editor.criteria.noul.empty" xml:space="preserve">
+        <source>None — Jev reads the question on its own.</source>
+      </trans-unit>
+      <trans-unit id="editor.addOption" resname="editor.addOption" xml:space="preserve">
+        <source>Add an option</source>
+      </trans-unit>
+      <trans-unit id="editor.addLevel" resname="editor.addLevel" xml:space="preserve">
+        <source>Add a level</source>
+      </trans-unit>
+      <trans-unit id="editor.option.number" resname="editor.option.number" xml:space="preserve">
+        <source>Option %d</source>
+      </trans-unit>
+      <trans-unit id="editor.level.number" resname="editor.level.number" xml:space="preserve">
+        <source>Level %d</source>
+      </trans-unit>
+      <trans-unit id="editor.criterion.actions" resname="editor.criterion.actions" xml:space="preserve">
+        <source>Actions for %s</source>
+      </trans-unit>
+      <trans-unit id="editor.criterion.moveUp" resname="editor.criterion.moveUp" xml:space="preserve">
+        <source>Move %s up</source>
+      </trans-unit>
+      <trans-unit id="editor.criterion.moveDown" resname="editor.criterion.moveDown" xml:space="preserve">
+        <source>Move %s down</source>
+      </trans-unit>
+      <trans-unit id="editor.criterion.remove" resname="editor.criterion.remove" xml:space="preserve">
+        <source>Remove %s</source>
+      </trans-unit>
+      <trans-unit id="editor.criterion.added" resname="editor.criterion.added" xml:space="preserve">
+        <source>Row added</source>
+      </trans-unit>
+      <trans-unit id="editor.criterion.removed" resname="editor.criterion.removed" xml:space="preserve">
+        <source>Row removed</source>
+      </trans-unit>
+      <trans-unit id="editor.criterion.moved" resname="editor.criterion.moved" xml:space="preserve">
+        <source>Moved from position %d to %d</source>
+      </trans-unit>
+      <trans-unit id="editor.errors.title" resname="editor.errors.title" xml:space="preserve">
+        <source>{count, plural, one {One field needs attention} other {# fields need attention}}</source>
+      </trans-unit>
+      <trans-unit id="editor.saved.title" resname="editor.saved.title" xml:space="preserve">
+        <source>Decision saved</source>
+      </trans-unit>
+      <trans-unit id="editor.saveFailed.title" resname="editor.saveFailed.title" xml:space="preserve">
+        <source>The decision was not saved</source>
+      </trans-unit>
+      <trans-unit id="editor.shortcut.save" resname="editor.shortcut.save" xml:space="preserve">
+        <source>saves the decision.</source>
+      </trans-unit>
+      <trans-unit id="editor.leave.title" resname="editor.leave.title" xml:space="preserve">
+        <source>Leave without saving?</source>
+      </trans-unit>
+      <trans-unit id="editor.leave.message" resname="editor.leave.message" xml:space="preserve">
+        <source>The decision has unsaved changes. They are lost if you leave now.</source>
+      </trans-unit>
+      <trans-unit id="editor.leave.stay" resname="editor.leave.stay" xml:space="preserve">
+        <source>Keep editing</source>
+      </trans-unit>
+      <trans-unit id="editor.leave.discard" resname="editor.leave.discard" xml:space="preserve">
+        <source>Discard changes</source>
+      </trans-unit>
+      <trans-unit id="editor.state.empty" resname="editor.state.empty" xml:space="preserve">
+        <source>Empty: every filled field goes over as JSON, so a field added to the form later is included without editing this decision.</source>
+      </trans-unit>
+      <trans-unit id="editor.state.static" resname="editor.state.static" xml:space="preserve">
+        <source>The template has no placeholders, so every run sends the same text.</source>
+      </trans-unit>
+      <trans-unit id="editor.state.reads" resname="editor.state.reads" xml:space="preserve">
+        <source>Reads:</source>
+      </trans-unit>
+      <trans-unit id="field.title" resname="field.title" xml:space="preserve">
+        <source>Title</source>
+      </trans-unit>
+      <trans-unit id="field.title.help" resname="field.title.help" xml:space="preserve">
+        <source>What editors call this decision.</source>
+      </trans-unit>
+      <trans-unit id="field.identifier" resname="field.identifier" xml:space="preserve">
+        <source>Identifier</source>
+      </trans-unit>
+      <trans-unit id="field.identifier.help" resname="field.identifier.help" xml:space="preserve">
+        <source>How code and conditions refer to it: lowercase letters, digits, - and _. Leave it empty to derive it from the title.</source>
+      </trans-unit>
+      <trans-unit id="field.description" resname="field.description" xml:space="preserve">
+        <source>What this decides</source>
+      </trans-unit>
+      <trans-unit id="field.description.help" resname="field.description.help" xml:space="preserve">
+        <source>For whoever reads the run log in six months.</source>
+      </trans-unit>
+      <trans-unit id="field.active" resname="field.active" xml:space="preserve">
+        <source>Active</source>
+      </trans-unit>
+      <trans-unit id="field.active.help" resname="field.active.help" xml:space="preserve">
+        <source>When off, forms treat the decision as absent: conditions do not apply and mail goes to the form's own receiver.</source>
+      </trans-unit>
+      <trans-unit id="field.stateTemplate" resname="field.stateTemplate" xml:space="preserve">
+        <source>State template</source>
+      </trans-unit>
+      <trans-unit id="field.stateTemplate.help" resname="field.stateTemplate.help" xml:space="preserve">
+        <source>What Jev gets to read. {{field.marker}} inserts a form value. Leave it empty to send every filled field as JSON.</source>
+      </trans-unit>
+      <trans-unit id="field.threshold" resname="field.threshold" xml:space="preserve">
+        <source>Confidence threshold</source>
+      </trans-unit>
+      <trans-unit id="field.threshold.help" resname="field.threshold.help" xml:space="preserve">
+        <source>How certain an answer has to be before it is acted on, from 0 to 1. 0.5 is a coin toss; above 0.9 is a clear read.</source>
+      </trans-unit>
+      <trans-unit id="field.defaultOutcome" resname="field.defaultOutcome" xml:space="preserve">
+        <source>Default outcome</source>
+      </trans-unit>
+      <trans-unit id="field.defaultOutcome.help" resname="field.defaultOutcome.help" xml:space="preserve">
+        <source>Used when Jev cannot answer or is not certain enough — for routing, the address that gets the mail anyway.</source>
+      </trans-unit>
+      <trans-unit id="field.cacheLifetime" resname="field.cacheLifetime" xml:space="preserve">
+        <source>Cache lifetime (seconds)</source>
+      </trans-unit>
+      <trans-unit id="field.cacheLifetime.help" resname="field.cacheLifetime.help" xml:space="preserve">
+        <source>How long an identical question about identical state reuses its answer. -1 follows the extension configuration (%d seconds), 0 never caches.</source>
+      </trans-unit>
+      <trans-unit id="field.model" resname="field.model" xml:space="preserve">
+        <source>Model</source>
+      </trans-unit>
+      <trans-unit id="field.model.help" resname="field.model.help" xml:space="preserve">
+        <source>Leave it empty to use the configured model, %s.</source>
+      </trans-unit>
+      <trans-unit id="field.question.name" resname="field.question.name" xml:space="preserve">
+        <source>Name</source>
+      </trans-unit>
+      <trans-unit id="field.question.name.help" resname="field.question.name.help" xml:space="preserve">
+        <source>The key the answer comes back under. Conditions and the routing refer to it.</source>
+      </trans-unit>
+      <trans-unit id="field.question.type" resname="field.question.type" xml:space="preserve">
+        <source>Type</source>
+      </trans-unit>
+      <trans-unit id="field.question.instructions" resname="field.question.instructions" xml:space="preserve">
+        <source>Question</source>
+      </trans-unit>
+      <trans-unit id="field.question.instructions.help" resname="field.question.instructions.help" xml:space="preserve">
+        <source>Put it as you would to a colleague who can only see the state — no background, no examples of the answer you want. Ask about one thing: a low confidence usually means the question asks two.</source>
+      </trans-unit>
+      <trans-unit id="field.question.instructions.placeholder" resname="field.question.instructions.placeholder" xml:space="preserve">
+        <source>Which department should answer this enquiry?</source>
+      </trans-unit>
+      <trans-unit id="field.criterion.identifier" resname="field.criterion.identifier" xml:space="preserve">
+        <source>Id</source>
+      </trans-unit>
+      <trans-unit id="field.criterion.description" resname="field.criterion.description" xml:space="preserve">
+        <source>Meaning</source>
+      </trans-unit>
+      <trans-unit id="field.criterion.outcome" resname="field.criterion.outcome" xml:space="preserve">
+        <source>Outcome</source>
+      </trans-unit>
+      <trans-unit id="field.criterion.level" resname="field.criterion.level" xml:space="preserve">
+        <source>Level %d</source>
+      </trans-unit>
+      <trans-unit id="field.criterion.levelLowest" resname="field.criterion.levelLowest" xml:space="preserve">
+        <source>Level %d (lowest)</source>
+      </trans-unit>
+      <trans-unit id="field.criterion.levelHighest" resname="field.criterion.levelHighest" xml:space="preserve">
+        <source>Level %d (highest)</source>
+      </trans-unit>
+      <trans-unit id="type.choice" resname="type.choice" xml:space="preserve">
+        <source>Choice</source>
+      </trans-unit>
+      <trans-unit id="type.score" resname="type.score" xml:space="preserve">
+        <source>Score</source>
+      </trans-unit>
+      <trans-unit id="type.noul" resname="type.noul" xml:space="preserve">
+        <source>Noul</source>
+      </trans-unit>
+      <trans-unit id="type.choice.option" resname="type.choice.option" xml:space="preserve">
+        <source>Choice — pick one of several options</source>
+      </trans-unit>
+      <trans-unit id="type.score.option" resname="type.score.option" xml:space="preserve">
+        <source>Score — place it on an ordered scale</source>
+      </trans-unit>
+      <trans-unit id="type.noul.option" resname="type.noul.option" xml:space="preserve">
+        <source>Noul — how likely a yes/no statement is true</source>
+      </trans-unit>
+      <trans-unit id="type.choice.help" resname="type.choice.help" xml:space="preserve">
+        <source>Picks one of several options and says how sure it is — the type to use for routing.</source>
+      </trans-unit>
+      <trans-unit id="type.score.help" resname="type.score.help" xml:space="preserve">
+        <source>Places the state on an ordered scale; the answer may land between two levels.</source>
+      </trans-unit>
+      <trans-unit id="type.noul.help" resname="type.noul.help" xml:space="preserve">
+        <source>Answers how likely a yes/no statement is true, as a probability from 0 to 1.</source>
+      </trans-unit>
+      <trans-unit id="playground.title" resname="playground.title" xml:space="preserve">
+        <source>Playground</source>
+      </trans-unit>
+      <trans-unit id="playground.subtitle" resname="playground.subtitle" xml:space="preserve">
+        <source>Runs what the form holds now, saved or not. Nothing is cached, and each run costs a fraction of a cent.</source>
+      </trans-unit>
+      <trans-unit id="playground.disabled" resname="playground.disabled" xml:space="preserve">
+        <source>Jev is switched off in the extension configuration — a run shows the fallback a form would get.</source>
+      </trans-unit>
+      <trans-unit id="playground.noToken" resname="playground.noToken" xml:space="preserve">
+        <source>No API token is stored — a run shows the fallback a form would get.</source>
+      </trans-unit>
+      <trans-unit id="playground.empty" resname="playground.empty" xml:space="preserve">
+        <source>Add a question to try the decision.</source>
+      </trans-unit>
+      <trans-unit id="playground.static" resname="playground.static" xml:space="preserve">
+        <source>The state template has no placeholders, so every run sends the same text.</source>
+      </trans-unit>
+      <trans-unit id="playground.sample.template" resname="playground.sample.template" xml:space="preserve">
+        <source>A sample for each value the state template reads:</source>
+      </trans-unit>
+      <trans-unit id="playground.sample.free" resname="playground.sample.free" xml:space="preserve">
+        <source>With no state template, every filled field goes over as JSON. Name the fields the way the form's markers name them.</source>
+      </trans-unit>
+      <trans-unit id="playground.fieldName" resname="playground.fieldName" xml:space="preserve">
+        <source>Field marker</source>
+      </trans-unit>
+      <trans-unit id="playground.fieldValue" resname="playground.fieldValue" xml:space="preserve">
+        <source>Value of %s</source>
+      </trans-unit>
+      <trans-unit id="playground.addField" resname="playground.addField" xml:space="preserve">
+        <source>Add a field</source>
+      </trans-unit>
+      <trans-unit id="playground.removeField" resname="playground.removeField" xml:space="preserve">
+        <source>Remove %s</source>
+      </trans-unit>
+      <trans-unit id="playground.run" resname="playground.run" xml:space="preserve">
+        <source>Run</source>
+      </trans-unit>
+      <trans-unit id="playground.running" resname="playground.running" xml:space="preserve">
+        <source>Asking Jev…</source>
+      </trans-unit>
+      <trans-unit id="playground.idle" resname="playground.idle" xml:space="preserve">
+        <source>The answer appears here: the value, the probability behind every option, how sure Jev is, and what it cost.</source>
+      </trans-unit>
+      <trans-unit id="playground.invalid.title" resname="playground.invalid.title" xml:space="preserve">
+        <source>Fix the highlighted fields first</source>
+      </trans-unit>
+      <trans-unit id="playground.error.title" resname="playground.error.title" xml:space="preserve">
+        <source>The run did not complete</source>
+      </trans-unit>
+      <trans-unit id="playground.result" resname="playground.result" xml:space="preserve">
+        <source>Result</source>
+      </trans-unit>
+      <trans-unit id="playground.tokens" resname="playground.tokens" xml:space="preserve">
+        <source>%s input tokens</source>
+      </trans-unit>
+      <trans-unit id="playground.fallback.title" resname="playground.fallback.title" xml:space="preserve">
+        <source>No answer — the default outcome would be used</source>
+      </trans-unit>
+      <trans-unit id="playground.confidence" resname="playground.confidence" xml:space="preserve">
+        <source>%s sure</source>
+      </trans-unit>
+      <trans-unit id="playground.weak" resname="playground.weak" xml:space="preserve">
+        <source>Below the threshold of %s: a form would use the default outcome and flag the submission for a person.</source>
+      </trans-unit>
+      <trans-unit id="playground.distribution" resname="playground.distribution" xml:space="preserve">
+        <source>Probabilities for %s</source>
+      </trans-unit>
+      <trans-unit id="playground.level" resname="playground.level" xml:space="preserve">
+        <source>Level %d</source>
+      </trans-unit>
+      <trans-unit id="playground.yes" resname="playground.yes" xml:space="preserve">
+        <source>yes</source>
+      </trans-unit>
+      <trans-unit id="playground.no" resname="playground.no" xml:space="preserve">
+        <source>no</source>
+      </trans-unit>
+      <trans-unit id="playground.routing" resname="playground.routing" xml:space="preserve">
+        <source>Where this would go</source>
+      </trans-unit>
+      <trans-unit id="playground.review" resname="playground.review" xml:space="preserve">
+        <source>Needs a person</source>
+      </trans-unit>
+      <trans-unit id="playground.default" resname="playground.default" xml:space="preserve">
+        <source>default outcome</source>
+      </trans-unit>
+      <trans-unit id="playground.state" resname="playground.state" xml:space="preserve">
+        <source>State as sent</source>
+      </trans-unit>
+      <trans-unit id="keys.ctrl" resname="keys.ctrl" xml:space="preserve">
+        <source>Ctrl</source>
+      </trans-unit>
+      <trans-unit id="keys.enter" resname="keys.enter" xml:space="preserve">
+        <source>Enter</source>
+      </trans-unit>
+      <trans-unit id="runs.title" resname="runs.title" xml:space="preserve">
+        <source>Run log</source>
+      </trans-unit>
+      <trans-unit id="runs.intro" resname="runs.intro" xml:space="preserve">
+        <source>Every call: when, where from, what it answered, how sure it was, how long it took and what it cost. “Cached” never reached the API and cost nothing; “Fallback” means the default outcome was used — the reason is next to it.</source>
+      </trans-unit>
+      <trans-unit id="runs.filter.label" resname="runs.filter.label" xml:space="preserve">
+        <source>Filter the run log</source>
+      </trans-unit>
+      <trans-unit id="runs.filter.decision" resname="runs.filter.decision" xml:space="preserve">
+        <source>Decision</source>
+      </trans-unit>
+      <trans-unit id="runs.filter.decision.all" resname="runs.filter.decision.all" xml:space="preserve">
+        <source>All decisions</source>
+      </trans-unit>
+      <trans-unit id="runs.filter.context" resname="runs.filter.context" xml:space="preserve">
+        <source>Where from</source>
+      </trans-unit>
+      <trans-unit id="runs.filter.context.all" resname="runs.filter.context.all" xml:space="preserve">
+        <source>Anywhere</source>
+      </trans-unit>
+      <trans-unit id="runs.filter.outcome" resname="runs.filter.outcome" xml:space="preserve">
+        <source>Result</source>
+      </trans-unit>
+      <trans-unit id="runs.filter.outcome.all" resname="runs.filter.outcome.all" xml:space="preserve">
+        <source>Any result</source>
+      </trans-unit>
+      <trans-unit id="runs.filter.submit" resname="runs.filter.submit" xml:space="preserve">
+        <source>Filter</source>
+      </trans-unit>
+      <trans-unit id="runs.filter.reset" resname="runs.filter.reset" xml:space="preserve">
+        <source>Reset filter</source>
+      </trans-unit>
+      <trans-unit id="runs.caption" resname="runs.caption" xml:space="preserve">
+        <source>Runs, newest first</source>
+      </trans-unit>
+      <trans-unit id="runs.column.when" resname="runs.column.when" xml:space="preserve">
+        <source>When</source>
+      </trans-unit>
+      <trans-unit id="runs.column.decision" resname="runs.column.decision" xml:space="preserve">
+        <source>Decision</source>
+      </trans-unit>
+      <trans-unit id="runs.column.context" resname="runs.column.context" xml:space="preserve">
+        <source>Where from</source>
+      </trans-unit>
+      <trans-unit id="runs.column.answers" resname="runs.column.answers" xml:space="preserve">
+        <source>Answers</source>
+      </trans-unit>
+      <trans-unit id="runs.column.latency" resname="runs.column.latency" xml:space="preserve">
+        <source>Latency</source>
+      </trans-unit>
+      <trans-unit id="runs.column.tokens" resname="runs.column.tokens" xml:space="preserve">
+        <source>Tokens</source>
+      </trans-unit>
+      <trans-unit id="runs.column.cost" resname="runs.column.cost" xml:space="preserve">
+        <source>Cost</source>
+      </trans-unit>
+      <trans-unit id="runs.decision.gone" resname="runs.decision.gone" xml:space="preserve">
+        <source>Deleted decision</source>
+      </trans-unit>
+      <trans-unit id="runs.retention" resname="runs.retention" xml:space="preserve">
+        <source>Rows older than the configured retention are removed by vendor/bin/typo3 webcon-jev:log:prune — run it as a scheduled task.</source>
+      </trans-unit>
+      <trans-unit id="runs.empty.title" resname="runs.empty.title" xml:space="preserve">
+        <source>No runs yet</source>
+      </trans-unit>
+      <trans-unit id="runs.empty.message" resname="runs.empty.message" xml:space="preserve">
+        <source>Runs appear here when a form consults a decision or somebody tries one in the playground.</source>
+      </trans-unit>
+      <trans-unit id="runs.empty.action" resname="runs.empty.action" xml:space="preserve">
+        <source>Open the decisions</source>
+      </trans-unit>
+      <trans-unit id="runs.empty.filtered.title" resname="runs.empty.filtered.title" xml:space="preserve">
+        <source>No runs match this filter</source>
+      </trans-unit>
+      <trans-unit id="runs.empty.filtered.message" resname="runs.empty.filtered.message" xml:space="preserve">
+        <source>Widen the filter, or reset it to see every run.</source>
+      </trans-unit>
+      <trans-unit id="context.powermail_cond" resname="context.powermail_cond" xml:space="preserve">
+        <source>Condition</source>
+      </trans-unit>
+      <trans-unit id="context.powermail_finisher" resname="context.powermail_finisher" xml:space="preserve">
+        <source>Routing</source>
+      </trans-unit>
+      <trans-unit id="context.playground" resname="context.playground" xml:space="preserve">
+        <source>Playground</source>
+      </trans-unit>
+      <trans-unit id="context.cli" resname="context.cli" xml:space="preserve">
+        <source>CLI</source>
+      </trans-unit>
+      <trans-unit id="outcome.answered" resname="outcome.answered" xml:space="preserve">
+        <source>Answered</source>
+      </trans-unit>
+      <trans-unit id="outcome.cached" resname="outcome.cached" xml:space="preserve">
+        <source>Cached</source>
+      </trans-unit>
+      <trans-unit id="outcome.fallback" resname="outcome.fallback" xml:space="preserve">
+        <source>Fallback</source>
+      </trans-unit>
+      <trans-unit id="pagination.label" resname="pagination.label" xml:space="preserve">
+        <source>Pages</source>
+      </trans-unit>
+      <trans-unit id="pagination.first" resname="pagination.first" xml:space="preserve">
+        <source>First page</source>
+      </trans-unit>
+      <trans-unit id="pagination.previous" resname="pagination.previous" xml:space="preserve">
+        <source>Previous page</source>
+      </trans-unit>
+      <trans-unit id="pagination.next" resname="pagination.next" xml:space="preserve">
+        <source>Next page</source>
+      </trans-unit>
+      <trans-unit id="pagination.last" resname="pagination.last" xml:space="preserve">
+        <source>Last page</source>
+      </trans-unit>
+      <trans-unit id="pagination.position" resname="pagination.position" xml:space="preserve">
+        <source>Runs %d–%d · page %d of %d</source>
+      </trans-unit>
+      <trans-unit id="connection.title" resname="connection.title" xml:space="preserve">
+        <source>Connection</source>
+      </trans-unit>
+      <trans-unit id="connection.intro" resname="connection.intro" xml:space="preserve">
+        <source>Whether this installation can reach Jev, and what it has cost. The token never leaves the server — only the decision does.</source>
+      </trans-unit>
+      <trans-unit id="connection.noToken.title" resname="connection.noToken.title" xml:space="preserve">
+        <source>No API token</source>
+      </trans-unit>
+      <trans-unit id="connection.noToken.message" resname="connection.noToken.message" xml:space="preserve">
+        <source>Jev is a managed API and needs a key from TypeSafe. Until one is stored, every decision falls back to its default outcome.</source>
+      </trans-unit>
+      <trans-unit id="connection.noToken.step1" resname="connection.noToken.step1" xml:space="preserve">
+        <source>Put the key into the environment variable</source>
+      </trans-unit>
+      <trans-unit id="connection.noToken.step2" resname="connection.noToken.step2" xml:space="preserve">
+        <source>Then move it into the vault:</source>
+      </trans-unit>
+      <trans-unit id="connection.api.title" resname="connection.api.title" xml:space="preserve">
+        <source>Jev API</source>
+      </trans-unit>
+      <trans-unit id="connection.api.subtitle" resname="connection.api.subtitle" xml:space="preserve">
+        <source>Where decisions are sent, and with what.</source>
+      </trans-unit>
+      <trans-unit id="connection.endpoint" resname="connection.endpoint" xml:space="preserve">
+        <source>Endpoint</source>
+      </trans-unit>
+      <trans-unit id="connection.model" resname="connection.model" xml:space="preserve">
+        <source>Model</source>
+      </trans-unit>
+      <trans-unit id="connection.token" resname="connection.token" xml:space="preserve">
+        <source>Token</source>
+      </trans-unit>
+      <trans-unit id="connection.token.vault" resname="connection.token.vault" xml:space="preserve">
+        <source>in nr-vault, as “%s”</source>
+      </trans-unit>
+      <trans-unit id="connection.token.environment" resname="connection.token.environment" xml:space="preserve">
+        <source>from the environment variable TYPESAFE_API_KEY — move it into the vault</source>
+      </trans-unit>
+      <trans-unit id="connection.token.environmentWhileVaultUnreadable" resname="connection.token.environmentWhileVaultUnreadable" xml:space="preserve">
+        <source>from the environment variable TYPESAFE_API_KEY; nr-vault has “%s” too, but it cannot be read here</source>
+      </trans-unit>
+      <trans-unit id="connection.token.vaultUnreadable" resname="connection.token.vaultUnreadable" xml:space="preserve">
+        <source>in nr-vault as “%s”, but it cannot be read here</source>
+      </trans-unit>
+      <trans-unit id="connection.token.none" resname="connection.token.none" xml:space="preserve">
+        <source>not configured</source>
+      </trans-unit>
+      <trans-unit id="connection.frontend" resname="connection.frontend" xml:space="preserve">
+        <source>Readable in the frontend</source>
+      </trans-unit>
+      <trans-unit id="connection.frontend.yes" resname="connection.frontend.yes" xml:space="preserve">
+        <source>yes — powermail conditions and routing can ask Jev</source>
+      </trans-unit>
+      <trans-unit id="connection.frontend.no" resname="connection.frontend.no" xml:space="preserve">
+        <source>no — powermail conditions and routing fall back to their defaults</source>
+      </trans-unit>
+      <trans-unit id="connection.enabled" resname="connection.enabled" xml:space="preserve">
+        <source>Decisions</source>
+      </trans-unit>
+      <trans-unit id="connection.enabled.yes" resname="connection.enabled.yes" xml:space="preserve">
+        <source>switched on</source>
+      </trans-unit>
+      <trans-unit id="connection.enabled.no" resname="connection.enabled.no" xml:space="preserve">
+        <source>switched off — everything falls back</source>
+      </trans-unit>
+      <trans-unit id="connection.timeout" resname="connection.timeout" xml:space="preserve">
+        <source>Timeout</source>
+      </trans-unit>
+      <trans-unit id="connection.seconds" resname="connection.seconds" xml:space="preserve">
+        <source>{count, plural, one {# second} other {# seconds}}</source>
+      </trans-unit>
+      <trans-unit id="connection.cache" resname="connection.cache" xml:space="preserve">
+        <source>Cache lifetime</source>
+      </trans-unit>
+      <trans-unit id="connection.off" resname="connection.off" xml:space="preserve">
+        <source>off</source>
+      </trans-unit>
+      <trans-unit id="connection.budget" resname="connection.budget" xml:space="preserve">
+        <source>Budget guard</source>
+      </trans-unit>
+      <trans-unit id="connection.budget.value" resname="connection.budget.value" xml:space="preserve">
+        <source>{count, plural, one {# call a minute} other {# calls a minute}}</source>
+      </trans-unit>
+      <trans-unit id="connection.runLog" resname="connection.runLog" xml:space="preserve">
+        <source>Run log</source>
+      </trans-unit>
+      <trans-unit id="connection.runLog.kept" resname="connection.runLog.kept" xml:space="preserve">
+        <source>{count, plural, one {on, rows are kept for # day} other {on, rows are kept for # days}}</source>
+      </trans-unit>
+      <trans-unit id="connection.settingsHint" resname="connection.settingsHint" xml:space="preserve">
+        <source>Change these in System › Settings › Extension Configuration › webcon_jev.</source>
+      </trans-unit>
+      <trans-unit id="connection.ping" resname="connection.ping" xml:space="preserve">
+        <source>Send a test question</source>
+      </trans-unit>
+      <trans-unit id="connection.ping.running" resname="connection.ping.running" xml:space="preserve">
+        <source>Asking Jev…</source>
+      </trans-unit>
+      <trans-unit id="connection.ping.okTitle" resname="connection.ping.okTitle" xml:space="preserve">
+        <source>Jev answered</source>
+      </trans-unit>
+      <trans-unit id="connection.ping.failedTitle" resname="connection.ping.failedTitle" xml:space="preserve">
+        <source>No answer</source>
+      </trans-unit>
+      <trans-unit id="connection.ping.ok" resname="connection.ping.ok" xml:space="preserve">
+        <source>The token, the endpoint and the network work: an answer came back in %d ms from %s.</source>
+      </trans-unit>
+      <trans-unit id="connection.ping.failed" resname="connection.ping.failed" xml:space="preserve">
+        <source>Jev could not be reached with this configuration.</source>
+      </trans-unit>
+      <trans-unit id="connection.ping.noToken" resname="connection.ping.noToken" xml:space="preserve">
+        <source>No API token is readable here. Store one with vendor/bin/typo3 webcon-jev:token:import.</source>
+      </trans-unit>
+      <trans-unit id="connection.ping.answer" resname="connection.ping.answer" xml:space="preserve">
+        <source>Test answer: %s, %s sure</source>
+      </trans-unit>
+      <trans-unit id="connection.ping.usage" resname="connection.ping.usage" xml:space="preserve">
+        <source>%s input tokens, %s</source>
+      </trans-unit>
+      <trans-unit id="connection.state.ok" resname="connection.state.ok" xml:space="preserve">
+        <source>OK</source>
+      </trans-unit>
+      <trans-unit id="connection.state.problem" resname="connection.state.problem" xml:space="preserve">
+        <source>Problem</source>
+      </trans-unit>
+      <trans-unit id="connection.cost.title" resname="connection.cost.title" xml:space="preserve">
+        <source>What it has cost</source>
+      </trans-unit>
+      <trans-unit id="connection.cost.subtitle" resname="connection.cost.subtitle" xml:space="preserve">
+        <source>Jev bills input tokens only, at $0.042 per million. Output is free.</source>
+      </trans-unit>
+      <trans-unit id="connection.cost.day" resname="connection.cost.day" xml:space="preserve">
+        <source>Last 24 hours</source>
+      </trans-unit>
+      <trans-unit id="connection.cost.month" resname="connection.cost.month" xml:space="preserve">
+        <source>Last 30 days</source>
+      </trans-unit>
+      <trans-unit id="connection.cost.runs" resname="connection.cost.runs" xml:space="preserve">
+        <source>Runs</source>
+      </trans-unit>
+      <trans-unit id="connection.cost.calls" resname="connection.cost.calls" xml:space="preserve">
+        <source>Reached the API</source>
+      </trans-unit>
+      <trans-unit id="connection.cost.fallbacks" resname="connection.cost.fallbacks" xml:space="preserve">
+        <source>Fell back</source>
+      </trans-unit>
+      <trans-unit id="connection.cost.tokens" resname="connection.cost.tokens" xml:space="preserve">
+        <source>Input tokens</source>
+      </trans-unit>
+      <trans-unit id="connection.cost.cost" resname="connection.cost.cost" xml:space="preserve">
+        <source>Cost</source>
+      </trans-unit>
+      <trans-unit id="connection.cost.latency" resname="connection.cost.latency" xml:space="preserve">
+        <source>Average latency</source>
+      </trans-unit>
+      <trans-unit id="connection.cost.note" resname="connection.cost.note" xml:space="preserve">
+        <source>Cached runs cost nothing. Fallbacks are counted next to calls because a form that quietly fell back for a week looks exactly like one that worked.</source>
+      </trans-unit>
+      <trans-unit id="connection.cost.runLog" resname="connection.cost.runLog" xml:space="preserve">
+        <source>Open the run log</source>
+      </trans-unit>
+      <trans-unit id="error.status" resname="error.status" xml:space="preserve">
+        <source>The server answered with status %d.</source>
+      </trans-unit>
+      <trans-unit id="api.error.noDecision" resname="api.error.noDecision" xml:space="preserve">
+        <source>No decision in the request.</source>
+      </trans-unit>
+      <trans-unit id="api.error.noPayload" resname="api.error.noPayload" xml:space="preserve">
+        <source>The request carried nothing to run.</source>
+      </trans-unit>
+      <trans-unit id="api.save.invalid" resname="api.save.invalid" xml:space="preserve">
+        <source>{count, plural, one {One field needs attention — the decision was not saved.} other {# fields need attention — the decision was not saved.}}</source>
+      </trans-unit>
+      <trans-unit id="api.save.refused" resname="api.save.refused" xml:space="preserve">
+        <source>TYPO3 refused to save the decision. The system log says why.</source>
+      </trans-unit>
+      <trans-unit id="api.save.saved" resname="api.save.saved" xml:space="preserve">
+        <source>“%s” is saved.</source>
+      </trans-unit>
+      <trans-unit id="api.delete.notFound" resname="api.delete.notFound" xml:space="preserve">
+        <source>Decision %d does not exist any more.</source>
+      </trans-unit>
+      <trans-unit id="api.delete.refused" resname="api.delete.refused" xml:space="preserve">
+        <source>TYPO3 refused to delete the decision.</source>
+      </trans-unit>
+      <trans-unit id="api.delete.deleted" resname="api.delete.deleted" xml:space="preserve">
+        <source>“%s” is deleted. The recycler can restore it.</source>
+      </trans-unit>
+      <trans-unit id="api.playground.invalid" resname="api.playground.invalid" xml:space="preserve">
+        <source>{count, plural, one {One field needs attention before the decision can be asked.} other {# fields need attention before the decision can be asked.}}</source>
+      </trans-unit>
+      <trans-unit id="api.playground.notFound" resname="api.playground.notFound" xml:space="preserve">
+        <source>That decision does not exist.</source>
+      </trans-unit>
+      <trans-unit id="validation.required" resname="validation.required" xml:space="preserve">
+        <source>Required.</source>
+      </trans-unit>
+      <trans-unit id="validation.tooLong" resname="validation.tooLong" xml:space="preserve">
+        <source>At most %d characters.</source>
+      </trans-unit>
+      <trans-unit id="validation.identifier.format" resname="validation.identifier.format" xml:space="preserve">
+        <source>Use lowercase letters, digits, - and _ only.</source>
+      </trans-unit>
+      <trans-unit id="validation.identifier.taken" resname="validation.identifier.taken" xml:space="preserve">
+        <source>“%s” already uses this identifier.</source>
+      </trans-unit>
+      <trans-unit id="validation.threshold.range" resname="validation.threshold.range" xml:space="preserve">
+        <source>Enter a number from 0 to 1.</source>
+      </trans-unit>
+      <trans-unit id="validation.cacheLifetime.range" resname="validation.cacheLifetime.range" xml:space="preserve">
+        <source>Enter -1, 0 or a number of seconds.</source>
+      </trans-unit>
+      <trans-unit id="validation.model.format" resname="validation.model.format" xml:space="preserve">
+        <source>Model ids consist of letters, digits, dots, dashes and colons.</source>
+      </trans-unit>
+      <trans-unit id="validation.name.format" resname="validation.name.format" xml:space="preserve">
+        <source>Use letters, digits, - and _ only.</source>
+      </trans-unit>
+      <trans-unit id="validation.question.name.duplicate" resname="validation.question.name.duplicate" xml:space="preserve">
+        <source>Another question is also named “%s” — answers come back by name, so each needs its own.</source>
+      </trans-unit>
+      <trans-unit id="validation.question.type.invalid" resname="validation.question.type.invalid" xml:space="preserve">
+        <source>Pick choice, score or noul.</source>
+      </trans-unit>
+      <trans-unit id="validation.criteria.choiceMinimum" resname="validation.criteria.choiceMinimum" xml:space="preserve">
+        <source>A choice needs at least two options.</source>
+      </trans-unit>
+      <trans-unit id="validation.criteria.scoreMinimum" resname="validation.criteria.scoreMinimum" xml:space="preserve">
+        <source>A score needs at least two levels.</source>
+      </trans-unit>
+      <trans-unit id="validation.criterion.identifier.duplicate" resname="validation.criterion.identifier.duplicate" xml:space="preserve">
+        <source>Another option is also called “%s” — the request would carry only one of them.</source>
+      </trans-unit>
+      <trans-unit id="validation.questions.none" resname="validation.questions.none" xml:space="preserve">
+        <source>Add a question first.</source>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

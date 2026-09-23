@@ -6,155 +6,121 @@ namespace Webconsulting\WebconJev\Backend\Controller;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Backend\Attribute\AsController;
+use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Core\Http\JsonResponse;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\StringUtility;
-use Webconsulting\WebconJev\Configuration\Settings;
+use Webconsulting\WebconJev\Backend\Labels;
+use Webconsulting\WebconJev\Backend\RequestPayload;
 use Webconsulting\WebconJev\Domain\Repository\DecisionRepository;
+use Webconsulting\WebconJev\Editing\DecisionValidator;
+use Webconsulting\WebconJev\Editing\DecisionWriter;
+use Webconsulting\WebconJev\Editing\Dto\DecisionDraft;
+use Webconsulting\WebconJev\Editing\Dto\ValidationError;
 use Webconsulting\WebconJev\Support\Cast;
 
 /**
- * Reading and writing decisions from the module.
+ * Saving and deleting decisions from the module's editor.
  *
- * Writes go through the DataHandler rather than straight to the database, so a decision edited
- * here gets the same history entry, the same permission check and the same hooks as one edited in
- * a normal TYPO3 form — and can be rolled back from the record history like anything else.
+ * Every answer carries a message in the backend user's language, and a refused save names the
+ * field each problem belongs to, so the editor can put it next to the input.
  */
+#[AsController]
 final readonly class DecisionApiController
 {
-    private const DECISIONS = 'tx_webconjev_decision';
-    private const QUESTIONS = 'tx_webconjev_question';
-    private const CRITERIA = 'tx_webconjev_criterion';
-
     public function __construct(
         private DecisionRepository $decisions,
-        private Settings $settings,
+        private DecisionValidator $validator,
+        private DecisionWriter $writer,
+        private UriBuilder $uriBuilder,
+        private Labels $labels,
     ) {}
 
-    public function list(ServerRequestInterface $request): ResponseInterface
+    public function saveAction(ServerRequestInterface $request): ResponseInterface
     {
-        $language = Cast::int($request->getQueryParams()['language'] ?? null);
-
-        return new JsonResponse([
-            'decisions' => array_map(
-                static fn(object $decision): array => $decision->toArray(),
-                $this->decisions->findAll($language, true),
-            ),
-        ]);
-    }
-
-    public function save(ServerRequestInterface $request): ResponseInterface
-    {
-        $payload = $this->payload($request);
+        $payload = RequestPayload::fromRequest($request);
         if (!is_array($payload['decision'] ?? null)) {
-            return new JsonResponse(['ok' => false, 'error' => 'No decision in the request.'], 400);
+            return $this->failure($this->labels->get('api.error.noDecision'), 400);
         }
 
-        $decision = Cast::map($payload['decision']);
-        $uid = Cast::int($decision['uid'] ?? null);
-        $decisionId = $uid > 0 ? (string)$uid : StringUtility::getUniqueId('NEW');
-        $pid = $uid > 0 ? null : $this->settings->storagePid();
-
-        $questionIds = [];
-        $data = [self::DECISIONS => [], self::QUESTIONS => [], self::CRITERIA => []];
-
-        foreach (Cast::array($decision['questions'] ?? null) as $index => $rawQuestion) {
-            $question = Cast::map($rawQuestion);
-            if ($question === []) {
-                continue;
-            }
-            $questionUid = Cast::int($question['uid'] ?? null);
-            $questionId = $questionUid > 0 ? (string)$questionUid : StringUtility::getUniqueId('NEW');
-            $questionIds[] = $questionId;
-
-            $criterionIds = [];
-            foreach (Cast::array($question['criteria'] ?? null) as $criterionIndex => $rawCriterion) {
-                $criterion = Cast::map($rawCriterion);
-                if ($criterion === []) {
-                    continue;
-                }
-                $criterionUid = Cast::int($criterion['uid'] ?? null);
-                $criterionId = $criterionUid > 0 ? (string)$criterionUid : StringUtility::getUniqueId('NEW');
-                $criterionIds[] = $criterionId;
-
-                $data[self::CRITERIA][$criterionId] = array_filter([
-                    'pid' => $criterionUid > 0 ? null : $pid,
-                    'question' => $questionId,
-                    'sorting' => (Cast::int($criterionIndex) + 1) * 64,
-                    'identifier' => Cast::string($criterion['identifier'] ?? null),
-                    'description' => Cast::string($criterion['description'] ?? null),
-                    'outcome_value' => Cast::string($criterion['outcomeValue'] ?? null),
-                ], static fn(mixed $v): bool => $v !== null);
-            }
-
-            $data[self::QUESTIONS][$questionId] = array_filter([
-                'pid' => $questionUid > 0 ? null : $pid,
-                'decision' => $decisionId,
-                'sorting' => (Cast::int($index) + 1) * 64,
-                'name' => Cast::string($question['name'] ?? null),
-                'type' => Cast::trimmed($question['type'] ?? null, 'choice'),
-                'instructions' => Cast::string($question['instructions'] ?? null),
-                'criteria' => implode(',', $criterionIds),
-            ], static fn(mixed $v): bool => $v !== null);
+        $draft = DecisionDraft::fromPayload(Cast::map($payload['decision']));
+        $errors = $this->validator->validate($draft);
+        if ($errors !== []) {
+            return new JsonResponse([
+                'ok' => false,
+                'message' => $this->labels->get('api.save.invalid', ['count' => count($errors)]),
+                'errors' => $this->translate($errors),
+            ], 422);
         }
 
-        $data[self::DECISIONS][$decisionId] = array_filter([
-            'pid' => $pid,
-            'title' => Cast::string($decision['title'] ?? null),
-            'identifier' => Cast::string($decision['identifier'] ?? null),
-            'description' => Cast::string($decision['description'] ?? null),
-            'state_template' => Cast::string($decision['stateTemplate'] ?? null),
-            'model' => Cast::string($decision['model'] ?? null),
-            'confidence_threshold' => Cast::float($decision['confidenceThreshold'] ?? null, 0.6),
-            'cache_lifetime' => Cast::int($decision['cacheLifetime'] ?? null, -1),
-            'default_outcome' => Cast::string($decision['defaultOutcome'] ?? null),
-            'questions' => implode(',', $questionIds),
-        ], static fn(mixed $v): bool => $v !== null);
-
-        $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
-        $dataHandler->start($data, []);
-        $dataHandler->process_datamap();
-
-        if ($dataHandler->errorLog !== []) {
-            return new JsonResponse(['ok' => false, 'errors' => $dataHandler->errorLog], 422);
+        $result = $this->writer->save($draft);
+        $saved = $result['uid'] > 0 ? $this->decisions->findByUid($result['uid'], 0, true) : null;
+        if ($result['errors'] !== [] || $saved === null) {
+            return new JsonResponse([
+                'ok' => false,
+                'message' => $this->labels->get('api.save.refused'),
+                'details' => $result['errors'],
+            ], 422);
         }
-
-        $savedUid = Cast::int($dataHandler->substNEWwithIDs[$decisionId] ?? null, $uid);
-        $saved = $this->decisions->findByUid($savedUid, 0, true);
 
         return new JsonResponse([
             'ok' => true,
-            'decision' => $saved?->toArray(),
+            'message' => $this->labels->get('api.save.saved', [$saved->title]),
+            'decision' => $saved->toArray(),
+            'urls' => [
+                'edit' => (string)$this->uriBuilder->buildUriFromRoute(
+                    DecisionsController::EDIT_ROUTE,
+                    ['decision' => $saved->uid],
+                ),
+                'runLog' => (string)$this->uriBuilder->buildUriFromRoute(
+                    RunLogController::MODULE,
+                    ['filter' => ['decision' => $saved->uid]],
+                ),
+            ],
         ]);
     }
 
-    public function delete(ServerRequestInterface $request): ResponseInterface
+    public function deleteAction(ServerRequestInterface $request): ResponseInterface
     {
-        $uid = Cast::int($this->payload($request)['uid'] ?? null);
+        $uid = Cast::int(RequestPayload::fromRequest($request)['uid'] ?? null);
         if ($uid <= 0) {
-            return new JsonResponse(['ok' => false, 'error' => 'No decision to delete.'], 400);
+            return $this->failure($this->labels->get('api.error.noDecision'), 400);
         }
 
-        $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
-        $dataHandler->start([], [self::DECISIONS => [$uid => ['delete' => 1]]]);
-        $dataHandler->process_cmdmap();
-
-        if ($dataHandler->errorLog !== []) {
-            return new JsonResponse(['ok' => false, 'errors' => $dataHandler->errorLog], 422);
+        $decision = $this->decisions->findByUid($uid, 0, true);
+        if ($decision === null) {
+            return $this->failure($this->labels->get('api.delete.notFound', [$uid]), 404);
         }
 
-        return new JsonResponse(['ok' => true]);
+        $errors = $this->writer->delete($uid);
+        if ($errors !== []) {
+            return new JsonResponse([
+                'ok' => false,
+                'message' => $this->labels->get('api.delete.refused'),
+                'details' => $errors,
+            ], 422);
+        }
+
+        return new JsonResponse([
+            'ok' => true,
+            'message' => $this->labels->get('api.delete.deleted', [$decision->title]),
+        ]);
     }
 
     /**
-     * @return array<string, mixed>
+     * @param list<ValidationError> $errors
+     *
+     * @return list<array{path: string, message: string}>
      */
-    private function payload(ServerRequestInterface $request): array
+    private function translate(array $errors): array
     {
-        $body = (string)$request->getBody();
-        $decoded = Cast::map($body !== '' ? json_decode($body, true) : null);
+        return array_map(fn(ValidationError $error): array => [
+            'path' => $error->path,
+            'message' => $this->labels->get($error->labelKey, $error->arguments),
+        ], $errors);
+    }
 
-        return $decoded !== [] ? $decoded : Cast::map($request->getParsedBody());
+    private function failure(string $message, int $status): JsonResponse
+    {
+        return new JsonResponse(['ok' => false, 'message' => $message], $status);
     }
 }

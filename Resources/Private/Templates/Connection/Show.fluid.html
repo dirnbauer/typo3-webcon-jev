@@ -1,0 +1,205 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    xmlns:jev="http://typo3.org/ns/Webconsulting/WebconJev/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+<f:layout name="Module" />
+
+<f:section name="Content">
+    <f:asset.css identifier="webcon-jev-module" href="EXT:webcon_jev/Resources/Public/Css/module.css" />
+    <f:asset.module identifier="@webconsulting/webcon-jev/connection.js" />
+
+    <h1><f:translate key="connection.title" domain="webcon_jev.module" /></h1>
+    <p class="webcon-jev-lead"><f:translate key="connection.intro" domain="webcon_jev.module" /></p>
+
+    <f:if condition="!{connection.enabled}">
+        <f:be.infobox
+            state="{f:constant(name: 'TYPO3\CMS\Core\Type\ContextualFeedbackSeverity::WARNING')}"
+            title="{f:translate(key: 'status.disabled.title', domain: 'webcon_jev.module')}"
+        >
+            <p><f:translate key="status.disabled.message" domain="webcon_jev.module" /></p>
+        </f:be.infobox>
+    </f:if>
+
+    <f:if condition="!{connection.hasToken}">
+        <f:be.infobox
+            state="{f:constant(name: 'TYPO3\CMS\Core\Type\ContextualFeedbackSeverity::WARNING')}"
+            title="{f:translate(key: 'connection.noToken.title', domain: 'webcon_jev.module')}"
+        >
+            <p><f:translate key="connection.noToken.message" domain="webcon_jev.module" /></p>
+            <ol>
+                <li><f:translate key="connection.noToken.step1" domain="webcon_jev.module" /> <code>TYPESAFE_API_KEY</code></li>
+                <li><f:translate key="connection.noToken.step2" domain="webcon_jev.module" /> <code>vendor/bin/typo3 webcon-jev:token:import</code></li>
+            </ol>
+        </f:be.infobox>
+    </f:if>
+
+    <div class="card-container">
+        <section class="card card-size-medium" aria-labelledby="webcon-jev-connection-api">
+            <div class="card-header">
+                <div class="card-icon"><core:icon identifier="webcon-jev-connection" size="medium" /></div>
+                <div class="card-header-body">
+                    <h2 class="card-title" id="webcon-jev-connection-api"><f:translate key="connection.api.title" domain="webcon_jev.module" /></h2>
+                    <span class="card-subtitle"><f:translate key="connection.api.subtitle" domain="webcon_jev.module" /></span>
+                </div>
+            </div>
+            <div class="card-body">
+                <dl class="webcon-jev-facts">
+                    <dt><f:translate key="connection.endpoint" domain="webcon_jev.module" /></dt>
+                    <dd class="webcon-jev-mono">{connection.endpoint}</dd>
+                    <dt><f:translate key="connection.model" domain="webcon_jev.module" /></dt>
+                    <dd class="webcon-jev-mono">{connection.model}</dd>
+                    <dt><f:translate key="connection.token" domain="webcon_jev.module" /></dt>
+                    <dd>
+                        <f:render section="state" arguments="{ok: connection.hasToken}" />
+                        <f:translate key="connection.token.{connection.tokenSource}" domain="webcon_jev.module" arguments="{0: connection.tokenIdentifier}" />
+                    </dd>
+                    <dt><f:translate key="connection.frontend" domain="webcon_jev.module" /></dt>
+                    <dd>
+                        <f:render section="state" arguments="{ok: connection.frontendReadable}" />
+                        <f:if condition="{connection.frontendReadable}">
+                            <f:then><f:translate key="connection.frontend.yes" domain="webcon_jev.module" /></f:then>
+                            <f:else><f:translate key="connection.frontend.no" domain="webcon_jev.module" /></f:else>
+                        </f:if>
+                    </dd>
+                    <dt><f:translate key="connection.enabled" domain="webcon_jev.module" /></dt>
+                    <dd>
+                        <f:render section="state" arguments="{ok: connection.enabled}" />
+                        <f:if condition="{connection.enabled}">
+                            <f:then><f:translate key="connection.enabled.yes" domain="webcon_jev.module" /></f:then>
+                            <f:else><f:translate key="connection.enabled.no" domain="webcon_jev.module" /></f:else>
+                        </f:if>
+                    </dd>
+                    <dt><f:translate key="connection.timeout" domain="webcon_jev.module" /></dt>
+                    <dd><f:translate key="connection.seconds" domain="webcon_jev.module" arguments="{count: connection.timeout}" /></dd>
+                    <dt><f:translate key="connection.cache" domain="webcon_jev.module" /></dt>
+                    <dd>
+                        <f:if condition="{connection.cacheLifetime}">
+                            <f:then><f:translate key="connection.seconds" domain="webcon_jev.module" arguments="{count: connection.cacheLifetime}" /></f:then>
+                            <f:else><f:translate key="connection.off" domain="webcon_jev.module" /></f:else>
+                        </f:if>
+                    </dd>
+                    <dt><f:translate key="connection.budget" domain="webcon_jev.module" /></dt>
+                    <dd>
+                        <f:if condition="{connection.maxCallsPerMinute}">
+                            <f:then><f:translate key="connection.budget.value" domain="webcon_jev.module" arguments="{count: connection.maxCallsPerMinute}" /></f:then>
+                            <f:else><f:translate key="connection.off" domain="webcon_jev.module" /></f:else>
+                        </f:if>
+                    </dd>
+                    <dt><f:translate key="connection.runLog" domain="webcon_jev.module" /></dt>
+                    <dd>
+                        <f:if condition="{connection.logRuns}">
+                            <f:then><f:translate key="connection.runLog.kept" domain="webcon_jev.module" arguments="{count: connection.logRetentionDays}" /></f:then>
+                            <f:else><f:translate key="connection.off" domain="webcon_jev.module" /></f:else>
+                        </f:if>
+                    </dd>
+                </dl>
+                <p class="text-variant"><f:translate key="connection.settingsHint" domain="webcon_jev.module" /></p>
+                <div class="webcon-jev-ping-result" aria-live="polite" data-webcon-jev-ping-result></div>
+            </div>
+            <div class="card-footer">
+                <button
+                    type="button"
+                    class="btn btn-default"
+                    data-webcon-jev-ping="{pingUrl}"
+                    {f:if(condition: connection.hasToken, else: 'disabled')}
+                >
+                    <core:icon identifier="actions-bolt" />
+                    <f:translate key="connection.ping" domain="webcon_jev.module" />
+                </button>
+            </div>
+        </section>
+
+        <section class="card card-size-medium" aria-labelledby="webcon-jev-connection-cost">
+            <div class="card-header">
+                <div class="card-icon"><core:icon identifier="tx_webconjev_run" size="medium" /></div>
+                <div class="card-header-body">
+                    <h2 class="card-title" id="webcon-jev-connection-cost"><f:translate key="connection.cost.title" domain="webcon_jev.module" /></h2>
+                    <span class="card-subtitle"><f:translate key="connection.cost.subtitle" domain="webcon_jev.module" /></span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-fit mb-0">
+                    <table class="table table-striped">
+                        <caption class="visually-hidden"><f:translate key="connection.cost.title" domain="webcon_jev.module" /></caption>
+                        <thead>
+                            <tr>
+                                <td></td>
+                                <th scope="col" class="text-end"><f:translate key="connection.cost.day" domain="webcon_jev.module" /></th>
+                                <th scope="col" class="text-end"><f:translate key="connection.cost.month" domain="webcon_jev.module" /></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row"><f:translate key="connection.cost.runs" domain="webcon_jev.module" /></th>
+                                <td class="text-end"><jev:format.number value="{totals.day.runs}" /></td>
+                                <td class="text-end"><jev:format.number value="{totals.month.runs}" /></td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><f:translate key="connection.cost.calls" domain="webcon_jev.module" /></th>
+                                <td class="text-end"><jev:format.number value="{totals.day.calls}" /></td>
+                                <td class="text-end"><jev:format.number value="{totals.month.calls}" /></td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><f:translate key="connection.cost.fallbacks" domain="webcon_jev.module" /></th>
+                                <td class="text-end"><f:render section="fallbacks" arguments="{count: totals.day.fallbacks}" /></td>
+                                <td class="text-end"><f:render section="fallbacks" arguments="{count: totals.month.fallbacks}" /></td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><f:translate key="connection.cost.tokens" domain="webcon_jev.module" /></th>
+                                <td class="text-end"><jev:format.number value="{totals.day.inputTokens}" /></td>
+                                <td class="text-end"><jev:format.number value="{totals.month.inputTokens}" /></td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><f:translate key="connection.cost.cost" domain="webcon_jev.module" /></th>
+                                <td class="text-end"><jev:format.number value="{totals.day.costUsd}" style="usd" /></td>
+                                <td class="text-end"><jev:format.number value="{totals.month.costUsd}" style="usd" /></td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><f:translate key="connection.cost.latency" domain="webcon_jev.module" /></th>
+                                <td class="text-end"><f:render section="latency" arguments="{ms: totals.day.avgDurationMs}" /></td>
+                                <td class="text-end"><f:render section="latency" arguments="{ms: totals.month.avgDurationMs}" /></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-variant"><f:translate key="connection.cost.note" domain="webcon_jev.module" /></p>
+            </div>
+            <div class="card-footer">
+                <a class="btn btn-default" href="{runLogUrl}">
+                    <core:icon identifier="actions-history" />
+                    <f:translate key="connection.cost.runLog" domain="webcon_jev.module" />
+                </a>
+            </div>
+        </section>
+    </div>
+</f:section>
+
+<f:section name="state">
+    <f:if condition="{ok}">
+        <f:then>
+            <span class="badge badge-success"><f:translate key="connection.state.ok" domain="webcon_jev.module" /></span>
+        </f:then>
+        <f:else>
+            <span class="badge badge-danger"><f:translate key="connection.state.problem" domain="webcon_jev.module" /></span>
+        </f:else>
+    </f:if>
+</f:section>
+
+<f:section name="fallbacks">
+    <f:if condition="{count}">
+        <f:then><span class="badge badge-danger"><jev:format.number value="{count}" /></span></f:then>
+        <f:else>0</f:else>
+    </f:if>
+</f:section>
+
+<f:section name="latency">
+    <f:if condition="{ms} >= 1">
+        <f:then><jev:format.number value="{ms}" />&nbsp;ms</f:then>
+        <f:else><span class="text-variant">—</span></f:else>
+    </f:if>
+</f:section>
+
+</html>

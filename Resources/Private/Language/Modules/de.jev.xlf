@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="de" datatype="plaintext" original="EXT:webcon_jev/Resources/Private/Language/Modules/jev.xlf" date="2026-09-23T00:00:00Z" product-name="webcon_jev">
+    <header/>
+    <body>
+      <trans-unit id="title" resname="title" xml:space="preserve">
+        <source>Jev decisions</source>
+        <target state="final">Jev-Entscheidungen</target>
+      </trans-unit>
+      <trans-unit id="description" resname="description" xml:space="preserve">
+        <source>Define the questions Jev answers about your content, try them against a sample, and see what every call answered and cost.</source>
+        <target state="final">Die Fragen festlegen, die Jev zu Inhalten beantwortet, sie an einem Beispiel ausprobieren und sehen, was jeder Aufruf geantwortet und gekostet hat.</target>
+      </trans-unit>
+      <trans-unit id="short_description" resname="short_description" xml:space="preserve">
+        <source>Typed decisions and what they cost</source>
+        <target state="final">Typisierte Entscheidungen und was sie kosten</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

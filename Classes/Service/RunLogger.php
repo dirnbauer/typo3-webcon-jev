@@ -6,10 +6,13 @@ namespace Webconsulting\WebconJev\Service;
 
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use Webconsulting\WebconJev\Client\Dto\Answer;
 use Webconsulting\WebconJev\Client\Dto\DecisionResult;
 use Webconsulting\WebconJev\Configuration\Settings;
 use Webconsulting\WebconJev\Domain\Model\Decision;
+use Webconsulting\WebconJev\Service\Dto\RunLogFilter;
+use Webconsulting\WebconJev\Service\Dto\RunOutcome;
 use Webconsulting\WebconJev\Support\Cast;
 
 /**
@@ -20,12 +23,12 @@ use Webconsulting\WebconJev\Support\Cast;
  */
 final readonly class RunLogger
 {
-    public const TABLE = 'tx_webconjev_run';
+    public const string TABLE = 'tx_webconjev_run';
 
-    public const CONTEXT_CONDITION = 'powermail_cond';
-    public const CONTEXT_FINISHER = 'powermail_finisher';
-    public const CONTEXT_PLAYGROUND = 'playground';
-    public const CONTEXT_CLI = 'cli';
+    public const string CONTEXT_CONDITION = 'powermail_cond';
+    public const string CONTEXT_FINISHER = 'powermail_finisher';
+    public const string CONTEXT_PLAYGROUND = 'playground';
+    public const string CONTEXT_CLI = 'cli';
 
     public function __construct(
         private ConnectionPool $connectionPool,
@@ -69,23 +72,103 @@ final readonly class RunLogger
     }
 
     /**
+     * The most recent rows, newest first.
+     *
      * @return list<array<string, mixed>>
      */
     public function recent(int $limit = 50, int $decisionUid = 0): array
     {
-        $query = $this->connectionPool->getQueryBuilderForTable(self::TABLE);
-        $query->select('*')->from(self::TABLE)->orderBy('crdate', 'DESC')->setMaxResults(max(1, $limit));
+        return $this->query(new RunLogFilter(decision: $decisionUid))
+            ->setMaxResults(max(1, $limit))
+            ->executeQuery()
+            ->fetchAllAssociative();
+    }
 
-        if ($decisionUid > 0) {
-            $query->where(
-                $query->expr()->eq('decision', $query->createNamedParameter($decisionUid, Connection::PARAM_INT)),
-            );
+    /**
+     * The rows a filter selects, newest first, for a paginator to slice.
+     */
+    public function query(RunLogFilter $filter): QueryBuilder
+    {
+        $query = $this->connectionPool->getQueryBuilderForTable(self::TABLE);
+        $query->select('*')->from(self::TABLE)->orderBy('crdate', 'DESC')->addOrderBy('uid', 'DESC');
+
+        $constraints = [];
+        if ($filter->decision > 0) {
+            $constraints[] = $query->expr()->eq('decision', $query->createNamedParameter($filter->decision, Connection::PARAM_INT));
+        }
+        if ($filter->context !== '') {
+            $constraints[] = $query->expr()->eq('context', $query->createNamedParameter($filter->context));
+        }
+        $constraints = [...$constraints, ...match ($filter->outcome) {
+            RunOutcome::Fallback => [$query->expr()->eq('is_fallback', 1)],
+            RunOutcome::Cached => [$query->expr()->eq('is_fallback', 0), $query->expr()->eq('from_cache', 1)],
+            RunOutcome::Answered => [$query->expr()->eq('is_fallback', 0), $query->expr()->eq('from_cache', 0)],
+            null => [],
+        }];
+        if ($constraints !== []) {
+            $query->where(...$constraints);
         }
 
-        /** @var list<array<string, mixed>> $rows */
-        $rows = $query->executeQuery()->fetchAllAssociative();
+        return $query;
+    }
 
-        return $rows;
+    /**
+     * How often each decision ran since a point in time, how often it fell back, and when it last ran.
+     *
+     * @return array<int, array{runs: int, fallbacks: int, lastRun: int}> Keyed by decision uid
+     */
+    public function summaryByDecision(int $since): array
+    {
+        $query = $this->connectionPool->getQueryBuilderForTable(self::TABLE);
+        $rows = $query
+            ->select('decision')
+            ->addSelectLiteral(
+                'COUNT(*) AS ' . $query->quoteIdentifier('runs'),
+                'SUM(' . $query->quoteIdentifier('is_fallback') . ') AS ' . $query->quoteIdentifier('fallbacks'),
+                'MAX(' . $query->quoteIdentifier('crdate') . ') AS ' . $query->quoteIdentifier('last_run'),
+            )
+            ->from(self::TABLE)
+            ->where($query->expr()->gte('crdate', $query->createNamedParameter($since, Connection::PARAM_INT)))
+            ->groupBy('decision')
+            ->executeQuery()
+            ->fetchAllAssociative();
+
+        $summary = [];
+        foreach ($rows as $row) {
+            $summary[Cast::int($row['decision'] ?? null)] = [
+                'runs' => Cast::int($row['runs'] ?? null),
+                'fallbacks' => Cast::int($row['fallbacks'] ?? null),
+                'lastRun' => Cast::int($row['last_run'] ?? null),
+            ];
+        }
+
+        return $summary;
+    }
+
+    /**
+     * The contexts that appear in the log — the four this extension writes, and any a developer's
+     * own integration passed to the runner.
+     *
+     * @return list<string>
+     */
+    public function contexts(): array
+    {
+        $query = $this->connectionPool->getQueryBuilderForTable(self::TABLE);
+        $logged = $query
+            ->select('context')
+            ->from(self::TABLE)
+            ->where($query->expr()->neq('context', $query->createNamedParameter('')))
+            ->groupBy('context')
+            ->executeQuery()
+            ->fetchFirstColumn();
+
+        return array_values(array_unique([
+            self::CONTEXT_CONDITION,
+            self::CONTEXT_FINISHER,
+            self::CONTEXT_PLAYGROUND,
+            self::CONTEXT_CLI,
+            ...array_map(Cast::string(...), $logged),
+        ]));
     }
 
     /**

@@ -10,6 +10,7 @@ use Psr\Log\LoggerInterface;
 use Throwable;
 use TYPO3\CMS\Core\Http\ApplicationType;
 use Webconsulting\WebconJev\Configuration\Settings;
+use Webconsulting\WebconJev\Service\Dto\TokenSource;
 use Webconsulting\WebconJev\Support\Cast;
 
 /**
@@ -25,7 +26,7 @@ use Webconsulting\WebconJev\Support\Cast;
  */
 final readonly class TokenProvider
 {
-    public const ENVIRONMENT_VARIABLE = 'TYPESAFE_API_KEY';
+    public const string ENVIRONMENT_VARIABLE = 'TYPESAFE_API_KEY';
 
     public function __construct(
         private VaultServiceInterface $vault,
@@ -69,6 +70,25 @@ final readonly class TokenProvider
     }
 
     /**
+     * Whether a token is there at all, without reading it.
+     *
+     * Cheap enough for every page view of the backend module: exists() neither decrypts the secret
+     * nor writes an entry to the vault's audit log, which a read does.
+     */
+    public function isPresent(): bool
+    {
+        try {
+            if ($this->vault->exists($this->settings->tokenIdentifier())) {
+                return true;
+            }
+        } catch (Throwable) {
+            // An unreadable vault counts as empty; the environment may still have one.
+        }
+
+        return $this->fromEnvironment() !== null;
+    }
+
+    /**
      * Whether a frontend request would be able to read the token.
      *
      * This is the question that actually matters for the powermail integrations, and the one no
@@ -90,38 +110,48 @@ final readonly class TokenProvider
     }
 
     /**
-     * Where the token that would be used right now comes from — for the module's status panel.
+     * Where the token that would be used right now comes from.
      */
-    public function describeSource(): string
+    public function source(): TokenSource
     {
-        $identifier = $this->settings->tokenIdentifier();
-
         // exists() needs no read permission and retrieve() does, so the two disagree in exactly
         // the case worth naming: the secret is in the vault, and this context may not read it.
         // Reporting only the first produced a status table that said the token was there directly
         // above an error saying there was none.
         $present = false;
         try {
-            $present = $this->vault->exists($identifier);
+            $present = $this->vault->exists($this->settings->tokenIdentifier());
         } catch (Throwable) {
             // Treat an unreadable vault as absent and fall through to the environment.
         }
 
-        if ($present) {
+        $inEnvironment = $this->fromEnvironment() !== null;
+
+        return match (true) {
             // Deliberately the vault read and not getToken(): the environment fallback would
-            // otherwise let this report "nr-vault" for a value that came from the environment.
-            if ($this->fromVault() !== null) {
-                return sprintf('nr-vault (%s)', $identifier);
-            }
+            // otherwise let this report the vault for a value that came from the environment.
+            $present && $this->fromVault() !== null => TokenSource::Vault,
+            $present && $inEnvironment => TokenSource::EnvironmentWhileVaultUnreadable,
+            $present => TokenSource::VaultUnreadable,
+            $inEnvironment => TokenSource::Environment,
+            default => TokenSource::None,
+        };
+    }
 
-            return $this->fromEnvironment() !== null
-                ? sprintf('environment (%s) — the vault has it too, unreadable from here', self::ENVIRONMENT_VARIABLE)
-                : sprintf('nr-vault (%s) — present, but not readable from here', $identifier);
-        }
+    /**
+     * The source in a sentence, for the command line.
+     */
+    public function describeSource(): string
+    {
+        $identifier = $this->settings->tokenIdentifier();
 
-        return $this->fromEnvironment() !== null
-            ? sprintf('environment (%s)', self::ENVIRONMENT_VARIABLE)
-            : 'not configured';
+        return match ($this->source()) {
+            TokenSource::Vault => sprintf('nr-vault (%s)', $identifier),
+            TokenSource::EnvironmentWhileVaultUnreadable => sprintf('environment (%s) — the vault has it too, unreadable from here', self::ENVIRONMENT_VARIABLE),
+            TokenSource::VaultUnreadable => sprintf('nr-vault (%s) — present, but not readable from here', $identifier),
+            TokenSource::Environment => sprintf('environment (%s)', self::ENVIRONMENT_VARIABLE),
+            TokenSource::None => 'not configured',
+        };
     }
 
     private function fromEnvironment(): ?string

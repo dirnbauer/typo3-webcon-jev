@@ -10,6 +10,7 @@ $icons = [
     'tx_webconjev_question' => 'tx_webconjev_question.svg',
     'tx_webconjev_criterion' => 'tx_webconjev_criterion.svg',
     'tx_webconjev_run' => 'tx_webconjev_run.svg',
+    'webcon-jev-connection' => 'connection.svg',
 ];
 
 return array_map(

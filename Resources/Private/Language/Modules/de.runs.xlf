@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="de" datatype="plaintext" original="EXT:webcon_jev/Resources/Private/Language/Modules/runs.xlf" date="2026-09-23T00:00:00Z" product-name="webcon_jev">
+    <header/>
+    <body>
+      <trans-unit id="title" resname="title" xml:space="preserve">
+        <source>Run log</source>
+        <target state="final">Protokoll</target>
+      </trans-unit>
+      <trans-unit id="description" resname="description" xml:space="preserve">
+        <source>Every call: what it answered, how sure it was, and what it cost.</source>
+        <target state="final">Jeder Aufruf: was geantwortet wurde, wie sicher und was es kostete.</target>
+      </trans-unit>
+      <trans-unit id="short_description" resname="short_description" xml:space="preserve">
+        <source>Every call and its cost</source>
+        <target state="final">Jeder Aufruf und seine Kosten</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="de" datatype="plaintext" original="EXT:webcon_jev/Resources/Private/Language/Modules/decisions.xlf" date="2026-09-23T00:00:00Z" product-name="webcon_jev">
+    <header/>
+    <body>
+      <trans-unit id="title" resname="title" xml:space="preserve">
+        <source>Decisions</source>
+        <target state="final">Entscheidungen</target>
+      </trans-unit>
+      <trans-unit id="description" resname="description" xml:space="preserve">
+        <source>Write the questions, and try them before a form uses them.</source>
+        <target state="final">Fragen schreiben und ausprobieren, bevor ein Formular sie verwendet.</target>
+      </trans-unit>
+      <trans-unit id="short_description" resname="short_description" xml:space="preserve">
+        <source>Write and try decisions</source>
+        <target state="final">Entscheidungen schreiben und ausprobieren</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

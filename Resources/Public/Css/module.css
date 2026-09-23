@@ -1,0 +1,288 @@
+/*
+ * webcon_jev backend module.
+ *
+ * Only what the backend's own components do not cover. Every colour, space and radius is a core
+ * --typo3-* token, so light and dark mode both follow the backend's colour scheme.
+ */
+
+.webcon-jev-lead {
+  max-inline-size: 80ch;
+  color: var(--typo3-text-color-variant);
+}
+
+.webcon-jev-mono {
+  font-family: var(--typo3-font-family-monospace);
+}
+
+.webcon-jev-error {
+  color: var(--typo3-text-color-danger);
+}
+
+.webcon-jev-chips {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: calc(var(--typo3-spacing) * .25);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.webcon-jev-plain-list,
+.webcon-jev-error-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.webcon-jev-loading,
+.webcon-jev-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--typo3-spacing) * .5);
+  padding-block: calc(var(--typo3-spacing) * 1.5);
+  color: var(--typo3-text-color-variant);
+  text-align: center;
+}
+
+.webcon-jev-empty p {
+  margin: 0;
+  max-inline-size: 45ch;
+}
+
+/* Facts in two columns: a label, and what it says. */
+.webcon-jev-facts {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: calc(var(--typo3-spacing) * .5) var(--typo3-spacing);
+  margin: 0 0 var(--typo3-spacing);
+}
+
+.webcon-jev-facts dt {
+  font-weight: normal;
+  color: var(--typo3-text-color-variant);
+}
+
+.webcon-jev-facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Editor ------------------------------------------------------------------------------------ */
+
+webcon-jev-decision-editor {
+  display: block;
+  container-type: inline-size;
+}
+
+.webcon-jev-editor-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--typo3-spacing) * .5);
+}
+
+.webcon-jev-editor-head h1 {
+  margin-block-end: 0;
+}
+
+.webcon-jev-editor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--typo3-spacing);
+  align-items: start;
+}
+
+@container (min-width: 1100px) {
+  .webcon-jev-editor {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  }
+
+  .webcon-jev-editor-aside {
+    position: sticky;
+    inset-block-start: var(--typo3-spacing);
+  }
+}
+
+.webcon-jev-card + .webcon-jev-card {
+  margin-block-start: var(--typo3-spacing);
+}
+
+.webcon-jev-grow {
+  flex: 1 1 16rem;
+  min-inline-size: 0;
+}
+
+.webcon-jev-narrow {
+  flex: 0 1 12rem;
+}
+
+.webcon-jev-question + .webcon-jev-question {
+  margin-block-start: var(--typo3-spacing);
+}
+
+.webcon-jev-question-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--typo3-spacing) * .5);
+  margin: 0;
+  font-size: inherit;
+}
+
+.webcon-jev-criteria {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-inline-size: 0;
+}
+
+.webcon-jev-criteria > legend {
+  float: none;
+  inline-size: auto;
+  margin-block-end: calc(var(--typo3-spacing) * .25);
+  font-size: inherit;
+}
+
+.webcon-jev-criteria-list {
+  margin: 0 0 var(--typo3-spacing);
+  padding: 0;
+  list-style: none;
+}
+
+.webcon-jev-criterion .form-row {
+  margin-block-end: calc(var(--typo3-spacing) * .5);
+}
+
+.webcon-jev-col-id {
+  flex: 0 1 11rem;
+}
+
+.webcon-jev-col-meaning {
+  flex: 1 1 16rem;
+  min-inline-size: 0;
+}
+
+.webcon-jev-col-outcome {
+  flex: 0 1 15rem;
+}
+
+.webcon-jev-col-actions {
+  flex: 0 0 auto;
+}
+
+/* The column labels are read out for every row but shown above the first one only. */
+.webcon-jev-criterion + .webcon-jev-criterion .form-label {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.webcon-jev-shortcut {
+  margin-block-start: var(--typo3-spacing);
+}
+
+/* Playground -------------------------------------------------------------------------------- */
+
+.webcon-jev-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--typo3-spacing) * .75);
+}
+
+.webcon-jev-sample {
+  padding-block-end: var(--typo3-spacing);
+}
+
+.webcon-jev-sample + .webcon-jev-sample {
+  padding-block-start: var(--typo3-spacing);
+  border-block-start: var(--typo3-component-border-width) solid var(--typo3-component-border-color);
+}
+
+.webcon-jev-meta {
+  color: var(--typo3-text-color-variant);
+}
+
+.webcon-jev-answer {
+  padding-block: calc(var(--typo3-spacing) * .75);
+  border-block-start: var(--typo3-component-border-width) solid var(--typo3-component-border-color);
+}
+
+.webcon-jev-answer-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--typo3-spacing) * .5);
+}
+
+.webcon-jev-distribution {
+  inline-size: 100%;
+  margin-block-start: calc(var(--typo3-spacing) * .5);
+  border-collapse: collapse;
+}
+
+.webcon-jev-distribution th,
+.webcon-jev-distribution td {
+  padding: calc(var(--typo3-spacing) * .125) calc(var(--typo3-spacing) * .25);
+  vertical-align: middle;
+}
+
+.webcon-jev-distribution th {
+  inline-size: 30%;
+  font-weight: normal;
+  overflow-wrap: anywhere;
+}
+
+.webcon-jev-distribution td:last-child {
+  inline-size: 4.5rem;
+  white-space: nowrap;
+}
+
+.webcon-jev-bar {
+  display: block;
+  block-size: .5rem;
+  overflow: hidden;
+  border-radius: var(--typo3-component-border-radius);
+  background: color-mix(in srgb, currentColor 15%, transparent);
+}
+
+.webcon-jev-bar > span {
+  display: block;
+  block-size: 100%;
+  background: var(--typo3-state-primary-bg);
+}
+
+.webcon-jev-answer.is-weak .webcon-jev-bar > span {
+  background: var(--typo3-state-warning-bg);
+}
+
+.webcon-jev-routing {
+  padding-block-start: calc(var(--typo3-spacing) * .75);
+  border-block-start: var(--typo3-component-border-width) solid var(--typo3-component-border-color);
+}
+
+.webcon-jev-details > summary {
+  cursor: pointer;
+}
+
+.webcon-jev-pre {
+  max-block-size: 20rem;
+  margin: calc(var(--typo3-spacing) * .5) 0 0;
+  padding: calc(var(--typo3-spacing) * .5);
+  overflow: auto;
+  border-radius: var(--typo3-component-border-radius);
+  background: color-mix(in srgb, currentColor 6%, transparent);
+  font-family: var(--typo3-font-family-monospace);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .webcon-jev-bar > span {
+    transition: inline-size .2s ease-out;
+  }
+}
