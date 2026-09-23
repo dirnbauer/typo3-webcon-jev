@@ -5,6 +5,46 @@
 Changelog
 =========
 
+0.2.1 — 2026-09-23
+==================
+
+Translated decisions, and decisions an integration builds in code.
+
+Added
+-----
+
+*   **Decisions built in code.** :php:`DecisionRunner::run()` takes a :php:`Decision` with uid ``0``
+    that an integration puts together at run time — questions it only knows then, such as one per
+    part of an imported document. It gets the same switch, token check, budget guard, cache and
+    fallback as a stored decision, and its runs are logged under uid ``0`` and its identifier. See
+    :ref:`developers-decision-in-code`.
+*   The :guilabel:`Run log` shows such a run as an **ad-hoc decision** with its identifier;
+    "Deleted decision" is left for a stored decision that no longer exists.
+*   **Labels for other extensions' run contexts.** An integration names the context it passes to the
+    runner in ``$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['webcon_jev']['runContexts'][<context>]``
+    — an ``LLL:`` or translation domain reference, or plain text. The run log's rows and filter use
+    it; a context nobody labelled is shown as written, as before.
+
+Fixed
+-----
+
+*   **A translation is never a decision of its own.** A German translation shares its decision's
+    identifier, as it should: the identifier is excluded from translation, and it is unique per
+    language, so neither the record editor nor the module reports it as taken. What was wrong:
+
+    *   :php:`DecisionRepository::findByUid()` given a translation's uid returned the translation as a
+        decision of its own — with no questions, since those hang off the default record. It now
+        returns the decision the translation belongs to, in the language asked for.
+    *   The decision list counted a translated form or condition rule once per language under
+        "Used by", and the delete confirmation did the same. Each is counted once now.
+    *   Deleting through the module with a translation's uid deleted only that translation. It
+        deletes the decision, which takes its translations along.
+
+*   The run log cuts an identifier, context or model name that is longer than its column instead of
+    failing the insert — which, on MariaDB, failed the run the row was logging.
+*   The answer cache takes the decision's model into account. Changing a decision's model used to
+    serve the previous model's answers until they expired.
+
 0.2.0 — 2026-09-23
 ==================
 

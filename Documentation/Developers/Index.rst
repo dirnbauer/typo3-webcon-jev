@@ -77,6 +77,71 @@ Asking without a decision record
 Put every question about one state in **one** call. Jev evaluates them in a single parallel pass, so
 splitting them costs a multiple of the tokens and the latency for the same answers.
 
+..  _developers-decision-in-code:
+
+A decision built in code
+========================
+
+When the questions are only known at run time — one per part of an imported document, say, with the
+content elements the target page allows as options — build the decision in code instead of storing
+it. A :php:`Decision` with uid ``0`` runs exactly like a stored one: the switch in the extension
+configuration, the token check, the budget guard, the cache and the fallback all apply, and every run
+is logged.
+
+..  code-block:: php
+
+    use Webconsulting\WebconJev\Client\Dto\QuestionType;
+    use Webconsulting\WebconJev\Domain\Model\Criterion;
+    use Webconsulting\WebconJev\Domain\Model\Decision;
+    use Webconsulting\WebconJev\Domain\Model\DecisionQuestion;
+
+    $options = [
+        new Criterion(0, 'text', 'Running text', outcomeValue: 'text'),
+        new Criterion(0, 'table', 'Rows and columns of data', outcomeValue: 'table'),
+    ];
+
+    $decision = new Decision(
+        uid: 0,
+        identifier: 'my_extension.content_type',
+        title: 'Content element for a document part',
+        description: '',
+        stateTemplate: '',
+        model: '',
+        confidenceThreshold: Decision::DEFAULT_CONFIDENCE_THRESHOLD,
+        cacheLifetime: Decision::CACHE_LIFETIME_INHERIT,
+        defaultOutcome: 'text',
+        questions: [
+            new DecisionQuestion(0, 'part_1', QuestionType::Choice, 'Which content element fits part 1?', $options),
+            new DecisionQuestion(0, 'part_2', QuestionType::Choice, 'Which content element fits part 2?', $options),
+        ],
+    );
+
+    $outcome = $this->runner->run($decision, ['parts' => $parts], 'my_extension_import', 'page 42');
+    $outcome->outcomeFor('part_1');   // 'table', or 'text' when Jev is not sure enough
+
+*   :php:`outcomeFor()` answers with the winning option's **outcome value**, so give every option
+    one; an option without one answers with the decision's default. The option's id itself is
+    :php:`$outcome->confidentAnswer('part_1')?->choice`.
+*   Do not log the run yourself: the runner does, under uid ``0`` and the identifier, and the
+    :guilabel:`Run log` shows it as an *ad-hoc decision*.
+*   The identifier is logged up to 64 characters and the context up to 32; longer ones are cut.
+
+Naming where a run came from
+----------------------------
+
+The third argument of :php:`DecisionRunner::run()` is the run's context. Make it a key of lowercase
+letters, digits and underscores, at most 32 characters — the run log filters by it — and give it a
+label in your :file:`ext_localconf.php`:
+
+..  code-block:: php
+
+    $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['webcon_jev']['runContexts']['my_extension_import']
+        = 'LLL:EXT:my_extension/Resources/Private/Language/locallang.xlf:jev.context';
+
+The label is anything :php:`LanguageService::sL()` resolves: an ``LLL:`` reference, a translation
+domain reference (``my_extension.messages:jev.context``) or plain text. A context nobody labelled —
+or whose extension has since been removed — is shown as written.
+
 Adding your own rule operator to powermail_cond
 ===============================================
 
