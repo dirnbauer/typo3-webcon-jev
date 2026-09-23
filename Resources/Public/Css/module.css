@@ -108,13 +108,15 @@ webcon-jev-decision-editor {
   margin-block-start: var(--typo3-spacing);
 }
 
-.webcon-jev-grow {
-  flex: 1 1 16rem;
-  min-inline-size: 0;
+/* Fields that share a row take equal shares of it, and wrap below each other when it is narrow.
+   Their inputs line up at the top, whatever length of help text follows each. */
+.webcon-jev-fields {
+  align-items: flex-start;
 }
 
-.webcon-jev-narrow {
-  flex: 0 1 12rem;
+.webcon-jev-col {
+  flex: 1 1 14rem;
+  min-inline-size: 0;
 }
 
 .webcon-jev-question + .webcon-jev-question {

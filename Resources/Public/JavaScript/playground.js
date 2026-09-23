@@ -130,7 +130,7 @@ export class Playground extends LitElement {
   renderEmpty() {
     return html`
       <div class="webcon-jev-empty">
-        <typo3-backend-icon identifier="tx_webconjev_question" size="large"></typo3-backend-icon>
+        <typo3-backend-icon identifier="tx_webconjev_question" size="large" markup="inline"></typo3-backend-icon>
         <p>${labels.get('playground.empty')}</p>
       </div>
     `;

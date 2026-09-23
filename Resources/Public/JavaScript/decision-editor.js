@@ -209,9 +209,9 @@ class DecisionEditor extends LitElement {
     const draft = this.draft;
 
     return this.card('decision', labels.get('editor.section.decision'), labels.get('editor.section.decision.description'), html`
-      <div class="form-row">
-        ${this.group('title', labels.get('field.title'), labels.get('field.title.help'), this.input('title', draft.title, { required: true }), 'webcon-jev-grow')}
-        ${this.group('identifier', labels.get('field.identifier'), labels.get('field.identifier.help'), this.input('identifier', draft.identifier, { mono: true, placeholder: 'contact_routing' }))}
+      <div class="form-row webcon-jev-fields">
+        ${this.group('title', labels.get('field.title'), labels.get('field.title.help'), this.input('title', draft.title, { required: true }), 'webcon-jev-col')}
+        ${this.group('identifier', labels.get('field.identifier'), labels.get('field.identifier.help'), this.input('identifier', draft.identifier, { mono: true, placeholder: 'contact_routing' }), 'webcon-jev-col')}
       </div>
       ${this.group('description', labels.get('field.description'), labels.get('field.description.help'), this.textarea('description', draft.description, { rows: 2 }))}
       <div class="form-group">
@@ -261,21 +261,21 @@ class DecisionEditor extends LitElement {
     const defaults = this.config.defaults ?? {};
 
     return this.card('behaviour', labels.get('editor.section.behaviour'), labels.get('editor.section.behaviour.description'), html`
-      <div class="form-row">
+      <div class="form-row webcon-jev-fields">
         ${this.group('confidenceThreshold', labels.get('field.threshold'), labels.get('field.threshold.help'), this.input('confidenceThreshold', draft.confidenceThreshold, {
           type: 'number', min: '0', max: '1', step: '0.05', inputmode: 'decimal',
-        }), 'webcon-jev-narrow')}
+        }), 'webcon-jev-col')}
         ${this.group('defaultOutcome', labels.get('field.defaultOutcome'), labels.get('field.defaultOutcome.help'), this.input('defaultOutcome', draft.defaultOutcome, {
           mono: true, placeholder: 'office@example.com',
-        }), 'webcon-jev-grow')}
+        }), 'webcon-jev-col')}
       </div>
-      <div class="form-row">
+      <div class="form-row webcon-jev-fields">
         ${this.group('cacheLifetime', labels.get('field.cacheLifetime'), labels.get('field.cacheLifetime.help', [defaults.cacheLifetime ?? 0]), this.input('cacheLifetime', draft.cacheLifetime, {
           type: 'number', min: '-1', step: '1', inputmode: 'numeric',
-        }), 'webcon-jev-narrow')}
+        }), 'webcon-jev-col')}
         ${this.group('model', labels.get('field.model'), labels.get('field.model.help', [defaults.model ?? '']), this.input('model', draft.model, {
           mono: true, placeholder: defaults.model ?? '',
-        }), 'webcon-jev-grow')}
+        }), 'webcon-jev-col')}
       </div>
     `);
   }
@@ -289,7 +289,7 @@ class DecisionEditor extends LitElement {
       ${questions.length === 0
         ? html`
           <div class="webcon-jev-empty">
-            <typo3-backend-icon identifier="tx_webconjev_question" size="large"></typo3-backend-icon>
+            <typo3-backend-icon identifier="tx_webconjev_question" size="large" markup="inline"></typo3-backend-icon>
             <p>${labels.get('editor.questions.empty')}</p>
           </div>`
         : repeat(questions, (question) => question.key, (question, index) => this.renderQuestion(question, index))}
@@ -329,10 +329,10 @@ class DecisionEditor extends LitElement {
           </div>
         </div>
         <div class="panel-body">
-          <div class="form-row">
+          <div class="form-row webcon-jev-fields">
             ${this.group(`${path}.name`, labels.get('field.question.name'), labels.get('field.question.name.help'), this.input(`${path}.name`, question.name, {
               mono: true, required: true, placeholder: 'department',
-            }))}
+            }), 'webcon-jev-col')}
             ${this.group(`${path}.type`, labels.get('field.question.type'), labels.get(`type.${question.type}.help`), html`
               <select
                 class="form-select"
@@ -344,7 +344,7 @@ class DecisionEditor extends LitElement {
               >
                 ${QUESTION_TYPES.map((type) => html`<option value=${type} ?selected=${type === question.type}>${labels.get(`type.${type}.option`)}</option>`)}
               </select>
-            `, 'webcon-jev-grow')}
+            `, 'webcon-jev-col')}
           </div>
           ${this.group(`${path}.instructions`, labels.get('field.question.instructions'), labels.get('field.question.instructions.help'), this.textarea(`${path}.instructions`, question.instructions, {
             rows: 2, required: true, placeholder: labels.get('field.question.instructions.placeholder'),

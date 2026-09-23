@@ -37,7 +37,7 @@
                         <f:for each="{rows}" as="row">
                             <f:variable name="name">{f:if(condition: row.decision.title, then: row.decision.title, else: row.decision.identifier)}</f:variable>
                             <tr data-webcon-jev-decision="{row.decision.uid}">
-                                <td class="col-icon"><core:icon identifier="tx_webconjev_decision" /></td>
+                                <td class="col-icon"><core:icon identifier="tx_webconjev_decision" alternativeMarkupIdentifier="inline" /></td>
                                 <td>
                                     <a href="{row.editUrl}" class="fw-bold">{name}</a>
                                     <f:if condition="{row.decision.hidden}">
@@ -128,7 +128,6 @@
             <f:be.infobox
                 state="{f:constant(name: 'TYPO3\CMS\Core\Type\ContextualFeedbackSeverity::INFO')}"
                 title="{f:translate(key: 'decisions.empty.title', domain: 'webcon_jev.module')}"
-                iconName="tx_webconjev_decision"
             >
                 <p><f:translate key="decisions.empty.message" domain="webcon_jev.module" /></p>
                 <a class="btn btn-primary" href="{newUrl}">
