@@ -110,8 +110,8 @@ final class JevExampleDefinitions
             'number' => '08',
             'titleEn' => 'Powermail 08: Support triage',
             'titleDe' => 'Powermail 08: Support-Triage',
-            'introEn' => 'The form asks for reproduction steps only when what you wrote is actually a bug report, and warns about the escalation path only when it reads as serious. Two questions, two different primitives, both answered in the same call.',
-            'introDe' => 'Das Formular fragt erst dann nach Reproduktionsschritten, wenn das Geschriebene wirklich eine Fehlermeldung ist, und weist erst dann auf den Eskalationsweg hin, wenn es ernst klingt. Zwei Fragen, zwei verschiedene Primitive, beide im selben Aufruf beantwortet.',
+            'introEn' => 'The form asks for reproduction steps only when your text is a bug report. It warns about escalation only when the problem sounds serious. Two questions, two different primitives, both answered in the same call.',
+            'introDe' => 'Das Formular fragt nur dann nach Reproduktionsschritten, wenn Ihr Text eine Fehlermeldung ist. Auf den Eskalationsweg weist es nur hin, wenn das Problem ernst klingt. Zwei Fragen, zwei verschiedene Primitive, beide im selben Aufruf beantwortet.',
             'moresteps' => false,
             'routingQuestion' => 'queue',
             'decision' => [
@@ -322,8 +322,8 @@ final class JevExampleDefinitions
             'number' => '10',
             'titleEn' => 'Powermail 10: Project enquiry that branches',
             'titleDe' => 'Powermail 10: Projektanfrage, die sich verzweigt',
-            'introEn' => 'Describe the project in your own words on step one. What you wrote decides what step two asks: a small job never sees the procurement questions, and the NDA block appears only when the description suggests one is wanted. Nobody picks a category from a dropdown.',
-            'introDe' => 'Beschreiben Sie das Projekt auf Schritt eins in eigenen Worten. Das Geschriebene entscheidet, was Schritt zwei fragt: ein kleiner Auftrag sieht die Beschaffungsfragen nie, und der NDA-Block erscheint nur, wenn die Beschreibung darauf hindeutet. Niemand wählt eine Kategorie aus einer Liste.',
+            'introEn' => 'Describe the project in your own words on step one. What you wrote decides what step two asks. A small job never sees the procurement questions, and the NDA block appears only when the description suggests one. Nobody picks a category from a dropdown.',
+            'introDe' => 'Beschreiben Sie das Projekt auf Schritt eins in eigenen Worten. Das Geschriebene entscheidet, was Schritt zwei fragt. Ein kleiner Auftrag sieht die Beschaffungsfragen nie, und der NDA-Block erscheint nur, wenn die Beschreibung darauf hindeutet. Niemand wählt eine Kategorie aus einer Liste.',
             'moresteps' => true,
             'routingQuestion' => 'owner',
             'decision' => [
@@ -463,10 +463,10 @@ final class JevExampleDefinitions
         return [
             'slug' => 'job-application',
             'number' => '11',
-            'titleEn' => 'Powermail 11: Job application, routed by what you wrote',
-            'titleDe' => 'Powermail 11: Bewerbung, weitergeleitet nach dem Geschriebenen',
-            'introEn' => 'Paste what you would put in a covering letter. Jev reads it for the role, the seniority and whether you are asking to work remotely, and step two asks only the questions that follow from those answers. Routing is confidence-gated: below the threshold the application goes to a human to sort, and the run log says so — which is the honest behaviour for a decision about somebody\'s career.',
-            'introDe' => 'Fügen Sie ein, was Sie in ein Anschreiben schreiben würden. Jev liest daraus die Rolle, die Erfahrungsstufe und ob Sie um Remote-Arbeit bitten, und Schritt zwei stellt nur die Fragen, die sich daraus ergeben. Die Weiterleitung ist konfidenzgesteuert: unterhalb der Schwelle geht die Bewerbung zur Sichtung an einen Menschen, und das Protokoll sagt das auch — das ehrliche Verhalten für eine Entscheidung über jemandes Laufbahn.',
+            'titleEn' => 'Powermail 11: Job application, routed by its text',
+            'titleDe' => 'Powermail 11: Bewerbung, nach Inhalt zugeordnet',
+            'introEn' => 'Paste what you would put in a covering letter. Jev reads it for the role, the seniority and whether you ask to work remotely. Step two then asks only the questions that follow from those answers. Routing is confidence-gated: below the threshold, a person sorts the application and the run log says so. For a decision about someone\'s career, that is the honest behaviour.',
+            'introDe' => 'Fügen Sie ein, was Sie in ein Anschreiben schreiben würden. Jev liest daraus die Rolle, die Erfahrungsstufe und ob Sie um Remote-Arbeit bitten. Schritt zwei stellt dann nur die Fragen, die sich daraus ergeben. Die Weiterleitung ist konfidenzgesteuert: Unterhalb der Schwelle sichtet ein Mensch die Bewerbung, und das Protokoll sagt das auch. Bei einer Entscheidung über jemandes Laufbahn ist das ehrlich.',
             'moresteps' => true,
             'routingQuestion' => 'role',
             'decision' => [

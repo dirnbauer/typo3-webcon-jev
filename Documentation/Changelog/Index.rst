@@ -5,6 +5,17 @@
 Changelog
 =========
 
+0.2.3 — 2026-09-23
+==================
+
+Changed
+-------
+
+*   The copy of the Powermail 08, 10 and 11 example pages follows the lab's style guide: no
+    sentence over 25 words and page titles of at most 50 characters, in English and German.
+    Powermail 11 is now "Job application, routed by its text" ("Bewerbung, nach Inhalt
+    zugeordnet"). ``webcon-jev:examples:seed`` writes the new copy.
+
 0.2.2 — 2026-09-23
 ==================
 
