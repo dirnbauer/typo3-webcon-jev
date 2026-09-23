@@ -7164,16 +7164,16 @@
         },
         {
             "name": "in2code/powermail",
-            "version": "14.0.3.1",
+            "version": "14.0.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dirnbauer/powermail.git",
-                "reference": "aa30ba2a118ee049eadab1334f5943a1607da6f9"
+                "reference": "5354ee35d4bac4a9602ba0288d04d88bcca62560"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dirnbauer/powermail/zipball/aa30ba2a118ee049eadab1334f5943a1607da6f9",
-                "reference": "aa30ba2a118ee049eadab1334f5943a1607da6f9",
+                "url": "https://api.github.com/repos/dirnbauer/powermail/zipball/5354ee35d4bac4a9602ba0288d04d88bcca62560",
+                "reference": "5354ee35d4bac4a9602ba0288d04d88bcca62560",
                 "shasum": ""
             },
             "require": {
@@ -7204,7 +7204,7 @@
                 "helmich/typo3-typoscript-lint": "^3.1",
                 "mikey179/vfsstream": "^1.6",
                 "phpmd/phpmd": "^2.8",
-                "phpstan/phpstan": "^2.2",
+                "phpstan/phpstan": "^2.2.15",
                 "phpunit/phpunit": "^11.5",
                 "rector/rector": "^2.3",
                 "saschaegerer/phpstan-typo3": "^3.0.1",
@@ -7232,7 +7232,7 @@
                     "cms-package-dir": "{$vendor-dir}/typo3/cms",
                     "web-dir": ".build/public",
                     "extension-key": "powermail",
-                    "version": "14.0.3.1",
+                    "version": "14.0.3.2",
                     "Package": {
                         "providesPackages": []
                     },
@@ -7316,9 +7316,9 @@
                 "typo3"
             ],
             "support": {
-                "source": "https://github.com/dirnbauer/powermail/tree/14.0.3.1"
+                "source": "https://github.com/dirnbauer/powermail/tree/14.0.3.2"
             },
-            "time": "2026-09-23T08:29:48+00:00"
+            "time": "2026-09-23T13:05:49+00:00"
         },
         {
             "name": "in2code/powermail_cond",
@@ -7326,12 +7326,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/dirnbauer/powermail_cond.git",
-                "reference": "7ee7ebb0aa7e43bb058e5126ca51a4229ab7d86a"
+                "reference": "9b93c57a4677b73d61abe0766edfd3c72e7b5f66"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dirnbauer/powermail_cond/zipball/7ee7ebb0aa7e43bb058e5126ca51a4229ab7d86a",
-                "reference": "7ee7ebb0aa7e43bb058e5126ca51a4229ab7d86a",
+                "url": "https://api.github.com/repos/dirnbauer/powermail_cond/zipball/9b93c57a4677b73d61abe0766edfd3c72e7b5f66",
+                "reference": "9b93c57a4677b73d61abe0766edfd3c72e7b5f66",
                 "shasum": ""
             },
             "require": {
@@ -7419,7 +7419,7 @@
                 "issues": "https://github.com/dirnbauer/powermail_cond/issues",
                 "source": "https://github.com/dirnbauer/powermail_cond"
             },
-            "time": "2026-09-23T08:35:30+00:00"
+            "time": "2026-09-23T13:14:29+00:00"
         },
         {
             "name": "maennchen/zipstream-php",
