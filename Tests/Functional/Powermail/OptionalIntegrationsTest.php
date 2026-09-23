@@ -6,6 +6,8 @@ namespace Webconsulting\WebconJev\Tests\Functional\Powermail;
 
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\EventDispatcher\ListenerProvider;
+use TYPO3\CMS\Core\Schema\SearchableSchemaFieldsCollector;
+use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 use Webconsulting\WebconJev\Editing\DecisionUsage;
 use Webconsulting\WebconJev\Powermail\JevRuleListener;
@@ -53,6 +55,29 @@ final class OptionalIntegrationsTest extends FunctionalTestCase
         self::assertArrayHasKey('tx_webconjev_decision', $GLOBALS['TCA']['tx_powermailcond_domain_model_rule']['columns']);
         self::assertArrayHasKey('tx_webconjev_routing_decision', $GLOBALS['TCA']['tx_powermail_domain_model_form']['columns']);
         self::assertArrayHasKey('tx_webconjev_routing_summary', $GLOBALS['TCA']['tx_powermail_domain_model_mail']['columns']);
+    }
+
+    #[Test]
+    public function noColumnThisExtensionAddsToPowermailIsSearchedInTheBackend(): void
+    {
+        // TYPO3 v14 searches every text-like column unless it says otherwise. The routing summary
+        // is bookkeeping about a mail, not something to find mails by; the other columns are
+        // selects and numbers, which are never searched — this keeps it that way if one changes.
+        $searched = [];
+        foreach (['tx_powermail_domain_model_form', 'tx_powermail_domain_model_mail', 'tx_powermailcond_domain_model_rule'] as $table) {
+            $schema = $this->get(TcaSchemaFactory::class)->get($table);
+            foreach ($schema->getFields() as $field) {
+                if (str_starts_with($field->getName(), 'tx_webconjev_') && $field->isSearchable()) {
+                    $searched[] = $table . '.' . $field->getName();
+                }
+            }
+        }
+
+        self::assertSame([], $searched);
+        self::assertNotContains(
+            'tx_webconjev_routing_summary',
+            $this->get(SearchableSchemaFieldsCollector::class)->getFieldNames('tx_powermail_domain_model_mail'),
+        );
     }
 
     #[Test]

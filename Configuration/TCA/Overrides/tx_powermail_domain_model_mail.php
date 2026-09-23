@@ -20,6 +20,9 @@ $GLOBALS['TCA']['tx_powermail_domain_model_mail']['columns']['tx_webconjev_routi
         'type' => 'input',
         'size' => 50,
         'readOnly' => true,
+        // Bookkeeping about how a mail was routed, not something to find mails by. TYPO3 v14
+        // searches every input column unless it says otherwise.
+        'searchable' => false,
     ],
 ];
 
