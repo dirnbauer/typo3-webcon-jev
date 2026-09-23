@@ -121,5 +121,10 @@ Builds five example forms — contact routing, support triage, a quality gate, a
 enquiry and a branching job application — with their decisions, their conditions and a page each in
 English and German. It needs EXT:desiderio's Powermail Lab page to put them under, or a ``--page``.
 
+It also adds a section to the Powermail Lab page that links the five forms, in English and German,
+below EXT:desiderio's list of its own six. The section is marked as the seeder's own in its
+:guilabel:`Description` field (``rowDescription``).
+
 Running it again replaces what the last run made rather than adding to it, and it only ever touches
-records it marked as its own.
+records it marked as its own. A reseed of the Desiderio styleguide replaces all content on the lab
+page, this section included, so run ``webcon-jev:examples:seed`` again after it.

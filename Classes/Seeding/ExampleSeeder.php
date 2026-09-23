@@ -20,11 +20,17 @@ use Webconsulting\WebconJev\Support\Cast;
  *
  * The markers are deliberately different from the ones EXT:desiderio's own powermail seeder uses,
  * so reseeding the styleguide cannot hide these pages and reseeding these cannot touch those.
+ *
+ * The Powermail Lab page itself belongs to EXT:desiderio, which lists its own six forms there.
+ * These five get a section of their own below that list. A styleguide reseed replaces all
+ * content on the lab page, this section included, so run this seeder again after it.
  */
 final readonly class ExampleSeeder
 {
     public const SLUG_PREFIX = '/desiderio-powermail-jev/';
     public const FORM_MARKER = 'webcon-jev-demo';
+    /** Kept in tt_content.rowDescription, where an editor sees it in the page module. */
+    public const OVERVIEW_MARKER = 'Seeded by webcon-jev:examples:seed. A reseed replaces it.';
 
     private const FORM = 'tx_powermail_domain_model_form';
     private const FORM_PAGE = 'tx_powermail_domain_model_page';
@@ -66,6 +72,7 @@ final readonly class ExampleSeeder
 
         $counts = ['examples' => 0, 'forms' => 0, 'decisions' => 0, 'conditions' => 0, 'pages' => 0];
         $sorting = 4096;
+        $overview = [];
 
         foreach (JevExampleDefinitions::all() as $example) {
             $decisionUid = $this->seedDecision($example['decision'], $germanLanguageUid, $now);
@@ -86,7 +93,11 @@ final readonly class ExampleSeeder
             $counts['conditions'] += $this->seedConditions($example, $form, $decisionUid, $labPageUid, $now);
 
             $sorting += 256;
-            $counts['pages'] += $this->seedPages($example, $form, $labPageUid, $germanLanguageUid, $sorting, $now);
+            $overview[] = [
+                'pageUid' => $this->seedPages($example, $form, $labPageUid, $germanLanguageUid, $sorting, $now),
+                'example' => $example,
+            ];
+            $counts['pages'] += 2;
             $counts['examples']++;
 
             $io->writeln(sprintf(
@@ -98,7 +109,84 @@ final readonly class ExampleSeeder
             ));
         }
 
+        $this->seedOverview($labPageUid, $germanLanguageUid, $overview, $now);
+
         return $counts;
+    }
+
+    /**
+     * One linked entry per example on the lab page, in the same shape as EXT:desiderio's list of
+     * its own forms above it.
+     *
+     * The German row sits on the lab page too: translated content belongs to the page it
+     * translates, not to the page's translation record, or TYPO3 never shows it.
+     *
+     * @param list<array{pageUid: int, example: array<string, mixed>}> $overview
+     */
+    private function seedOverview(int $labPageUid, int $germanLanguageUid, array $overview, int $now): void
+    {
+        $englishUid = $this->insertOverview(
+            $labPageUid,
+            'Five forms that decide with Jev',
+            'In these forms, Jev reads what the visitor writes. Its answers show or hide fields and decide who receives the mail.'
+            . ' Without a confident answer, the mail goes to the default address.',
+            $overview,
+            false,
+            $now,
+        );
+        $this->insertOverview(
+            $labPageUid,
+            'Fünf Formulare, die mit Jev entscheiden',
+            'In diesen Formularen liest Jev, was Besucher schreiben. Die Antworten blenden Felder ein oder aus und entscheiden, wer die Nachricht erhält.'
+            . ' Ohne sichere Antwort geht sie an die Standardadresse.',
+            $overview,
+            true,
+            $now,
+            $germanLanguageUid,
+            $englishUid,
+        );
+    }
+
+    /**
+     * @param list<array{pageUid: int, example: array<string, mixed>}> $overview
+     */
+    private function insertOverview(
+        int $labPageUid,
+        string $header,
+        string $note,
+        array $overview,
+        bool $german,
+        int $now,
+        int $languageUid = 0,
+        int $translationParent = 0,
+    ): int {
+        $items = '';
+        foreach ($overview as $entry) {
+            $example = $entry['example'];
+            $items .= sprintf(
+                '<li><p><strong><a href="t3://page?uid=%d">%s</a></strong><br>%s</p></li>',
+                $entry['pageUid'],
+                htmlspecialchars(Cast::string($example[$german ? 'titleDe' : 'titleEn'] ?? null)),
+                htmlspecialchars(Cast::string($example[$german ? 'summaryDe' : 'summaryEn'] ?? null)),
+            );
+        }
+
+        return $this->insert('tt_content', [
+            'pid' => $labPageUid,
+            'CType' => 'text',
+            'header' => $header,
+            'bodytext' => '<p>' . htmlspecialchars($note) . '</p><ul>' . $items . '</ul>',
+            'rowDescription' => self::OVERVIEW_MARKER,
+            'colPos' => 0,
+            // Below EXT:desiderio's list of its own forms (384).
+            'sorting' => 512,
+            'sys_language_uid' => $languageUid,
+            'l18n_parent' => $translationParent,
+            'l10n_parent' => $translationParent,
+            'l10n_source' => $translationParent,
+            'crdate' => $now,
+            'tstamp' => $now,
+        ]);
     }
 
     /**
@@ -418,6 +506,8 @@ final readonly class ExampleSeeder
     /**
      * @param array<string, mixed>                                                            $example
      * @param array{uid: int, translationUid: int, pageUids: list<int>, fieldUids: array<string, int>} $form
+     *
+     * @return int The English page's uid
      */
     private function seedPages(
         array $example,
@@ -474,7 +564,7 @@ final readonly class ExampleSeeder
             $pluginUid,
         );
 
-        return 2;
+        return $pageUid;
     }
 
     private function insertText(
@@ -599,6 +689,8 @@ final readonly class ExampleSeeder
         $this->deleteUids(self::FIELD, $fieldUids);
         $this->deleteUids(self::FORM_PAGE, $pageUids);
         $this->deleteUids(self::FORM, $formUids);
+
+        $this->deleteUids('tt_content', $this->uidsWhere('tt_content', 'rowDescription = :marker', ['marker' => self::OVERVIEW_MARKER]));
 
         $contentPageUids = $this->uidsWhere('pages', 'slug LIKE :slug', ['slug' => self::SLUG_PREFIX . '%']);
         if ($contentPageUids !== []) {

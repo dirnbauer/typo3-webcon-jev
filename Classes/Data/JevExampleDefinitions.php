@@ -21,7 +21,7 @@ use Webconsulting\WebconJev\Powermail\JevOperator;
  * @phpstan-type Question array{name: string, type: string, en: string, de: string, criteria: list<Criterion>}
  * @phpstan-type Rule array{start: string, operator: JevOperator, question: string, expect: string, threshold: float}
  * @phpstan-type Condition array{titleEn: string, titleDe: string, target: string, show: bool, rules: list<Rule>}
- * @phpstan-type Example array{slug: string, number: string, titleEn: string, titleDe: string, introEn: string, introDe: string, moresteps: bool, routingQuestion: string, decision: array{identifier: string, titleEn: string, titleDe: string, descriptionEn: string, descriptionDe: string, stateTemplate: string, threshold: float, defaultOutcome: string, questions: list<Question>}, pages: list<ExamplePage>, conditions: list<Condition>}
+ * @phpstan-type Example array{slug: string, number: string, titleEn: string, titleDe: string, introEn: string, introDe: string, summaryEn: string, summaryDe: string, moresteps: bool, routingQuestion: string, decision: array{identifier: string, titleEn: string, titleDe: string, descriptionEn: string, descriptionDe: string, stateTemplate: string, threshold: float, defaultOutcome: string, questions: list<Question>}, pages: list<ExamplePage>, conditions: list<Condition>}
  */
 final class JevExampleDefinitions
 {
@@ -53,6 +53,8 @@ final class JevExampleDefinitions
             'titleDe' => 'Powermail 07: Intelligente Kontaktweiterleitung',
             'introEn' => 'One contact form, five departments, no dropdown asking the visitor which one they need. Jev reads the message and the submission goes to whoever should answer it — and to the default address whenever it is not sure enough.',
             'introDe' => 'Ein Kontaktformular, fünf Abteilungen, kein Auswahlfeld, das den Besucher fragt, welche er braucht. Jev liest die Nachricht, und die Einsendung geht an die zuständige Stelle — und an die Standardadresse, sobald es zu unsicher ist.',
+            'summaryEn' => 'Jev reads the message and sends it to the right department. When it is unsure, the mail goes to the default address.',
+            'summaryDe' => 'Jev liest die Nachricht und schickt sie an die zuständige Abteilung. Ist es unsicher, geht sie an die Standardadresse.',
             'moresteps' => false,
             'routingQuestion' => 'department',
             'decision' => [
@@ -112,6 +114,8 @@ final class JevExampleDefinitions
             'titleDe' => 'Powermail 08: Support-Triage',
             'introEn' => 'The form asks for reproduction steps only when your text is a bug report. It warns about escalation only when the problem sounds serious. Two questions, two different primitives, both answered in the same call.',
             'introDe' => 'Das Formular fragt nur dann nach Reproduktionsschritten, wenn Ihr Text eine Fehlermeldung ist. Auf den Eskalationsweg weist es nur hin, wenn das Problem ernst klingt. Zwei Fragen, zwei verschiedene Primitive, beide im selben Aufruf beantwortet.',
+            'summaryEn' => 'The form asks for reproduction steps only for a bug report. It shows the escalation path only when the problem sounds serious.',
+            'summaryDe' => 'Das Formular fragt nur bei einer Fehlermeldung nach Reproduktionsschritten. Den Eskalationsweg zeigt es nur, wenn das Problem ernst klingt.',
             'moresteps' => false,
             'routingQuestion' => 'queue',
             'decision' => [
@@ -219,6 +223,8 @@ final class JevExampleDefinitions
             'titleDe' => 'Powermail 09: Spam- und Qualitätsfilter',
             'introEn' => 'A captcha proves you are human; it says nothing about whether the message is worth sending. Here Jev reads the message itself: obvious spam and three words of effort both hide the send button, with a note saying what is missing. Everything borderline goes through — the gate is deliberately generous, because a false positive costs a real enquiry.',
             'introDe' => 'Ein Captcha beweist, dass Sie ein Mensch sind; über die Nachricht sagt es nichts. Hier liest Jev die Nachricht selbst: offensichtlicher Spam und drei Wörter Aufwand blenden den Senden-Button aus, mit einem Hinweis, was fehlt. Alles Grenzwertige geht durch — der Filter ist bewusst großzügig, weil ein Fehlalarm eine echte Anfrage kostet.',
+            'summaryEn' => 'Obvious spam and messages with nothing to answer hide the send button, with a note on what is missing. Borderline messages go through.',
+            'summaryDe' => 'Offensichtlicher Spam und Nachrichten ohne Inhalt blenden den Senden-Button aus, mit einem Hinweis, was fehlt. Grenzfälle gehen durch.',
             'moresteps' => false,
             'routingQuestion' => 'handling',
             'decision' => [
@@ -324,6 +330,8 @@ final class JevExampleDefinitions
             'titleDe' => 'Powermail 10: Projektanfrage, die sich verzweigt',
             'introEn' => 'Describe the project in your own words on step one. What you wrote decides what step two asks. A small job never sees the procurement questions, and the NDA block appears only when the description suggests one. Nobody picks a category from a dropdown.',
             'introDe' => 'Beschreiben Sie das Projekt auf Schritt eins in eigenen Worten. Das Geschriebene entscheidet, was Schritt zwei fragt. Ein kleiner Auftrag sieht die Beschaffungsfragen nie, und der NDA-Block erscheint nur, wenn die Beschreibung darauf hindeutet. Niemand wählt eine Kategorie aus einer Liste.',
+            'summaryEn' => 'What you write on the first step decides which questions come next. Nobody picks a category from a list.',
+            'summaryDe' => 'Was Sie im ersten Schritt schreiben, entscheidet, welche Fragen danach kommen. Niemand wählt eine Kategorie aus einer Liste.',
             'moresteps' => true,
             'routingQuestion' => 'owner',
             'decision' => [
@@ -467,6 +475,8 @@ final class JevExampleDefinitions
             'titleDe' => 'Powermail 11: Bewerbung, nach Inhalt zugeordnet',
             'introEn' => 'Paste what you would put in a covering letter. Jev reads it for the role, the seniority and whether you ask to work remotely. Step two then asks only the questions that follow from those answers. Routing is confidence-gated: below the threshold, a person sorts the application and the run log says so. For a decision about someone\'s career, that is the honest behaviour.',
             'introDe' => 'Fügen Sie ein, was Sie in ein Anschreiben schreiben würden. Jev liest daraus die Rolle, die Erfahrungsstufe und ob Sie um Remote-Arbeit bitten. Schritt zwei stellt dann nur die Fragen, die sich daraus ergeben. Die Weiterleitung ist konfidenzgesteuert: Unterhalb der Schwelle sichtet ein Mensch die Bewerbung, und das Protokoll sagt das auch. Bei einer Entscheidung über jemandes Laufbahn ist das ehrlich.',
+            'summaryEn' => 'Jev reads the covering letter for role, seniority and remote work, then asks only the questions that follow. A person sorts unclear cases.',
+            'summaryDe' => 'Jev liest aus dem Anschreiben Rolle, Erfahrung und den Wunsch nach Remote-Arbeit und stellt nur die passenden Fragen. Unklare Fälle sichtet ein Mensch.',
             'moresteps' => true,
             'routingQuestion' => 'role',
             'decision' => [

@@ -5,6 +5,18 @@
 Changelog
 =========
 
+Unreleased
+==========
+
+Added
+-----
+
+*   ``webcon-jev:examples:seed`` lists the five examples on the Powermail Lab page, below
+    EXT:desiderio's list of its own six forms: a linked title and a one-line summary each, in
+    English and German. The German section sits on the lab page itself, so ``/de/`` shows it. A
+    reseed replaces the section rather than adding a second one; a functional test seeds twice and
+    checks that.
+
 0.2.3 — 2026-09-23
 ==================
 
