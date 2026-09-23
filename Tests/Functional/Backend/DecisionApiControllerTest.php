@@ -89,6 +89,16 @@ final class DecisionApiControllerTest extends AbstractJevTestCase
     }
 
     #[Test]
+    public function aTranslationsUidDeletesTheDecisionNotJustTheTranslation(): void
+    {
+        $response = $this->controller->deleteAction($this->backendRequest('ajax_webcon_jev_decision_delete', json: ['uid' => 2]));
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame(1, (int)$this->row('tx_webconjev_decision', 1)['deleted']);
+        self::assertSame(1, (int)$this->row('tx_webconjev_decision', 2)['deleted']);
+    }
+
+    #[Test]
     public function deletingReportsWhatWentAndRefusesWhatIsNotThere(): void
     {
         $deleted = $this->controller->deleteAction($this->backendRequest('ajax_webcon_jev_decision_delete', json: ['uid' => 1]));

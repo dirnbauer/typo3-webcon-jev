@@ -84,6 +84,8 @@ final class ModuleTest extends AbstractJevTestCase
         self::assertStringContainsString('Not used by any form', $html);
         self::assertStringContainsString('data-webcon-jev-delete="1"', $html);
         self::assertStringNotContainsString('Deleted', $html, 'deleted decisions stay out');
+        self::assertStringNotContainsString('Kontakt-Routing', $html, 'a translation is not a decision of its own');
+        self::assertSame(2, substr_count($html, 'data-webcon-jev-decision="'), 'decisions 1 and 3, not the translation 2');
     }
 
     #[Test]

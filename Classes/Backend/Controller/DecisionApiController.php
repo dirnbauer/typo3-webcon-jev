@@ -91,7 +91,9 @@ final readonly class DecisionApiController
             return $this->failure($this->labels->get('api.delete.notFound', [$uid]), 404);
         }
 
-        $errors = $this->writer->delete($uid);
+        // A translation's uid stands for its decision (see DecisionRepository::findByUid()), and
+        // deleting the decision takes its translations with it — never a translation on its own.
+        $errors = $this->writer->delete($decision->uid);
         if ($errors !== []) {
             return new JsonResponse([
                 'ok' => false,

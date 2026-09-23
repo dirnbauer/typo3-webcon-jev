@@ -35,21 +35,30 @@ final readonly class DecisionRepository
 
     public function __construct(private ConnectionPool $connectionPool) {}
 
+    /**
+     * The decision with this uid, in the given language.
+     *
+     * A decision is always its default-language record: that uid is the one conditions, routing and
+     * the run log refer to, and a translation only overrides wording. So the uid of a translation
+     * stands for the decision it translates, and the wording follows $languageId, not the row the
+     * uid happened to name — the module's editor, which edits the default language, relies on that.
+     */
     public function findByUid(int $uid, int $languageId = 0, bool $includeHidden = false): ?Decision
     {
-        if ($uid <= 0) {
+        $row = $this->decisionRow($uid, $includeHidden);
+        if ($row === null) {
             return null;
         }
 
-        $query = $this->query(self::DECISIONS, $includeHidden);
-        $row = $query
-            ->select('*')
-            ->from(self::DECISIONS)
-            ->andWhere($query->expr()->eq('uid', $query->createNamedParameter($uid, Connection::PARAM_INT)))
-            ->executeQuery()
-            ->fetchAssociative();
+        $parent = Cast::int($row['l10n_parent'] ?? null);
+        if (Cast::int($row['sys_language_uid'] ?? null) > 0 && $parent > 0) {
+            $row = $this->decisionRow($parent, $includeHidden);
+            if ($row === null || Cast::int($row['sys_language_uid'] ?? null) > 0) {
+                return null;
+            }
+        }
 
-        return is_array($row) ? $this->hydrate($row, $languageId, $includeHidden) : null;
+        return $this->hydrate($row, $languageId, $includeHidden);
     }
 
     public function findByIdentifier(string $identifier, int $languageId = 0, bool $includeHidden = false): ?Decision
@@ -63,10 +72,12 @@ final readonly class DecisionRepository
         $row = $query
             ->select('*')
             ->from(self::DECISIONS)
+            // Translations share their decision's identifier; the decision is the default record.
             ->andWhere(
                 $query->expr()->eq('identifier', $query->createNamedParameter($identifier)),
                 $query->expr()->in('sys_language_uid', [0, -1]),
             )
+            ->orderBy('uid')
             ->setMaxResults(1)
             ->executeQuery()
             ->fetchAssociative();
@@ -93,6 +104,26 @@ final readonly class DecisionRepository
             fn(array $row): Decision => $this->hydrate($row, $languageId, $includeHidden),
             $rows,
         );
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function decisionRow(int $uid, bool $includeHidden): ?array
+    {
+        if ($uid <= 0) {
+            return null;
+        }
+
+        $query = $this->query(self::DECISIONS, $includeHidden);
+        $row = $query
+            ->select('*')
+            ->from(self::DECISIONS)
+            ->andWhere($query->expr()->eq('uid', $query->createNamedParameter($uid, Connection::PARAM_INT)))
+            ->executeQuery()
+            ->fetchAssociative();
+
+        return is_array($row) ? $row : null;
     }
 
     /**

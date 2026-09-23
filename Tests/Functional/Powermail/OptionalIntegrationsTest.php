@@ -63,7 +63,7 @@ final class OptionalIntegrationsTest extends FunctionalTestCase
         self::assertSame(
             [1 => ['forms' => 2, 'rules' => 1], 2 => ['forms' => 0, 'rules' => 0]],
             $this->get(DecisionUsage::class)->countFor([1, 2]),
-            'a hidden form still routes through it; a deleted rule no longer reads it',
+            'a hidden form still routes through it, a deleted rule no longer reads it, and a translated form or rule is the same one',
         );
     }
 

@@ -144,6 +144,11 @@ default language carries the structure — identifiers, question names, types �
 overrides the wording. A field left empty in the translation keeps the default language's text, so
 a half-translated decision still asks a complete question.
 
+A translation is not a decision of its own. It keeps its decision's identifier — the record editor
+shows it read-only, and renaming the decision renames it too — so forms and condition rules find the
+same decision in every language. The module lists and counts each decision once, and deleting a
+decision deletes its translations.
+
 Jev is multilingual, so translating is a choice rather than a requirement: an English question about
 a German message works. Translate when the wording itself needs to be precise in the language of
 the people writing it.

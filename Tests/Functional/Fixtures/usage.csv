@@ -1,9 +1,11 @@
-"tx_powermail_domain_model_form",,,,,,
-,"uid","pid","title","hidden","deleted","tx_webconjev_routing_decision"
-,1,0,"Contact",0,0,1
-,2,0,"Contact (draft)",1,0,1
-,3,0,"Old contact",0,1,1
-"tx_powermailcond_domain_model_rule",,,,,,
-,"uid","pid","title","cond_string","deleted","tx_webconjev_decision"
-,1,0,"Show the bug field","",0,1
-,2,0,"Gone","",1,1
+"tx_powermail_domain_model_form",,,,,,,,
+,"uid","pid","title","hidden","deleted","sys_language_uid","l10n_parent","tx_webconjev_routing_decision"
+,1,0,"Contact",0,0,0,0,1
+,2,0,"Contact (draft)",1,0,0,0,1
+,3,0,"Old contact",0,1,0,0,1
+,4,0,"Kontakt",0,0,1,1,1
+"tx_powermailcond_domain_model_rule",,,,,,,,
+,"uid","pid","title","cond_string","deleted","sys_language_uid","l18n_parent","tx_webconjev_decision"
+,1,0,"Show the bug field","",0,0,0,1
+,2,0,"Gone","",1,0,0,1
+,3,0,"Fehlerfeld zeigen","",0,1,1,1

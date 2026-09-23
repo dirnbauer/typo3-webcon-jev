@@ -7,6 +7,7 @@ namespace Webconsulting\WebconJev\Editing;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
+use TYPO3\CMS\Core\Schema\Capability\TcaSchemaCapability;
 use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use Webconsulting\WebconJev\Support\Cast;
 
@@ -64,19 +65,27 @@ final readonly class DecisionUsage
             return [];
         }
 
+        $schema = $this->tcaSchemaFactory->get($table);
         $query = $this->connectionPool->getQueryBuilderForTable($table);
         // Hidden forms and rules still point at the decision; deleted ones do not.
         $query->getRestrictions()->removeAll()->add(new DeletedRestriction());
-        $rows = $query
+        $query
             ->select($field)
             ->addSelectLiteral('COUNT(*) AS ' . $query->quoteIdentifier('usage_count'))
             ->from($table)
             ->where(
                 $query->expr()->in($field, $query->createNamedParameter($decisionUids, Connection::PARAM_INT_ARRAY)),
             )
-            ->groupBy($field)
-            ->executeQuery()
-            ->fetchAllAssociative();
+            ->groupBy($field);
+
+        // A translated form or rule is the same form or rule, and usually carries the same
+        // decision: count each once, as its default-language record.
+        if ($schema->isLanguageAware()) {
+            $languageField = $schema->getCapability(TcaSchemaCapability::Language)->getLanguageField()->getName();
+            $query->andWhere($query->expr()->in($languageField, [0, -1]));
+        }
+
+        $rows = $query->executeQuery()->fetchAllAssociative();
 
         $counts = [];
         foreach ($rows as $row) {
