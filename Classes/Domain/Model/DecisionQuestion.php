@@ -22,6 +22,7 @@ final readonly class DecisionQuestion
         public QuestionType $type,
         public string $instructions,
         public array $criteria = [],
+        public bool $hidden = false,
     ) {}
 
     /**
@@ -36,9 +37,13 @@ final readonly class DecisionQuestion
             type: QuestionType::tryFrom(Cast::string($row['type'] ?? null)) ?? QuestionType::Choice,
             instructions: Cast::trimmed($row['instructions'] ?? null),
             criteria: $criteria,
+            hidden: Cast::bool($row['hidden'] ?? null),
         );
     }
 
+    /**
+     * @throws \Webconsulting\WebconJev\Exception\InvalidQuestionException when the question cannot be asked as it stands
+     */
     public function toClientQuestion(): Question
     {
         return new Question(
@@ -57,10 +62,7 @@ final readonly class DecisionQuestion
     private function criteriaPayload(): array
     {
         if ($this->type->criteriaAreOrdered()) {
-            return array_values(array_map(
-                static fn(Criterion $c): string => $c->description,
-                $this->criteria,
-            ));
+            return array_map(static fn(Criterion $c): string => $c->description, $this->criteria);
         }
 
         $payload = [];
@@ -73,22 +75,20 @@ final readonly class DecisionQuestion
     }
 
     /**
-     * What the integration should do when this option wins — for the routing finisher, the
-     * receiver address.
+     * What the integration should do when this option wins — for the routing, the receiver address.
      */
     public function outcomeValueFor(string $identifier): ?string
     {
-        foreach ($this->criteria as $criterion) {
-            if ($criterion->identifier === $identifier) {
-                return $criterion->outcomeValue !== '' ? $criterion->outcomeValue : null;
-            }
-        }
+        $criterion = array_find(
+            $this->criteria,
+            static fn(Criterion $criterion): bool => $criterion->identifier === $identifier,
+        );
 
-        return null;
+        return $criterion !== null && $criterion->outcomeValue !== '' ? $criterion->outcomeValue : null;
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array{uid: int, name: string, type: string, instructions: string, hidden: bool, criteria: list<array{uid: int, identifier: string, description: string, outcomeValue: string, hidden: bool}>}
      */
     public function toArray(): array
     {
@@ -97,6 +97,7 @@ final readonly class DecisionQuestion
             'name' => $this->name,
             'type' => $this->type->value,
             'instructions' => $this->instructions,
+            'hidden' => $this->hidden,
             'criteria' => array_map(static fn(Criterion $c): array => $c->toArray(), $this->criteria),
         ];
     }

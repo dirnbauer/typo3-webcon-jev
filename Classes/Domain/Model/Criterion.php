@@ -16,6 +16,7 @@ final readonly class Criterion
         public string $identifier,
         public string $description,
         public string $outcomeValue = '',
+        public bool $hidden = false,
     ) {}
 
     /**
@@ -28,11 +29,12 @@ final readonly class Criterion
             identifier: Cast::trimmed($row['identifier'] ?? null),
             description: Cast::trimmed($row['description'] ?? null),
             outcomeValue: Cast::trimmed($row['outcome_value'] ?? null),
+            hidden: Cast::bool($row['hidden'] ?? null),
         );
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array{uid: int, identifier: string, description: string, outcomeValue: string, hidden: bool}
      */
     public function toArray(): array
     {
@@ -41,6 +43,7 @@ final readonly class Criterion
             'identifier' => $this->identifier,
             'description' => $this->description,
             'outcomeValue' => $this->outcomeValue,
+            'hidden' => $this->hidden,
         ];
     }
 }

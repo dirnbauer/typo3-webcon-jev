@@ -13,7 +13,10 @@ use Webconsulting\WebconJev\Support\Cast;
 final readonly class Decision
 {
     /** Use the extension-wide cache lifetime rather than one of this decision's own. */
-    public const CACHE_LIFETIME_INHERIT = -1;
+    public const int CACHE_LIFETIME_INHERIT = -1;
+
+    /** What a new decision asks for before anybody has changed it. */
+    public const float DEFAULT_CONFIDENCE_THRESHOLD = 0.6;
 
     /**
      * @param list<DecisionQuestion> $questions
@@ -30,6 +33,7 @@ final readonly class Decision
         public string $defaultOutcome,
         public array $questions = [],
         public int $languageId = 0,
+        public bool $hidden = false,
     ) {}
 
     /**
@@ -45,16 +49,40 @@ final readonly class Decision
             description: Cast::trimmed($row['description'] ?? null),
             stateTemplate: Cast::string($row['state_template'] ?? null),
             model: Cast::trimmed($row['model'] ?? null),
-            confidenceThreshold: Cast::float($row['confidence_threshold'] ?? null, 0.6),
+            confidenceThreshold: Cast::float($row['confidence_threshold'] ?? null, self::DEFAULT_CONFIDENCE_THRESHOLD),
             cacheLifetime: Cast::int($row['cache_lifetime'] ?? null, self::CACHE_LIFETIME_INHERIT),
             defaultOutcome: Cast::trimmed($row['default_outcome'] ?? null),
             questions: $questions,
             languageId: Cast::int($row['sys_language_uid'] ?? null),
+            hidden: Cast::bool($row['hidden'] ?? null),
+        );
+    }
+
+    /**
+     * The same decision with a different cache lifetime — how the playground asks without the cache.
+     */
+    public function withCacheLifetime(int $cacheLifetime): self
+    {
+        return new self(
+            uid: $this->uid,
+            identifier: $this->identifier,
+            title: $this->title,
+            description: $this->description,
+            stateTemplate: $this->stateTemplate,
+            model: $this->model,
+            confidenceThreshold: $this->confidenceThreshold,
+            cacheLifetime: $cacheLifetime,
+            defaultOutcome: $this->defaultOutcome,
+            questions: $this->questions,
+            languageId: $this->languageId,
+            hidden: $this->hidden,
         );
     }
 
     /**
      * @return array<string, Question> Keyed by question name, ready for the client
+     *
+     * @throws \Webconsulting\WebconJev\Exception\InvalidQuestionException when a question cannot be asked as it stands
      */
     public function toClientQuestions(): array
     {
@@ -71,17 +99,11 @@ final readonly class Decision
 
     public function question(string $name): ?DecisionQuestion
     {
-        foreach ($this->questions as $question) {
-            if ($question->name === $name) {
-                return $question;
-            }
-        }
-
-        return null;
+        return array_find($this->questions, static fn(DecisionQuestion $question): bool => $question->name === $name);
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array{uid: int, identifier: string, title: string, description: string, stateTemplate: string, model: string, confidenceThreshold: float, cacheLifetime: int, defaultOutcome: string, languageId: int, hidden: bool, questions: list<array<string, mixed>>}
      */
     public function toArray(): array
     {
@@ -96,6 +118,7 @@ final readonly class Decision
             'cacheLifetime' => $this->cacheLifetime,
             'defaultOutcome' => $this->defaultOutcome,
             'languageId' => $this->languageId,
+            'hidden' => $this->hidden,
             'questions' => array_map(static fn(DecisionQuestion $q): array => $q->toArray(), $this->questions),
         ];
     }
