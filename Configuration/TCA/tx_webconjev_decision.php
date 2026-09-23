@@ -2,9 +2,13 @@
 
 declare(strict_types=1);
 
+/*
+ * The language, translation-parent and visibility columns are not declared here: TYPO3 v14 adds
+ * them from the ctrl section, with the core's own labels.
+ */
 return [
     'ctrl' => [
-        'title' => 'locallang_db.xlfx_webconjev_decision',
+        'title' => 'webcon_jev.db:tx_webconjev_decision',
         'label' => 'title',
         'descriptionColumn' => 'description',
         'tstamp' => 'tstamp',
@@ -24,15 +28,15 @@ return [
     'types' => [
         '1' => [
             'showitem' => '
-                --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:general,
+                --div--;core.form.tabs:general,
                     title, identifier, description, questions,
-                --div--;locallang_db.xlfx_webconjev_decision.tab.state,
+                --div--;webcon_jev.db:tx_webconjev_decision.tab.state,
                     state_template,
-                --div--;locallang_db.xlfx_webconjev_decision.tab.behaviour,
+                --div--;webcon_jev.db:tx_webconjev_decision.tab.behaviour,
                     confidence_threshold, default_outcome, model, cache_lifetime,
-                --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language,
+                --div--;core.form.tabs:language,
                     --palette--;;language,
-                --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:access,
+                --div--;core.form.tabs:access,
                     hidden,
             ',
         ],
@@ -43,37 +47,13 @@ return [
         ],
     ],
     'columns' => [
-        'sys_language_uid' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.language',
-            'config' => ['type' => 'language'],
-        ],
-        'l10n_parent' => [
-            'displayCond' => 'FIELD:sys_language_uid:>:0',
-            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.l18n_parent',
-            'config' => [
-                'type' => 'group',
-                'allowed' => 'tx_webconjev_decision',
-                'size' => 1,
-                'maxitems' => 1,
-                'minitems' => 0,
-                'default' => 0,
-            ],
-        ],
-        'l10n_diffsource' => ['config' => ['type' => 'passthrough']],
-        'l10n_source' => ['config' => ['type' => 'passthrough']],
-        'hidden' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.hidden',
-            'config' => ['type' => 'check', 'renderType' => 'checkboxToggle', 'default' => 0],
-        ],
         'title' => [
-            'label' => 'locallang_db.xlfx_webconjev_decision.title',
+            'label' => 'webcon_jev.db:tx_webconjev_decision.title',
             'config' => ['type' => 'input', 'size' => 40, 'eval' => 'trim', 'required' => true],
         ],
         'identifier' => [
-            'label' => 'locallang_db.xlfx_webconjev_decision.identifier',
-            'description' => 'locallang_db.xlfx_webconjev_decision.identifier.description',
+            'label' => 'webcon_jev.db:tx_webconjev_decision.identifier',
+            'description' => 'webcon_jev.db:tx_webconjev_decision.identifier.description',
             'l10n_mode' => 'exclude',
             'l10n_display' => 'defaultAsReadonly',
             'config' => [
@@ -84,28 +64,30 @@ return [
                     'replacements' => ['/' => '_', '-' => '_'],
                 ],
                 'fallbackCharacter' => '_',
-                'eval' => 'uniqueInSite',
+                // Unique across the table, not per site: code looks a decision up by identifier
+                // alone, so two sites sharing one would get whichever row the database returned.
+                'eval' => 'unique',
                 'appearance' => ['prefix' => ''],
             ],
         ],
         'description' => [
-            'label' => 'locallang_db.xlfx_webconjev_decision.description',
+            'label' => 'webcon_jev.db:tx_webconjev_decision.description',
             'config' => ['type' => 'text', 'cols' => 40, 'rows' => 3],
         ],
         'state_template' => [
-            'label' => 'locallang_db.xlfx_webconjev_decision.stateTemplate',
-            'description' => 'locallang_db.xlfx_webconjev_decision.stateTemplate.description',
+            'label' => 'webcon_jev.db:tx_webconjev_decision.stateTemplate',
+            'description' => 'webcon_jev.db:tx_webconjev_decision.stateTemplate.description',
             'config' => ['type' => 'text', 'cols' => 60, 'rows' => 8],
         ],
         'model' => [
-            'label' => 'locallang_db.xlfx_webconjev_decision.model',
-            'description' => 'locallang_db.xlfx_webconjev_decision.model.description',
+            'label' => 'webcon_jev.db:tx_webconjev_decision.model',
+            'description' => 'webcon_jev.db:tx_webconjev_decision.model.description',
             'l10n_mode' => 'exclude',
             'config' => ['type' => 'input', 'size' => 20, 'eval' => 'trim'],
         ],
         'confidence_threshold' => [
-            'label' => 'locallang_db.xlfx_webconjev_decision.confidenceThreshold',
-            'description' => 'locallang_db.xlfx_webconjev_decision.confidenceThreshold.description',
+            'label' => 'webcon_jev.db:tx_webconjev_decision.confidenceThreshold',
+            'description' => 'webcon_jev.db:tx_webconjev_decision.confidenceThreshold.description',
             'l10n_mode' => 'exclude',
             'config' => [
                 'type' => 'number',
@@ -116,18 +98,18 @@ return [
             ],
         ],
         'default_outcome' => [
-            'label' => 'locallang_db.xlfx_webconjev_decision.defaultOutcome',
-            'description' => 'locallang_db.xlfx_webconjev_decision.defaultOutcome.description',
+            'label' => 'webcon_jev.db:tx_webconjev_decision.defaultOutcome',
+            'description' => 'webcon_jev.db:tx_webconjev_decision.defaultOutcome.description',
             'config' => ['type' => 'input', 'size' => 30, 'eval' => 'trim'],
         ],
         'cache_lifetime' => [
-            'label' => 'locallang_db.xlfx_webconjev_decision.cacheLifetime',
-            'description' => 'locallang_db.xlfx_webconjev_decision.cacheLifetime.description',
+            'label' => 'webcon_jev.db:tx_webconjev_decision.cacheLifetime',
+            'description' => 'webcon_jev.db:tx_webconjev_decision.cacheLifetime.description',
             'l10n_mode' => 'exclude',
             'config' => ['type' => 'number', 'size' => 10, 'default' => -1, 'range' => ['lower' => -1]],
         ],
         'questions' => [
-            'label' => 'locallang_db.xlfx_webconjev_decision.questions',
+            'label' => 'webcon_jev.db:tx_webconjev_decision.questions',
             'config' => [
                 'type' => 'inline',
                 'foreign_table' => 'tx_webconjev_question',

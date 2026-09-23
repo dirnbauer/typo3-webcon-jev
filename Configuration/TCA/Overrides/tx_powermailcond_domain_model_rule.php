@@ -10,7 +10,7 @@ if (!isset($GLOBALS['TCA']['tx_powermailcond_domain_model_rule'])) {
     return;
 }
 
-$ll = 'LLL:EXT:webcon_jev/Resources/Private/Language/locallang_db.xlf:';
+$ll = 'webcon_jev.db:';
 $choiceOperators = implode(',', JevOperator::choiceValues());
 $numericOperators = implode(',', JevOperator::numericValues());
 $allOperators = implode(',', JevOperator::values());

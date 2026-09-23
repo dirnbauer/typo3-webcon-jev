@@ -10,7 +10,7 @@ if (!isset($GLOBALS['TCA']['tx_powermail_domain_model_mail'])) {
     return;
 }
 
-$ll = 'LLL:EXT:webcon_jev/Resources/Private/Language/locallang_db.xlf:';
+$ll = 'webcon_jev.db:';
 
 $GLOBALS['TCA']['tx_powermail_domain_model_mail']['columns']['tx_webconjev_routing_summary'] = [
     'exclude' => true,
