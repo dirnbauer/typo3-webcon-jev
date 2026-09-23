@@ -5,6 +5,25 @@
 Changelog
 =========
 
+0.2.2 — 2026-09-23
+==================
+
+Fixed
+-----
+
+*   The routing summary on a powermail mail (``tx_webconjev_routing_summary``) is no longer searched
+    by the backend search. powermail 14.0.3.2 dropped its ``searchFields``, and TYPO3 v14 then
+    searches every text-like column that does not opt out; the column now says
+    ``'searchable' => false``. The other columns this extension adds to powermail and powermail_cond
+    are selects and numbers, which are never searched, and a test keeps it that way.
+
+Changed
+-------
+
+*   Development and CI run against powermail 14.0.3.2 and the powermail_cond fork's ``typo3-v14``
+    branch at ``9b93c57``, whose condition-aware validator no longer passes an argument to a
+    constructor that takes none.
+
 0.2.1 — 2026-09-23
 ==================
 
