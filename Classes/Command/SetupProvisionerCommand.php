@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webconsulting\WebconJev\Command;
 
+use Override;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -35,17 +36,17 @@ use Webconsulting\WebconJev\Support\Cast;
 )]
 final class SetupProvisionerCommand extends Command
 {
-    private const GROUP_TITLE = 'Vault provisioning';
-    private const USERNAME = 'vault_provisioner';
+    private const string GROUP_TITLE = 'Vault provisioning';
+    private const string USERNAME = 'vault_provisioner';
 
     /** Exactly what an unattended deployment needs to write a secret, and nothing more. */
-    private const GRANTS = 'tx_nrvault:secret.create,tx_nrvault:secret.rotate';
+    private const string GRANTS = 'tx_nrvault:secret.create,tx_nrvault:secret.rotate';
 
     /**
      * Not a hash of anything. TYPO3's password hashing never produces this, so no input can match
      * it and the account cannot be signed into even if somebody enables it in the backend.
      */
-    private const UNUSABLE_PASSWORD = 'invalid-no-login';
+    private const string UNUSABLE_PASSWORD = 'invalid-no-login';
 
     public function __construct(
         private readonly ConnectionPool $connectionPool,
@@ -54,6 +55,7 @@ final class SetupProvisionerCommand extends Command
         parent::__construct();
     }
 
+    #[Override]
     protected function configure(): void
     {
         $this->addOption(
@@ -64,6 +66,7 @@ final class SetupProvisionerCommand extends Command
         );
     }
 
+    #[Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);

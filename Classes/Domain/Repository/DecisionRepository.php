@@ -22,12 +22,12 @@ use Webconsulting\WebconJev\Support\Cast;
  */
 final readonly class DecisionRepository
 {
-    private const DECISIONS = 'tx_webconjev_decision';
-    private const QUESTIONS = 'tx_webconjev_question';
-    private const CRITERIA = 'tx_webconjev_criterion';
+    private const string DECISIONS = 'tx_webconjev_decision';
+    private const string QUESTIONS = 'tx_webconjev_question';
+    private const string CRITERIA = 'tx_webconjev_criterion';
 
     /** Wording an editor may translate, per table. */
-    private const TRANSLATABLE = [
+    private const array TRANSLATABLE = [
         self::DECISIONS => ['title', 'description', 'state_template', 'default_outcome'],
         self::QUESTIONS => ['instructions'],
         self::CRITERIA => ['description', 'outcome_value'],

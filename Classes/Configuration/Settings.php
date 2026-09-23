@@ -14,12 +14,12 @@ use Webconsulting\WebconJev\Support\Cast;
  *
  * Shared by the container, so the configuration is parsed once per request.
  */
-final class Settings
+final readonly class Settings
 {
-    public const EXTENSION_KEY = 'webcon_jev';
+    public const string EXTENSION_KEY = 'webcon_jev';
 
     /** @var array<string, mixed> */
-    private readonly array $raw;
+    private array $raw;
 
     public function __construct(ExtensionConfiguration $extensionConfiguration)
     {

@@ -24,7 +24,7 @@ use Webconsulting\WebconJev\Support\Cast;
 final readonly class ProvisionerResolver
 {
     /** Matches the user {@see \Webconsulting\WebconJev\Command\SetupProvisionerCommand} creates. */
-    public const USERNAME = 'vault_provisioner';
+    public const string USERNAME = 'vault_provisioner';
 
     public function __construct(
         private VaultConfiguration $vaultConfiguration,

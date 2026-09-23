@@ -16,7 +16,7 @@ use Webconsulting\WebconJev\Support\Cast;
  */
 final readonly class RuleConfigurationRepository
 {
-    private const TABLE = 'tx_powermailcond_domain_model_rule';
+    private const string TABLE = 'tx_powermailcond_domain_model_rule';
 
     public function __construct(private ConnectionPool $connectionPool) {}
 

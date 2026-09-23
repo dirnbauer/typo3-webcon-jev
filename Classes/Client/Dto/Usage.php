@@ -11,7 +11,7 @@ use Webconsulting\WebconJev\Support\Cast;
  */
 final readonly class Usage
 {
-    private const USD_PER_INPUT_TOKEN = 0.042 / 1_000_000;
+    private const float USD_PER_INPUT_TOKEN = 0.042 / 1_000_000;
 
     public function __construct(
         public int $inputTokens = 0,

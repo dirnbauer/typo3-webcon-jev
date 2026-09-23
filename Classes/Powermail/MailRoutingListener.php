@@ -33,7 +33,7 @@ use Webconsulting\WebconJev\Support\Cast;
  */
 final readonly class MailRoutingListener
 {
-    private const FORM_TABLE = 'tx_powermail_domain_model_form';
+    private const string FORM_TABLE = 'tx_powermail_domain_model_form';
 
     public function __construct(
         private DecisionRepository $decisions,

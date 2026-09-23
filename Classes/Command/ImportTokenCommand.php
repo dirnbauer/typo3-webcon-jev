@@ -6,6 +6,7 @@ namespace Webconsulting\WebconJev\Command;
 
 use Netresearch\NrVault\Security\TechnicalActorContextInterface;
 use Netresearch\NrVault\Service\VaultServiceInterface;
+use Override;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -29,10 +30,6 @@ use Webconsulting\WebconJev\Service\TokenProvider;
 )]
 final class ImportTokenCommand extends Command
 {
-    private const CREATED = 'created';
-    private const ROTATED = 'rotated';
-    private const SKIPPED = 'skipped';
-
     public function __construct(
         private readonly VaultServiceInterface $vault,
         private readonly Settings $settings,
@@ -42,6 +39,7 @@ final class ImportTokenCommand extends Command
         parent::__construct();
     }
 
+    #[Override]
     protected function configure(): void
     {
         $this
@@ -66,6 +64,7 @@ final class ImportTokenCommand extends Command
             );
     }
 
+    #[Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -82,18 +81,16 @@ final class ImportTokenCommand extends Command
             return Command::FAILURE;
         }
 
-        // Three outcomes, not two. Collapsing "already there, left alone" into the same falsy
-        // value as "created" made the command report a store it had not performed.
-        $write = function (bool $asProvisioner) use ($identifier, $token, $input): string {
+        $write = function (bool $asProvisioner) use ($identifier, $token, $input): TokenImportOutcome {
             $exists = $this->vault->exists($identifier);
             if ($exists && !$input->getOption('force')) {
-                return self::SKIPPED;
+                return TokenImportOutcome::Skipped;
             }
 
             if ($exists) {
                 $this->vault->rotate($identifier, $token, 'Replaced from ' . TokenProvider::ENVIRONMENT_VARIABLE);
 
-                return self::ROTATED;
+                return TokenImportOutcome::Rotated;
             }
 
             $options = [
@@ -113,7 +110,7 @@ final class ImportTokenCommand extends Command
 
             $this->vault->store($identifier, $token, $options);
 
-            return self::CREATED;
+            return TokenImportOutcome::Created;
         };
 
         $asProvisioner = (bool)$input->getOption('as-provisioner');
@@ -126,7 +123,7 @@ final class ImportTokenCommand extends Command
 
         try {
             $outcome = $asProvisioner
-                ? (string)$this->technicalActor->runAs($provisionerUid, static fn(): string => $write(true))
+                ? $this->technicalActor->runAs($provisionerUid, static fn(): TokenImportOutcome => $write(true))
                 : $write(false);
         } catch (Throwable $exception) {
             $io->error('The vault refused the token: ' . $exception->getMessage());
@@ -140,7 +137,7 @@ final class ImportTokenCommand extends Command
             return Command::FAILURE;
         }
 
-        if ($outcome === self::SKIPPED) {
+        if ($outcome === TokenImportOutcome::Skipped) {
             $io->warning(sprintf('"%s" is already in the vault. Pass --force to replace it.', $identifier));
 
             return Command::SUCCESS;
@@ -148,7 +145,7 @@ final class ImportTokenCommand extends Command
 
         $io->success(sprintf(
             '%s "%s" in the vault as %s (%d characters, ending "%s").',
-            $outcome === self::ROTATED ? 'Replaced' : 'Stored',
+            $outcome === TokenImportOutcome::Rotated ? 'Replaced' : 'Stored',
             $identifier,
             $asProvisioner ? 'provisioning backend user ' . $provisionerUid : 'the CLI actor',
             strlen($token),

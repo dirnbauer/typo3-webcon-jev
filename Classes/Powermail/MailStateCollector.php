@@ -17,7 +17,7 @@ use Webconsulting\WebconJev\Support\Cast;
  */
 final readonly class MailStateCollector
 {
-    private const SENSITIVE_TYPES = ['password', 'file', 'captcha', 'friendlycaptcha'];
+    private const array SENSITIVE_TYPES = ['password', 'file', 'captcha', 'friendlycaptcha'];
 
     /**
      * @return array{form: array{uid: int, title: string}, field: array<string, string>}
