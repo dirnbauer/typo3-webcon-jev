@@ -14,6 +14,7 @@ use Webconsulting\WebconJev\Client\Dto\Usage;
 use Webconsulting\WebconJev\Client\JevClientInterface;
 use Webconsulting\WebconJev\Configuration\Settings;
 use Webconsulting\WebconJev\Domain\Model\Decision;
+use Webconsulting\WebconJev\Exception\InvalidQuestionException;
 use Webconsulting\WebconJev\Exception\JevException;
 use Webconsulting\WebconJev\Support\Cast;
 
@@ -26,8 +27,8 @@ use Webconsulting\WebconJev\Support\Cast;
  */
 final readonly class DecisionRunner
 {
-    /** How many calls a minute bucket may hold before the guard trips. */
-    private const RATE_BUCKET_PREFIX = 'rate_';
+    /** Cache key prefix of the per-minute call counter the budget guard keeps. */
+    private const string RATE_BUCKET_PREFIX = 'rate_';
 
     public function __construct(
         private JevClientInterface $client,
@@ -48,7 +49,19 @@ final readonly class DecisionRunner
         string $runContext = '',
         string $origin = '',
     ): DecisionOutcome {
-        $questions = $decision->toClientQuestions();
+        // A question can be stored in a shape the API refuses — a choice left with one option after
+        // an edit in the record editor, say. That is a reason to fall back, not to break the form.
+        try {
+            $questions = $decision->toClientQuestions();
+        } catch (InvalidQuestionException $exception) {
+            return $this->fallback(
+                $decision,
+                'the decision cannot be asked as it stands: ' . $exception->getMessage(),
+                $runContext,
+                $origin,
+                '',
+            );
+        }
         if ($questions === []) {
             return $this->fallback($decision, 'the decision has no questions', $runContext, $origin, '');
         }
@@ -62,7 +75,7 @@ final readonly class DecisionRunner
         }
 
         $state = $this->stateBuilder->build($decision, $context);
-        $stateHash = $this->hash($decision, $state);
+        $stateHash = $this->hash($decision, $questions, $state);
 
         $cached = $this->readCache($decision, $stateHash);
         if ($cached !== null) {
@@ -113,17 +126,15 @@ final readonly class DecisionRunner
     }
 
     /**
+     * @param array<string, Question>     $questions
      * @param string|array<string, mixed> $state
      */
-    private function hash(Decision $decision, string|array $state): string
+    private function hash(Decision $decision, array $questions, string|array $state): string
     {
         return hash('xxh128', json_encode([
             'decision' => $decision->uid,
             'language' => $decision->languageId,
-            'questions' => array_map(
-                static fn(Question $question): array => $question->toPayload(),
-                $decision->toClientQuestions(),
-            ),
+            'questions' => array_map(static fn(Question $question): array => $question->toPayload(), $questions),
             'state' => $state,
         ], JSON_THROW_ON_ERROR));
     }

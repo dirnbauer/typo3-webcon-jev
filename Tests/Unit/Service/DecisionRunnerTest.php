@@ -8,17 +8,13 @@ use LogicException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
-use Throwable;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
-use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use Webconsulting\WebconJev\Client\Dto\Answer;
 use Webconsulting\WebconJev\Client\Dto\DecisionResult;
-use Webconsulting\WebconJev\Client\Dto\Question;
 use Webconsulting\WebconJev\Client\Dto\QuestionType;
 use Webconsulting\WebconJev\Client\Dto\Usage;
 use Webconsulting\WebconJev\Client\JevClientInterface;
-use Webconsulting\WebconJev\Configuration\Settings;
 use Webconsulting\WebconJev\Domain\Model\Criterion;
 use Webconsulting\WebconJev\Domain\Model\Decision;
 use Webconsulting\WebconJev\Domain\Model\DecisionQuestion;
@@ -26,6 +22,9 @@ use Webconsulting\WebconJev\Exception\RateLimitException;
 use Webconsulting\WebconJev\Service\DecisionRunner;
 use Webconsulting\WebconJev\Service\RunLogger;
 use Webconsulting\WebconJev\Service\StateBuilder;
+use Webconsulting\WebconJev\Tests\Double\ArrayCache;
+use Webconsulting\WebconJev\Tests\Double\FakeJevClient;
+use Webconsulting\WebconJev\Tests\Double\TestSettings;
 
 /**
  * Nothing here ever throws at a form. Every way a call can fail becomes a fallback carrying the
@@ -36,7 +35,7 @@ final class DecisionRunnerTest extends TestCase
     #[Test]
     public function aWorkingClientProducesAnOutcomeAndCachesIt(): void
     {
-        $client = new FakeClient(self::answered('sales'));
+        $client = new FakeJevClient(self::answered('sales'));
         $cache = new ArrayCache();
         $runner = self::runner($client, $cache, cacheLifetime: 300);
 
@@ -52,7 +51,7 @@ final class DecisionRunnerTest extends TestCase
     #[Test]
     public function aDifferentStateIsADifferentQuestion(): void
     {
-        $client = new FakeClient(self::answered('sales'));
+        $client = new FakeJevClient(self::answered('sales'));
         $runner = self::runner($client, new ArrayCache(), cacheLifetime: 300);
 
         $runner->run(self::decision(), ['field' => ['message' => 'Buy']]);
@@ -64,7 +63,7 @@ final class DecisionRunnerTest extends TestCase
     #[Test]
     public function aCacheLifetimeOfZeroNeverReads(): void
     {
-        $client = new FakeClient(self::answered('sales'));
+        $client = new FakeJevClient(self::answered('sales'));
         $runner = self::runner($client, new ArrayCache(), cacheLifetime: 0);
 
         $runner->run(self::decision(), ['field' => ['message' => 'Buy']]);
@@ -76,7 +75,7 @@ final class DecisionRunnerTest extends TestCase
     #[Test]
     public function aClientFailureBecomesAFallbackNotAnException(): void
     {
-        $client = new FakeClient(new RateLimitException('Jev is rate limiting'));
+        $client = new FakeJevClient(new RateLimitException('Jev is rate limiting'));
         $outcome = self::runner($client, new ArrayCache())->run(self::decision(), ['field' => ['message' => 'x']]);
 
         self::assertTrue($outcome->isFallback());
@@ -87,7 +86,7 @@ final class DecisionRunnerTest extends TestCase
     #[Test]
     public function aFallbackIsNeverCached(): void
     {
-        $client = new FakeClient(new RateLimitException('busy'));
+        $client = new FakeJevClient(new RateLimitException('busy'));
         $cache = new ArrayCache();
         self::runner($client, $cache, cacheLifetime: 300)->run(self::decision(), ['field' => ['message' => 'x']]);
 
@@ -97,7 +96,7 @@ final class DecisionRunnerTest extends TestCase
     #[Test]
     public function anUnconfiguredClientFallsBackWithoutBeingAsked(): void
     {
-        $client = new FakeClient(self::answered('sales'), configured: false);
+        $client = new FakeJevClient(self::answered('sales'), configured: false);
         $outcome = self::runner($client, new ArrayCache())->run(self::decision(), ['field' => ['message' => 'x']]);
 
         self::assertTrue($outcome->isFallback());
@@ -108,7 +107,7 @@ final class DecisionRunnerTest extends TestCase
     #[Test]
     public function aDisabledExtensionFallsBackWithoutBeingAsked(): void
     {
-        $client = new FakeClient(self::answered('sales'));
+        $client = new FakeJevClient(self::answered('sales'));
         $outcome = self::runner($client, new ArrayCache(), enabled: false)->run(self::decision(), ['field' => []]);
 
         self::assertTrue($outcome->isFallback());
@@ -118,7 +117,7 @@ final class DecisionRunnerTest extends TestCase
     #[Test]
     public function aDecisionWithoutQuestionsFallsBackWithoutBeingAsked(): void
     {
-        $client = new FakeClient(self::answered('sales'));
+        $client = new FakeJevClient(self::answered('sales'));
         $empty = new Decision(2, 'empty', 'Empty', '', '', '', 0.6, -1, 'office@example.com', []);
         $outcome = self::runner($client, new ArrayCache())->run($empty, ['field' => []]);
 
@@ -127,9 +126,27 @@ final class DecisionRunnerTest extends TestCase
     }
 
     #[Test]
+    public function aQuestionTheApiWouldRefuseFallsBackInsteadOfThrowing(): void
+    {
+        // A choice left with one option — possible after an edit in the record editor, which does
+        // not know the API's rules. It used to throw straight through the powermail integrations.
+        $client = new FakeJevClient(self::answered('sales'));
+        $lonely = new Decision(3, 'lonely', 'Lonely', '', '', '', 0.6, -1, 'office@example.com', [
+            new DecisionQuestion(1, 'department', QuestionType::Choice, 'Which?', [new Criterion(1, 'sales', 'Buying')]),
+        ]);
+
+        $outcome = self::runner($client, new ArrayCache())->run($lonely, ['field' => ['message' => 'x']]);
+
+        self::assertTrue($outcome->isFallback());
+        self::assertStringContainsString('at least two options', (string)$outcome->result->fallbackReason);
+        self::assertSame('office@example.com', $outcome->outcomeFor('department'));
+        self::assertSame(0, $client->calls);
+    }
+
+    #[Test]
     public function theBudgetGuardStopsCallsBeyondTheLimit(): void
     {
-        $client = new FakeClient(self::answered('sales'));
+        $client = new FakeJevClient(self::answered('sales'));
         $runner = self::runner($client, new ArrayCache(), cacheLifetime: 0, maxCallsPerMinute: 2);
 
         $runner->run(self::decision(), ['field' => ['message' => 'a']]);
@@ -148,7 +165,7 @@ final class DecisionRunnerTest extends TestCase
         int $maxCallsPerMinute = 0,
         bool $enabled = true,
     ): DecisionRunner {
-        $settings = self::settings([
+        $settings = TestSettings::with([
             'cacheLifetime' => (string)$cacheLifetime,
             'maxCallsPerMinute' => (string)$maxCallsPerMinute,
             'enabled' => $enabled ? '1' : '0',
@@ -179,24 +196,6 @@ final class DecisionRunnerTest extends TestCase
         };
     }
 
-    /**
-     * @param array<string, string> $values
-     */
-    private static function settings(array $values): Settings
-    {
-        $configuration = new readonly class ($values) extends ExtensionConfiguration {
-            /** @param array<string, string> $values */
-            public function __construct(private readonly array $values) {}
-
-            public function get(string $extension, string $path = ''): mixed
-            {
-                return $this->values;
-            }
-        };
-
-        return new Settings($configuration);
-    }
-
     private static function decision(): Decision
     {
         $question = new DecisionQuestion(1, 'department', QuestionType::Choice, 'Which?', [
@@ -215,106 +214,5 @@ final class DecisionRunnerTest extends TestCase
             new Usage(100),
             durationMs: 12.0,
         );
-    }
-}
-
-/**
- * A client that answers with what the test told it to, or throws it.
- */
-final class FakeClient implements JevClientInterface
-{
-    public int $calls = 0;
-
-    public function __construct(
-        private readonly DecisionResult|Throwable $response,
-        private readonly bool $configured = true,
-    ) {}
-
-    public function ask(string|array|null $state, array $questions, ?string $model = null): DecisionResult
-    {
-        $this->calls++;
-        foreach ($questions as $question) {
-            assert($question instanceof Question);
-        }
-        if ($this->response instanceof Throwable) {
-            throw $this->response;
-        }
-
-        return $this->response;
-    }
-
-    public function isConfigured(): bool
-    {
-        return $this->configured;
-    }
-}
-
-/**
- * Just enough of the caching framework to prove reads, writes and lifetimes.
- */
-final class ArrayCache implements FrontendInterface
-{
-    /** @var array<string, mixed> */
-    public array $entries = [];
-
-    public function getIdentifier(): string
-    {
-        return 'test';
-    }
-
-    public function getBackend(): never
-    {
-        throw new LogicException('not needed');
-    }
-
-    /**
-     * @param list<string> $tags
-     */
-    public function set(string $entryIdentifier, mixed $data, array $tags = [], ?int $lifetime = null): void
-    {
-        $this->entries[$entryIdentifier] = $data;
-    }
-
-    public function get(string $entryIdentifier): mixed
-    {
-        return $this->entries[$entryIdentifier] ?? false;
-    }
-
-    public function has(string $entryIdentifier): bool
-    {
-        return array_key_exists($entryIdentifier, $this->entries);
-    }
-
-    public function remove(string $entryIdentifier): bool
-    {
-        unset($this->entries[$entryIdentifier]);
-
-        return true;
-    }
-
-    public function flush(): void
-    {
-        $this->entries = [];
-    }
-
-    public function flushByTag(string $tag): void {}
-
-    public function flushByTags(array $tags): void {}
-
-    public function collectGarbage(): void {}
-
-    public function isValidEntryIdentifier(string $identifier): bool
-    {
-        return true;
-    }
-
-    public function isValidTag(string $tag): bool
-    {
-        return true;
-    }
-
-    public function requireOnce(string $entryIdentifier): mixed
-    {
-        return null;
     }
 }
