@@ -32,9 +32,14 @@ jobs:
       # The backend module's JavaScript is plain ES modules, loaded as they are through the import
       # map: there is no build that would catch a syntax error before a browser does.
       - name: Lint JavaScript
-        run: for file in Resources/Public/JavaScript/*.js; do node --input-type=module --check < "$file" || exit 1; done
+        run: |
+          for file in Resources/Public/JavaScript/*.js; do
+            node --input-type=module --check < "$file" || exit 1
+          done
       - name: Lint XLIFF
-        run: find Resources/Private/Language -name '*.xlf' -print0 | xargs -0 -n1 php -r 'libxml_use_internal_errors(false); exit(simplexml_load_file($argv[1]) === false ? 1 : 0);'
+        run: |
+          find Resources/Private/Language -name '*.xlf' -print0 \
+            | xargs -0 -n1 php -r 'exit(simplexml_load_file($argv[1]) === false ? 1 : 0);'
 
   phpstan:
     name: Static analysis
