@@ -16,6 +16,10 @@ Fixed
     searches every text-like column that does not opt out; the column now says
     ``'searchable' => false``. The other columns this extension adds to powermail and powermail_cond
     are selects and numbers, which are never searched, and a test keeps it that way.
+*   The decision editor's :guilabel:`Close` and :guilabel:`Save` buttons are labelled in the
+    editor's language. They came from the core, which labels them from its language packs, so a
+    German backend without those packs showed "Close" and "Save" next to "Löschen". A test checks
+    every document header button of the module in German.
 
 Changed
 -------
