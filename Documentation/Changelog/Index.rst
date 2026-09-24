@@ -5,6 +5,17 @@
 Changelog
 =========
 
+0.2.5 — 2026-09-24
+==================
+
+Fixed
+-----
+
+*   The German intro and form of each example page show on ``/de/``. ``webcon-jev:examples:seed``
+    stored them on the page's translation record, where TYPO3 never looks for content, so the
+    German pages showed the English intro. They now sit on the English page as its translations,
+    like the overview; a functional test checks where every German element is stored.
+
 0.2.4 — 2026-09-23
 ==================
 
