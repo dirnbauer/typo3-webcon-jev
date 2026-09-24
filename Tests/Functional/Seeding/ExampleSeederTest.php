@@ -8,6 +8,7 @@ use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 use Webconsulting\WebconJev\Data\JevExampleDefinitions;
 use Webconsulting\WebconJev\Seeding\ExampleSeeder;
@@ -62,6 +63,41 @@ final class ExampleSeederTest extends FunctionalTestCase
         foreach ($examples as $example) {
             self::assertStringContainsString(htmlspecialchars($example['titleEn']), $englishBody);
             self::assertStringContainsString(htmlspecialchars($example['titleDe']), $germanBody);
+        }
+    }
+
+    #[Test]
+    public function theGermanElementsOfAnExampleSitOnItsEnglishPage(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/powermail_lab.csv');
+        $seeder = new ExampleSeeder($this->getConnectionPool(), new SchemaHelper($this->getConnectionPool()));
+        $seeder->seed(1, 1, new SymfonyStyle(new ArrayInput([]), new NullOutput()));
+
+        $pageUids = $this->examplePageUids();
+        self::assertNotSame([], $pageUids);
+        $query = $this->getConnectionPool()->getQueryBuilderForTable('tt_content');
+        $query->getRestrictions()->removeAll();
+        $rows = $query
+            ->select('uid', 'pid', 'CType', 'sys_language_uid', 'l18n_parent')
+            ->from('tt_content')
+            ->where($query->expr()->in('pid', $query->createNamedParameter($pageUids, Connection::PARAM_INT_ARRAY)))
+            ->executeQuery()
+            ->fetchAllAssociative();
+
+        $english = [];
+        foreach ($rows as $row) {
+            if (Cast::int($row['sys_language_uid']) === 0) {
+                $english[Cast::int($row['uid'])] = Cast::int($row['pid']);
+            }
+        }
+        $german = array_values(array_filter($rows, static fn(array $row): bool => Cast::int($row['sys_language_uid']) === 1));
+        // An intro and a plugin per example, each translated on the page of its original:
+        // content stored on the page's translation record is never shown.
+        self::assertCount(2 * count($pageUids), $german);
+        foreach ($german as $row) {
+            $original = Cast::int($row['l18n_parent']);
+            self::assertArrayHasKey($original, $english);
+            self::assertSame($english[$original], Cast::int($row['pid']));
         }
     }
 

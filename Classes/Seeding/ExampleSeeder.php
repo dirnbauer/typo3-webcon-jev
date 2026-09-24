@@ -528,7 +528,7 @@ final readonly class ExampleSeeder
             'crdate' => $now,
             'tstamp' => $now,
         ]);
-        $translationUid = $this->insert('pages', [
+        $this->insert('pages', [
             'pid' => $labPageUid,
             'title' => Cast::string($example['titleDe'] ?? null),
             'doktype' => 1,
@@ -541,9 +541,11 @@ final readonly class ExampleSeeder
             'tstamp' => $now,
         ]);
 
+        // The German elements belong to the English page, like the overview: content stored on
+        // the page's translation record is never shown.
         $introUid = $this->insertText($pageUid, Cast::string($example['introEn'] ?? null), 256, $now);
         $this->insertText(
-            $translationUid,
+            $pageUid,
             Cast::string($example['introDe'] ?? null),
             256,
             $now,
@@ -554,7 +556,7 @@ final readonly class ExampleSeeder
         $moresteps = Cast::bool($example['moresteps'] ?? null);
         $pluginUid = $this->insertPlugin($pageUid, $form['uid'], $labPageUid, $moresteps, 512, $now);
         $this->insertPlugin(
-            $translationUid,
+            $pageUid,
             $form['translationUid'],
             $labPageUid,
             $moresteps,
