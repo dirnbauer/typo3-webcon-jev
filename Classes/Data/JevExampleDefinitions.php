@@ -179,8 +179,8 @@ final class JevExampleDefinitions
                         self::field('textarea', 'message', 'What is the problem?', 'Was ist das Problem?', ['mandatory' => true, 'placeholderEn' => 'Describe what you did and what happened.', 'placeholderDe' => 'Beschreiben Sie, was Sie getan haben und was passiert ist.']),
                         self::field('textarea', 'reproduction', 'How can we reproduce it?', 'Wie können wir es nachstellen?', ['placeholderEn' => 'Step by step, if you can.', 'placeholderDe' => 'Schritt für Schritt, wenn möglich.']),
                         self::field('html', 'escalation', 'Escalation', 'Eskalation', [
-                            'textEn' => '<p><strong>This looks urgent.</strong> If your system is down right now, call the support line on +43 1 234 5678 instead of waiting for a reply to this form.</p>',
-                            'textDe' => '<p><strong>Das klingt dringend.</strong> Wenn Ihr System gerade stillsteht, rufen Sie die Support-Hotline unter +43 1 234 5678 an, statt auf eine Antwort auf dieses Formular zu warten.</p>',
+                            'textEn' => '<p><strong>This looks urgent.</strong> If your system is down right now, call us on +43 2626 20156 instead of waiting for a reply to this form.</p>',
+                            'textDe' => '<p><strong>Das klingt dringend.</strong> Wenn Ihr System gerade stillsteht, rufen Sie uns unter +43 2626 20156 an, statt auf eine Antwort auf dieses Formular zu warten.</p>',
                         ]),
                         self::field('submit', 'submit', 'Send report', 'Meldung senden'),
                     ],
