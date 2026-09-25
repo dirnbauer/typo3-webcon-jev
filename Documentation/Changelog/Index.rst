@@ -5,6 +5,24 @@
 Changelog
 =========
 
+0.2.7 — 2026-09-25
+==================
+
+Fixed
+-----
+
+*   The escalation note of Powermail 08 (support triage) gives webconsulting's real phone number,
+    +43 2626 20156, in English and German. It named a made-up support line, +43 1 234 5678.
+    ``webcon-jev:examples:seed`` writes the new text.
+
+0.2.6 — 2026-09-24
+==================
+
+Changed
+-------
+
+*   The extension and module icons follow the TYPO3 v14 line style.
+
 0.2.5 — 2026-09-24
 ==================
 
