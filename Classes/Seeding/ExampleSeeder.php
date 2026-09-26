@@ -555,9 +555,13 @@ final readonly class ExampleSeeder
 
         $moresteps = Cast::bool($example['moresteps'] ?? null);
         $pluginUid = $this->insertPlugin($pageUid, $form['uid'], $labPageUid, $moresteps, 512, $now);
+        // The German plugin names the original form, as a translation made in the backend does:
+        // the form it renders posts the original's uid, and Powermail refuses a submission whose
+        // form the plugin does not name. With the translation's uid here, no German submission
+        // was ever saved.
         $this->insertPlugin(
             $pageUid,
-            $form['translationUid'],
+            $form['uid'],
             $labPageUid,
             $moresteps,
             512,
@@ -639,7 +643,7 @@ final readonly class ExampleSeeder
             'CType' => 'powermail_pi1',
             'header' => '',
             'header_layout' => 100,
-            'pi_flexform' => $this->flexform($formUid, $storagePid, $moresteps),
+            'pi_flexform' => $this->flexform($formUid, $storagePid, $moresteps, $languageUid > 0),
             'colPos' => 0,
             'sorting' => $sorting,
             'sys_language_uid' => $languageUid,
@@ -651,7 +655,7 @@ final readonly class ExampleSeeder
         ]);
     }
 
-    private function flexform(int $formUid, int $storagePid, bool $moresteps): string
+    private function flexform(int $formUid, int $storagePid, bool $moresteps, bool $german = false): string
     {
         $sheets = [
             'main' => [
@@ -671,11 +675,11 @@ final readonly class ExampleSeeder
             'sender' => [
                 'settings.flexform.sender.name' => 'Webconsulting',
                 'settings.flexform.sender.email' => 'office@webconsulting.at',
-                'settings.flexform.sender.subject' => 'Thank you for your request',
-                'settings.flexform.sender.body' => 'Thank you. We received your request.',
+                'settings.flexform.sender.subject' => $german ? 'Vielen Dank für Ihre Anfrage' : 'Thank you for your request',
+                'settings.flexform.sender.body' => $german ? 'Danke, wir haben Ihre Anfrage erhalten.' : 'Thank you. We received your request.',
             ],
             'thx' => [
-                'settings.flexform.thx.body' => 'Thank you for your submission.',
+                'settings.flexform.thx.body' => $german ? 'Vielen Dank für Ihre Nachricht.' : 'Thank you for your submission.',
             ],
         ];
 

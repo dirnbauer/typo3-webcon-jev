@@ -102,6 +102,45 @@ final class ExampleSeederTest extends FunctionalTestCase
     }
 
     #[Test]
+    public function theGermanPluginNamesTheOriginalFormAndThanksInGerman(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/powermail_lab.csv');
+        $seeder = new ExampleSeeder($this->getConnectionPool(), new SchemaHelper($this->getConnectionPool()));
+        $seeder->seed(1, 1, new SymfonyStyle(new ArrayInput([]), new NullOutput()));
+
+        $query = $this->getConnectionPool()->getQueryBuilderForTable('tt_content');
+        $query->getRestrictions()->removeAll();
+        $plugins = $query
+            ->select('uid', 'sys_language_uid', 'l18n_parent', 'pi_flexform')
+            ->from('tt_content')
+            ->where($query->expr()->eq('CType', $query->createNamedParameter('powermail_pi1')))
+            ->executeQuery()
+            ->fetchAllAssociative();
+
+        $formOf = static fn(array $row): string => (string)(preg_match(
+            '/settings\.flexform\.main\.form"><value index="vDEF">(\d+)</',
+            Cast::string($row['pi_flexform']),
+            $match,
+        ) ? $match[1] : '');
+        $english = [];
+        foreach ($plugins as $plugin) {
+            if (Cast::int($plugin['sys_language_uid']) === 0) {
+                $english[Cast::int($plugin['uid'])] = $plugin;
+            }
+        }
+        $german = array_filter($plugins, static fn(array $row): bool => Cast::int($row['sys_language_uid']) === 1);
+        self::assertCount(count(JevExampleDefinitions::all()), $german);
+
+        foreach ($german as $plugin) {
+            $original = $english[Cast::int($plugin['l18n_parent'])] ?? null;
+            self::assertNotNull($original);
+            // Powermail compares the posted form uid - always the original's - with the plugin's.
+            self::assertSame($formOf($original), $formOf($plugin));
+            self::assertStringContainsString('Vielen Dank für Ihre Nachricht.', Cast::string($plugin['pi_flexform']));
+        }
+    }
+
+    #[Test]
     public function everyIntroSaysWhatToTryAndWhatIsHard(): void
     {
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/powermail_lab.csv');
