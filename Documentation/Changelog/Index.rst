@@ -5,6 +5,19 @@
 Changelog
 =========
 
+0.2.12 — 2026-09-26
+===================
+
+Fixed
+-----
+
+*   German submissions of the five examples are saved and routed. The German plugin named the
+    translated form's uid, while the form posts the original's — and Powermail turns away a
+    submission whose form the plugin does not name, silently, with the form shown again. The
+    German plugin now names the original, as a translation made in the backend does. (The
+    Powermail fork 14.0.3.6 also accepts the old data, so pages seeded before stay usable.)
+*   The German plugin thanks in German, and its confirmation mail is German too.
+
 0.2.11 — 2026-09-26
 ===================
 
