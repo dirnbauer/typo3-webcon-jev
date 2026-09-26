@@ -5,6 +5,18 @@
 Changelog
 =========
 
+0.2.11 — 2026-09-26
+===================
+
+Changed
+-------
+
+*   Each of the five example pages says above its form what to try there and what makes the
+    decision hard: a "Try it" list with texts to paste and what then happens on the page, and a
+    paragraph on the challenge, in English and German. The contact routing example, whose effect
+    only shows after sending, says where the result can be seen. Every sample was checked against
+    the live model in both languages. ``webcon-jev:examples:seed`` writes the new text.
+
 0.2.10 — 2026-09-26
 ===================
 
