@@ -5,6 +5,20 @@
 Changelog
 =========
 
+0.2.9 — 2026-09-26
+==================
+
+Fixed
+-----
+
+*   ``--as-provisioner`` works again after the database moved. The configured nr-vault
+    ``provisioningBeUserUid`` was used whenever it was set; on typo3-lab the database had been
+    replaced by a development copy where the provisioner has another uid, and every provisioned
+    command — ``webcon-jev:ping``, ``webcon-jev:token:import``, so any token rotation — failed in
+    nr-vault with "does not resolve to a non-deleted be_users record". A configured uid that is
+    gone, deleted, disabled or not at root level now falls back to ``vault_provisioner`` by name,
+    and the commands say which one they used.
+
 0.2.8 — 2026-09-26
 ==================
 
