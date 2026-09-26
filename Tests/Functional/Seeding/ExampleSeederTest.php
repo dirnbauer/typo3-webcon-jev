@@ -101,6 +101,46 @@ final class ExampleSeederTest extends FunctionalTestCase
         }
     }
 
+    #[Test]
+    public function everyIntroSaysWhatToTryAndWhatIsHard(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/powermail_lab.csv');
+        $seeder = new ExampleSeeder($this->getConnectionPool(), new SchemaHelper($this->getConnectionPool()));
+        $seeder->seed(1, 1, new SymfonyStyle(new ArrayInput([]), new NullOutput()));
+
+        $query = $this->getConnectionPool()->getQueryBuilderForTable('tt_content');
+        $query->getRestrictions()->removeAll();
+        $intros = $query
+            ->select('pid', 'sys_language_uid', 'bodytext')
+            ->from('tt_content')
+            ->where(
+                $query->expr()->in('pid', $query->createNamedParameter($this->examplePageUids(), Connection::PARAM_INT_ARRAY)),
+                $query->expr()->eq('CType', $query->createNamedParameter('text')),
+            )
+            ->orderBy('pid')
+            ->addOrderBy('sys_language_uid')
+            ->executeQuery()
+            ->fetchAllAssociative();
+
+        $examples = JevExampleDefinitions::all();
+        self::assertCount(2 * count($examples), $intros, 'an intro per example and language');
+
+        foreach (array_values($examples) as $index => $example) {
+            foreach (['En' => 0, 'De' => 1] as $language => $offset) {
+                $body = Cast::string($intros[2 * $index + $offset]['bodytext']);
+                $tries = Cast::stringList($example['try' . $language] ?? null);
+
+                self::assertNotSame([], $tries, $example['slug'] . ' ' . $language . ' has nothing to try');
+                self::assertCount(count(Cast::stringList($example['tryEn'] ?? null)), $tries, $example['slug'] . ': the languages list the same tries');
+                self::assertStringContainsString($language === 'De' ? '<h2>Probieren Sie es aus</h2>' : '<h2>Try it</h2>', $body);
+                self::assertStringContainsString($language === 'De' ? '<h2>Die Herausforderung</h2>' : '<h2>The challenge</h2>', $body);
+                self::assertSame(count($tries), substr_count($body, '<li>'));
+                self::assertStringContainsString(htmlspecialchars(Cast::string($example['challenge' . $language] ?? null)), $body);
+                self::assertStringStartsWith('<p>' . htmlspecialchars(Cast::string($example['intro' . $language] ?? null)) . '</p>', $body);
+            }
+        }
+    }
+
     /**
      * @return list<array<string, mixed>>
      */

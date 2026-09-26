@@ -543,10 +543,10 @@ final readonly class ExampleSeeder
 
         // The German elements belong to the English page, like the overview: content stored on
         // the page's translation record is never shown.
-        $introUid = $this->insertText($pageUid, Cast::string($example['introEn'] ?? null), 256, $now);
+        $introUid = $this->insertText($pageUid, $this->introHtml($example, 'En'), 256, $now);
         $this->insertText(
             $pageUid,
-            Cast::string($example['introDe'] ?? null),
+            $this->introHtml($example, 'De'),
             256,
             $now,
             $germanLanguageUid,
@@ -569,9 +569,39 @@ final readonly class ExampleSeeder
         return $pageUid;
     }
 
+    /**
+     * What sits above each form: what the example does, what to try in it, and what makes the
+     * decision hard. The lab is where people meet Jev for the first time, and a form that
+     * changes only on blur, or only after sending, does not explain itself.
+     *
+     * @param array<string, mixed> $example
+     * @param 'En'|'De'            $language
+     */
+    private function introHtml(array $example, string $language): string
+    {
+        $html = '<p>' . htmlspecialchars(Cast::string($example['intro' . $language] ?? null)) . '</p>';
+
+        $tries = Cast::stringList($example['try' . $language] ?? null);
+        if ($tries !== []) {
+            $html .= '<h2>' . ($language === 'De' ? 'Probieren Sie es aus' : 'Try it') . '</h2><ul>';
+            foreach ($tries as $try) {
+                $html .= '<li>' . htmlspecialchars($try) . '</li>';
+            }
+            $html .= '</ul>';
+        }
+
+        $challenge = Cast::trimmed($example['challenge' . $language] ?? null);
+        if ($challenge !== '') {
+            $html .= '<h2>' . ($language === 'De' ? 'Die Herausforderung' : 'The challenge') . '</h2>'
+                . '<p>' . htmlspecialchars($challenge) . '</p>';
+        }
+
+        return $html;
+    }
+
     private function insertText(
         int $pid,
-        string $body,
+        string $bodyHtml,
         int $sorting,
         int $now,
         int $languageUid = 0,
@@ -582,7 +612,7 @@ final readonly class ExampleSeeder
             'CType' => 'text',
             'header' => '',
             'header_layout' => 100,
-            'bodytext' => '<p>' . htmlspecialchars($body) . '</p>',
+            'bodytext' => $bodyHtml,
             'colPos' => 0,
             'sorting' => $sorting,
             'sys_language_uid' => $languageUid,
