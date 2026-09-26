@@ -39,7 +39,7 @@ $GLOBALS['TCA']['tx_powermailcond_domain_model_rule']['columns'] += [
             'renderType' => 'selectSingle',
             'items' => [['label' => '', 'value' => 0]],
             'foreign_table' => 'tx_webconjev_decision',
-            'foreign_table_where' => 'AND {#tx_webconjev_decision}.{#sys_language_uid} IN (-1,0) ORDER BY {#tx_webconjev_decision}.{#title}',
+            'foreign_table_where' => 'AND {#tx_webconjev_decision}.{#sys_language_uid} IN (-1,0) ORDER BY tx_webconjev_decision.title',
             'size' => 1,
             'maxitems' => 1,
             'default' => 0,
