@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Webconsulting\WebconJev\Service;
 
 use Netresearch\NrVault\Configuration\ExtensionConfigurationInterface as VaultConfiguration;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use Webconsulting\WebconJev\Support\Cast;
 
 /**
@@ -20,6 +22,13 @@ use Webconsulting\WebconJev\Support\Cast;
  * on typo3-lab: the setting was written, the next deploy replaced the file, and the uid was back
  * to 0 — so a rotation months later would have failed with nothing obviously changed. The
  * backend user is a database row and survives.
+ *
+ * The configured uid is only trusted while it names a user nr-vault will accept. The database
+ * can move without the configuration: typo3-lab's was replaced by a copy of the development
+ * database, where the provisioner has another uid, and the image kept pointing at a uid that no
+ * longer existed — every provisioned command then died in nr-vault with "does not resolve to a
+ * non-deleted be_users record". A configured uid that is gone, deleted, disabled or not at root
+ * level now falls through to the lookup by name.
  */
 final readonly class ProvisionerResolver
 {
@@ -37,7 +46,7 @@ final readonly class ProvisionerResolver
     public function resolve(): int
     {
         $configured = $this->vaultConfiguration->getProvisioningBeUserUid();
-        if ($configured > 0) {
+        if ($configured > 0 && $this->isUsable($configured)) {
             return $configured;
         }
 
@@ -50,37 +59,57 @@ final readonly class ProvisionerResolver
     public function describe(): string
     {
         $configured = $this->vaultConfiguration->getProvisioningBeUserUid();
-        if ($configured > 0) {
+        if ($configured > 0 && $this->isUsable($configured)) {
             return sprintf('backend user %d (nr-vault configuration)', $configured);
         }
 
         $found = $this->byUsername();
+        $ignored = $configured > 0
+            ? sprintf('; the configured backend user %d is gone or disabled', $configured)
+            : '';
 
         return $found > 0
-            ? sprintf('backend user %d ("%s", found by name)', $found, self::USERNAME)
-            : 'none — run "webcon-jev:vault:setup-provisioner"';
+            ? sprintf('backend user %d ("%s", found by name%s)', $found, self::USERNAME, $ignored)
+            : sprintf('none — run "webcon-jev:vault:setup-provisioner"%s', $ignored);
+    }
+
+    private function isUsable(int $uid): bool
+    {
+        $query = $this->usableUsers();
+
+        return $query
+            ->andWhere($query->expr()->eq('uid', $query->createNamedParameter($uid, Connection::PARAM_INT)))
+            ->executeQuery()
+            ->fetchOne() !== false;
     }
 
     private function byUsername(): int
     {
+        $query = $this->usableUsers();
+
+        return Cast::int($query
+            ->andWhere($query->expr()->eq('username', $query->createNamedParameter(self::USERNAME)))
+            ->executeQuery()
+            ->fetchOne());
+    }
+
+    /**
+     * Backend users nr-vault accepts as a technical actor: present, not deleted, enabled and at
+     * root level. A row failing any of those is no better than no row — nr-vault throws on it.
+     */
+    private function usableUsers(): QueryBuilder
+    {
         $query = $this->connectionPool->getQueryBuilderForTable('be_users');
         $query->getRestrictions()->removeAll();
 
-        // nr-vault refuses an actor that is not root-level and enabled, so a row failing those is
-        // no better than no row: report nothing rather than a uid that will throw later.
-        $uid = $query
+        return $query
             ->select('uid')
             ->from('be_users')
             ->where(
-                $query->expr()->eq('username', $query->createNamedParameter(self::USERNAME)),
-                $query->expr()->eq('deleted', $query->createNamedParameter(0)),
-                $query->expr()->eq('disable', $query->createNamedParameter(0)),
-                $query->expr()->eq('pid', $query->createNamedParameter(0)),
+                $query->expr()->eq('deleted', $query->createNamedParameter(0, Connection::PARAM_INT)),
+                $query->expr()->eq('disable', $query->createNamedParameter(0, Connection::PARAM_INT)),
+                $query->expr()->eq('pid', $query->createNamedParameter(0, Connection::PARAM_INT)),
             )
-            ->setMaxResults(1)
-            ->executeQuery()
-            ->fetchOne();
-
-        return Cast::int($uid);
+            ->setMaxResults(1);
     }
 }

@@ -21,10 +21,57 @@ final class ProvisionerResolverTest extends AbstractJevTestCase
     public function aConfiguredUidWinsOverTheLookupByName(): void
     {
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/be_users.csv');
+        $this->getConnectionPool()->getConnectionForTable('be_users')->insert('be_users', [
+            'uid' => 99,
+            'pid' => 0,
+            'username' => 'deliberately_named',
+            'password' => 'invalid-no-login',
+        ]);
         $resolver = new ProvisionerResolver(self::vaultConfiguration(uid: 99), $this->get(ConnectionPool::class));
 
         self::assertSame(99, $resolver->resolve());
         self::assertStringContainsString('nr-vault configuration', $resolver->describe());
+    }
+
+    #[Test]
+    public function aConfiguredUidThatNoLongerExistsFallsBackToTheName(): void
+    {
+        // typo3-lab 2026-09-26: the database was replaced by a development copy where the
+        // provisioner is uid 13, and the image still configured 12 — a uid with no row behind it.
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/be_users.csv');
+        $resolver = new ProvisionerResolver(self::vaultConfiguration(uid: 12), $this->get(ConnectionPool::class));
+
+        self::assertSame(20, $resolver->resolve());
+        self::assertSame(
+            'backend user 20 ("vault_provisioner", found by name; the configured backend user 12 is gone or disabled)',
+            $resolver->describe(),
+        );
+    }
+
+    #[Test]
+    public function aConfiguredUidThatIsDeletedOrDisabledIsNotUsed(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/be_users.csv');
+        $connection = $this->getConnectionPool()->getConnectionForTable('be_users');
+        $connection->insert('be_users', ['uid' => 30, 'pid' => 0, 'username' => 'old_provisioner', 'deleted' => 1]);
+        $connection->insert('be_users', ['uid' => 31, 'pid' => 0, 'username' => 'locked_provisioner', 'disable' => 1]);
+
+        foreach ([30, 31] as $uid) {
+            $resolver = new ProvisionerResolver(self::vaultConfiguration(uid: $uid), $this->get(ConnectionPool::class));
+            self::assertSame(20, $resolver->resolve(), sprintf('configured uid %d', $uid));
+        }
+    }
+
+    #[Test]
+    public function aStaleConfigurationAndNoProvisionerSaysBoth(): void
+    {
+        $resolver = new ProvisionerResolver(self::vaultConfiguration(uid: 12), $this->get(ConnectionPool::class));
+
+        self::assertSame(0, $resolver->resolve());
+        self::assertSame(
+            'none — run "webcon-jev:vault:setup-provisioner"; the configured backend user 12 is gone or disabled',
+            $resolver->describe(),
+        );
     }
 
     #[Test]
