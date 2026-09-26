@@ -5,6 +5,17 @@
 Changelog
 =========
 
+Unreleased
+==========
+
+Changed
+-------
+
+*   The escalation note of Powermail 08 (support triage) gives +49 30 23125 999, a number from
+    the block the Bundesnetzagentur keeps free for film and television, instead of
+    webconsulting's real phone number. The examples run on the Desiderio demo site, whose
+    contact data reaches no one. ``webcon-jev:examples:seed`` writes the new text.
+
 0.2.9 — 2026-09-26
 ==================
 
