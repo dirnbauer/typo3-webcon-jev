@@ -5,6 +5,17 @@
 Changelog
 =========
 
+0.2.13 — 2026-09-27
+===================
+
+Fixed
+-----
+
+*   The Jev routing tab of a Powermail form and the decision field of a Powermail condition rule
+    load again on MariaDB and MySQL. Both lists sort the decisions by title, and the quoted
+    ``ORDER BY`` stayed in the database query's condition, so the backend showed a database
+    error and a missing label instead of the decisions.
+
 0.2.12 — 2026-09-26
 ===================
 
