@@ -108,6 +108,38 @@ Configuration
     Where decisions created in the backend module are stored. ``0`` keeps them at root level, which
     is where the :guilabel:`Records` module shows them.
 
+..  _configuration-typoscript:
+
+Frontend TypoScript
+===================
+
+Add the site set :yaml:`webconsulting/webcon-jev` ("Jev decisions") to the site, or the static
+template "Jev decisions" to a TypoScript record on a site without sets. Both load the same setup.
+
+..  confval:: plugin.tx_webconjev.settings.debug
+    :type: boolean
+    :default: 0
+
+    Shows a debug panel wherever Jev is asked in the frontend. Under a form with conditions it
+    appears as the visitor types and updates with every answer. On the page a routed submission
+    renders, it shows where the mail went. For every decision it lists what Jev read, each answer
+    with its confidence and whole distribution, whether the answer cleared the gate, each
+    powermail_cond rule with the field it shows or hides, and model, time, tokens and cost.
+
+    Set it as a site setting, as a constant of the same name, or directly in TypoScript. Visitors
+    see the panel too, so on anything public scope it with a condition:
+
+    ..  code-block:: typoscript
+
+        [backend.user.isLoggedIn]
+          plugin.tx_webconjev.settings.debug = 1
+        [END]
+
+    The panel under a form needs powermail_cond's ``powermailcond:processed`` event, which the
+    ``typo3-v14`` branch of the fork has from commit ``38eec7d``. The script that listens for it is
+    included through the constant, so a value set only in setup shows the panel after a
+    submission but not while typing.
+
 A cold cache costs more than the call
 =====================================
 

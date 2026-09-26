@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="de" datatype="plaintext" original="EXT:webcon_jev/Configuration/Sets/WebconJev/labels.xlf" date="2026-09-26T00:00:00Z" product-name="webcon_jev">
+    <header/>
+    <body>
+      <trans-unit id="label" resname="label" xml:space="preserve">
+        <source>Jev decisions</source>
+        <target state="final">Jev-Entscheidungen</target>
+      </trans-unit>
+      <trans-unit id="description" resname="description" xml:space="preserve">
+        <source>Frontend settings for Jev decisions in Powermail forms.</source>
+        <target state="final">Frontend-Einstellungen für Jev-Entscheidungen in Powermail-Formularen.</target>
+      </trans-unit>
+      <trans-unit id="categories.webconJev" resname="categories.webconJev" xml:space="preserve">
+        <source>Jev decisions</source>
+        <target state="final">Jev-Entscheidungen</target>
+      </trans-unit>
+      <trans-unit id="settings.plugin.tx_webconjev.settings.debug" resname="settings.plugin.tx_webconjev.settings.debug" xml:space="preserve">
+        <source>Debug panel</source>
+        <target state="final">Debug-Anzeige</target>
+      </trans-unit>
+      <trans-unit id="settings.description.plugin.tx_webconjev.settings.debug" resname="settings.description.plugin.tx_webconjev.settings.debug" xml:space="preserve">
+        <source>Show what Jev decided next to every Powermail form that asks it, and where a submission was routed. Visitors see it too, so never switch it on for a live site.</source>
+        <target state="final">Zeigt neben jedem Powermail-Formular, das Jev fragt, was Jev entschieden hat, und wohin eine Einsendung geleitet wurde. Auch Besucher sehen das – auf einer Live-Website nie einschalten.</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

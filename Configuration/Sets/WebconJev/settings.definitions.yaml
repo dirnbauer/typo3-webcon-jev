@@ -1,0 +1,9 @@
+categories:
+  webconJev:
+    label: 'Jev decisions'
+
+settings:
+  plugin.tx_webconjev.settings.debug:
+    category: webconJev
+    type: bool
+    default: false

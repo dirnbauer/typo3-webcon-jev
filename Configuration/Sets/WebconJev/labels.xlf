@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" datatype="plaintext" original="EXT:webcon_jev/Configuration/Sets/WebconJev/labels.xlf" date="2026-09-26T00:00:00Z" product-name="webcon_jev">
+    <header/>
+    <body>
+      <trans-unit id="label" resname="label" xml:space="preserve">
+        <source>Jev decisions</source>
+      </trans-unit>
+      <trans-unit id="description" resname="description" xml:space="preserve">
+        <source>Frontend settings for Jev decisions in Powermail forms.</source>
+      </trans-unit>
+      <trans-unit id="categories.webconJev" resname="categories.webconJev" xml:space="preserve">
+        <source>Jev decisions</source>
+      </trans-unit>
+      <trans-unit id="settings.plugin.tx_webconjev.settings.debug" resname="settings.plugin.tx_webconjev.settings.debug" xml:space="preserve">
+        <source>Debug panel</source>
+      </trans-unit>
+      <trans-unit id="settings.description.plugin.tx_webconjev.settings.debug" resname="settings.description.plugin.tx_webconjev.settings.debug" xml:space="preserve">
+        <source>Show what Jev decided next to every Powermail form that asks it, and where a submission was routed. Visitors see it too, so never switch it on for a live site.</source>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

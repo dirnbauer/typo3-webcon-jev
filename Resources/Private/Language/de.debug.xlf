@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="de" datatype="plaintext" original="EXT:webcon_jev/Resources/Private/Language/debug.xlf" date="2026-09-26T00:00:00Z" product-name="webcon_jev">
+    <header/>
+    <body>
+      <trans-unit id="panel.title" resname="panel.title" xml:space="preserve">
+        <source>Jev debug</source>
+        <target state="final">Jev-Debug</target>
+      </trans-unit>
+      <trans-unit id="panel.hint" resname="panel.hint" xml:space="preserve">
+        <source>Shown because plugin.tx_webconjev.settings.debug is on. Visitors see this too.</source>
+        <target state="final">Sichtbar, weil plugin.tx_webconjev.settings.debug eingeschaltet ist. Auch Besucher sehen das.</target>
+      </trans-unit>
+      <trans-unit id="notes.title" resname="notes.title" xml:space="preserve">
+        <source>Warnings</source>
+        <target state="final">Warnungen</target>
+      </trans-unit>
+      <trans-unit id="kind.conditions" resname="kind.conditions" xml:space="preserve">
+        <source>Live conditions</source>
+        <target state="final">Live-Bedingungen</target>
+      </trans-unit>
+      <trans-unit id="kind.routing" resname="kind.routing" xml:space="preserve">
+        <source>Routing on submit</source>
+        <target state="final">Weiterleitung beim Absenden</target>
+      </trans-unit>
+      <trans-unit id="status.live" resname="status.live" xml:space="preserve">
+        <source>asked live</source>
+        <target state="final">live gefragt</target>
+      </trans-unit>
+      <trans-unit id="status.cache" resname="status.cache" xml:space="preserve">
+        <source>from cache</source>
+        <target state="final">aus dem Cache</target>
+      </trans-unit>
+      <trans-unit id="status.fallback" resname="status.fallback" xml:space="preserve">
+        <source>fallback</source>
+        <target state="final">Fallback</target>
+      </trans-unit>
+      <trans-unit id="meta.model" resname="meta.model" xml:space="preserve">
+        <source>Model</source>
+        <target state="final">Modell</target>
+      </trans-unit>
+      <trans-unit id="meta.time" resname="meta.time" xml:space="preserve">
+        <source>Time</source>
+        <target state="final">Dauer</target>
+      </trans-unit>
+      <trans-unit id="meta.tokens" resname="meta.tokens" xml:space="preserve">
+        <source>Input tokens</source>
+        <target state="final">Input-Tokens</target>
+      </trans-unit>
+      <trans-unit id="meta.cost" resname="meta.cost" xml:space="preserve">
+        <source>Cost</source>
+        <target state="final">Kosten</target>
+      </trans-unit>
+      <trans-unit id="meta.threshold" resname="meta.threshold" xml:space="preserve">
+        <source>Confidence threshold</source>
+        <target state="final">Konfidenz-Schwelle</target>
+      </trans-unit>
+      <trans-unit id="fallback.message" resname="fallback.message" xml:space="preserve">
+        <source>Jev gave no answer, so every rule and the routing act as if it had not been asked. Reason: %s</source>
+        <target state="final">Jev hat nicht geantwortet, darum verhalten sich alle Regeln und die Weiterleitung, als wäre nicht gefragt worden. Grund: %s</target>
+      </trans-unit>
+      <trans-unit id="answers.title" resname="answers.title" xml:space="preserve">
+        <source>Answers</source>
+        <target state="final">Antworten</target>
+      </trans-unit>
+      <trans-unit id="answers.question" resname="answers.question" xml:space="preserve">
+        <source>Question</source>
+        <target state="final">Frage</target>
+      </trans-unit>
+      <trans-unit id="answers.answer" resname="answers.answer" xml:space="preserve">
+        <source>Answer</source>
+        <target state="final">Antwort</target>
+      </trans-unit>
+      <trans-unit id="answers.confidence" resname="answers.confidence" xml:space="preserve">
+        <source>Confidence</source>
+        <target state="final">Konfidenz</target>
+      </trans-unit>
+      <trans-unit id="answers.derived" resname="answers.derived" xml:space="preserve">
+        <source>derived: a noul reports none</source>
+        <target state="final">abgeleitet: ein Noul liefert keine</target>
+      </trans-unit>
+      <trans-unit id="answers.unsure" resname="answers.unsure" xml:space="preserve">
+        <source>below the threshold</source>
+        <target state="final">unter der Schwelle</target>
+      </trans-unit>
+      <trans-unit id="answers.distribution" resname="answers.distribution" xml:space="preserve">
+        <source>Distribution</source>
+        <target state="final">Verteilung</target>
+      </trans-unit>
+      <trans-unit id="rules.title" resname="rules.title" xml:space="preserve">
+        <source>Rules</source>
+        <target state="final">Regeln</target>
+      </trans-unit>
+      <trans-unit id="rules.rule" resname="rules.rule" xml:space="preserve">
+        <source>Rule %s</source>
+        <target state="final">Regel %s</target>
+      </trans-unit>
+      <trans-unit id="rules.applies" resname="rules.applies" xml:space="preserve">
+        <source>applies</source>
+        <target state="final">trifft zu</target>
+      </trans-unit>
+      <trans-unit id="rules.skips" resname="rules.skips" xml:space="preserve">
+        <source>does not apply</source>
+        <target state="final">trifft nicht zu</target>
+      </trans-unit>
+      <trans-unit id="rules.answer" resname="rules.answer" xml:space="preserve">
+        <source>Answer</source>
+        <target state="final">Antwort</target>
+      </trans-unit>
+      <trans-unit id="rules.gate.rule" resname="rules.gate.rule" xml:space="preserve">
+        <source>no confidence gate, the rule's own number decides</source>
+        <target state="final">keine Konfidenz-Schwelle, die Zahl der Regel entscheidet</target>
+      </trans-unit>
+      <trans-unit id="rules.gate.passed" resname="rules.gate.passed" xml:space="preserve">
+        <source>confidence %1$s, clears %2$s</source>
+        <target state="final">Konfidenz %1$s, über %2$s</target>
+      </trans-unit>
+      <trans-unit id="rules.gate.failed" resname="rules.gate.failed" xml:space="preserve">
+        <source>confidence %1$s, below %2$s: the answer is not used</source>
+        <target state="final">Konfidenz %1$s, unter %2$s: die Antwort wird nicht verwendet</target>
+      </trans-unit>
+      <trans-unit id="rules.gate.missing" resname="rules.gate.missing" xml:space="preserve">
+        <source>no answer to read</source>
+        <target state="final">keine Antwort vorhanden</target>
+      </trans-unit>
+      <trans-unit id="rules.effect.show" resname="rules.effect.show" xml:space="preserve">
+        <source>When it applies, the form shows “%s”.</source>
+        <target state="final">Wenn sie zutrifft, zeigt das Formular „%s“.</target>
+      </trans-unit>
+      <trans-unit id="rules.effect.hide" resname="rules.effect.hide" xml:space="preserve">
+        <source>When it applies, the form hides “%s”.</source>
+        <target state="final">Wenn sie zutrifft, blendet das Formular „%s“ aus.</target>
+      </trans-unit>
+      <trans-unit id="routing.title" resname="routing.title" xml:space="preserve">
+        <source>Routing</source>
+        <target state="final">Weiterleitung</target>
+      </trans-unit>
+      <trans-unit id="routing.question" resname="routing.question" xml:space="preserve">
+        <source>Routing question</source>
+        <target state="final">Weiterleitungs-Frage</target>
+      </trans-unit>
+      <trans-unit id="routing.outcome" resname="routing.outcome" xml:space="preserve">
+        <source>Outcome</source>
+        <target state="final">Ergebnis</target>
+      </trans-unit>
+      <trans-unit id="routing.receivers" resname="routing.receivers" xml:space="preserve">
+        <source>Sent to</source>
+        <target state="final">Gesendet an</target>
+      </trans-unit>
+      <trans-unit id="routing.default" resname="routing.default" xml:space="preserve">
+        <source>The decision's default outcome stood in: Jev's answer was missing, below the threshold, or has no outcome value.</source>
+        <target state="final">Das Standard-Ergebnis der Entscheidung wurde verwendet: Jevs Antwort fehlte, lag unter der Schwelle oder hat keinen Ergebniswert.</target>
+      </trans-unit>
+      <trans-unit id="routing.none" resname="routing.none" xml:space="preserve">
+        <source>The outcome holds no valid address, so the form's own receiver got the mail.</source>
+        <target state="final">Das Ergebnis enthält keine gültige Adresse, darum ging die Mail an den Empfänger des Formulars.</target>
+      </trans-unit>
+      <trans-unit id="state.title" resname="state.title" xml:space="preserve">
+        <source>What Jev read</source>
+        <target state="final">Was Jev gelesen hat</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

@@ -14,7 +14,11 @@ use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use Webconsulting\WebconJev\Debug\DebugLog;
+use Webconsulting\WebconJev\Debug\DecisionTrace;
+use Webconsulting\WebconJev\Debug\RoutingTrace;
 use Webconsulting\WebconJev\Domain\Repository\DecisionRepository;
+use Webconsulting\WebconJev\Service\DecisionOutcome;
 use Webconsulting\WebconJev\Service\DecisionRunner;
 use Webconsulting\WebconJev\Service\RunLogger;
 use Webconsulting\WebconJev\Support\Cast;
@@ -42,6 +46,7 @@ final readonly class MailRoutingListener
         private RoutingDecisionStore $store,
         private ConnectionPool $connectionPool,
         private LoggerInterface $logger,
+        private DebugLog $debugLog,
     ) {}
 
     /**
@@ -70,18 +75,36 @@ final readonly class MailRoutingListener
                 'form' => $formUid,
                 'decision' => $decisionUid,
             ]);
+            $this->debugLog->note(sprintf(
+                'Form %d routes through decision %d, which is gone; its own receiver got the mail.',
+                $formUid,
+                $decisionUid,
+            ));
 
             return;
         }
 
+        $context = $this->stateCollector->collect($mail);
         $outcome = $this->runner->run(
             $decision,
-            $this->stateCollector->collect($mail),
+            $context,
             RunLogger::CONTEXT_FINISHER,
             sprintf('form %d, mail %d', $formUid, Cast::int($mail->getUid())),
         );
 
-        $receivers = $this->receiversFrom($outcome->outcomeFor($questionName));
+        $outcomeValue = $outcome->outcomeFor($questionName);
+        $receivers = $this->receiversFrom($outcomeValue);
+
+        $this->debugLog->trace(
+            DecisionTrace::ROUTING . ':' . $formUid,
+            new DecisionTrace(DecisionTrace::ROUTING, $outcome, $context),
+        )->setRouting(new RoutingTrace(
+            question: $questionName,
+            outcomeValue: $outcomeValue,
+            receivers: $receivers,
+            usedDefault: $this->usedDefault($outcome, $questionName),
+        ));
+
         if ($receivers === []) {
             return;
         }
@@ -100,6 +123,18 @@ final readonly class MailRoutingListener
         }
 
         $event->setEmailArray($this->store->receivers());
+    }
+
+    /**
+     * Whether the decision's default outcome stood in for an answer — missing, unsure, or an option
+     * the editor gave no outcome value.
+     */
+    private function usedDefault(DecisionOutcome $outcome, string $questionName): bool
+    {
+        $choice = $outcome->confidentAnswer($questionName)?->choice;
+
+        return !is_string($choice)
+            || $outcome->decision->question($questionName)?->outcomeValueFor($choice) === null;
     }
 
     /**

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" datatype="plaintext" original="EXT:webcon_jev/Resources/Private/Language/debug.xlf" date="2026-09-26T00:00:00Z" product-name="webcon_jev">
+    <header/>
+    <body>
+      <trans-unit id="panel.title" resname="panel.title" xml:space="preserve">
+        <source>Jev debug</source>
+      </trans-unit>
+      <trans-unit id="panel.hint" resname="panel.hint" xml:space="preserve">
+        <source>Shown because plugin.tx_webconjev.settings.debug is on. Visitors see this too.</source>
+      </trans-unit>
+      <trans-unit id="notes.title" resname="notes.title" xml:space="preserve">
+        <source>Warnings</source>
+      </trans-unit>
+      <trans-unit id="kind.conditions" resname="kind.conditions" xml:space="preserve">
+        <source>Live conditions</source>
+      </trans-unit>
+      <trans-unit id="kind.routing" resname="kind.routing" xml:space="preserve">
+        <source>Routing on submit</source>
+      </trans-unit>
+      <trans-unit id="status.live" resname="status.live" xml:space="preserve">
+        <source>asked live</source>
+      </trans-unit>
+      <trans-unit id="status.cache" resname="status.cache" xml:space="preserve">
+        <source>from cache</source>
+      </trans-unit>
+      <trans-unit id="status.fallback" resname="status.fallback" xml:space="preserve">
+        <source>fallback</source>
+      </trans-unit>
+      <trans-unit id="meta.model" resname="meta.model" xml:space="preserve">
+        <source>Model</source>
+      </trans-unit>
+      <trans-unit id="meta.time" resname="meta.time" xml:space="preserve">
+        <source>Time</source>
+      </trans-unit>
+      <trans-unit id="meta.tokens" resname="meta.tokens" xml:space="preserve">
+        <source>Input tokens</source>
+      </trans-unit>
+      <trans-unit id="meta.cost" resname="meta.cost" xml:space="preserve">
+        <source>Cost</source>
+      </trans-unit>
+      <trans-unit id="meta.threshold" resname="meta.threshold" xml:space="preserve">
+        <source>Confidence threshold</source>
+      </trans-unit>
+      <trans-unit id="fallback.message" resname="fallback.message" xml:space="preserve">
+        <source>Jev gave no answer, so every rule and the routing act as if it had not been asked. Reason: %s</source>
+      </trans-unit>
+      <trans-unit id="answers.title" resname="answers.title" xml:space="preserve">
+        <source>Answers</source>
+      </trans-unit>
+      <trans-unit id="answers.question" resname="answers.question" xml:space="preserve">
+        <source>Question</source>
+      </trans-unit>
+      <trans-unit id="answers.answer" resname="answers.answer" xml:space="preserve">
+        <source>Answer</source>
+      </trans-unit>
+      <trans-unit id="answers.confidence" resname="answers.confidence" xml:space="preserve">
+        <source>Confidence</source>
+      </trans-unit>
+      <trans-unit id="answers.derived" resname="answers.derived" xml:space="preserve">
+        <source>derived: a noul reports none</source>
+      </trans-unit>
+      <trans-unit id="answers.unsure" resname="answers.unsure" xml:space="preserve">
+        <source>below the threshold</source>
+      </trans-unit>
+      <trans-unit id="answers.distribution" resname="answers.distribution" xml:space="preserve">
+        <source>Distribution</source>
+      </trans-unit>
+      <trans-unit id="rules.title" resname="rules.title" xml:space="preserve">
+        <source>Rules</source>
+      </trans-unit>
+      <trans-unit id="rules.rule" resname="rules.rule" xml:space="preserve">
+        <source>Rule %s</source>
+      </trans-unit>
+      <trans-unit id="rules.applies" resname="rules.applies" xml:space="preserve">
+        <source>applies</source>
+      </trans-unit>
+      <trans-unit id="rules.skips" resname="rules.skips" xml:space="preserve">
+        <source>does not apply</source>
+      </trans-unit>
+      <trans-unit id="rules.answer" resname="rules.answer" xml:space="preserve">
+        <source>Answer</source>
+      </trans-unit>
+      <trans-unit id="rules.gate.rule" resname="rules.gate.rule" xml:space="preserve">
+        <source>no confidence gate, the rule's own number decides</source>
+      </trans-unit>
+      <trans-unit id="rules.gate.passed" resname="rules.gate.passed" xml:space="preserve">
+        <source>confidence %1$s, clears %2$s</source>
+      </trans-unit>
+      <trans-unit id="rules.gate.failed" resname="rules.gate.failed" xml:space="preserve">
+        <source>confidence %1$s, below %2$s: the answer is not used</source>
+      </trans-unit>
+      <trans-unit id="rules.gate.missing" resname="rules.gate.missing" xml:space="preserve">
+        <source>no answer to read</source>
+      </trans-unit>
+      <trans-unit id="rules.effect.show" resname="rules.effect.show" xml:space="preserve">
+        <source>When it applies, the form shows “%s”.</source>
+      </trans-unit>
+      <trans-unit id="rules.effect.hide" resname="rules.effect.hide" xml:space="preserve">
+        <source>When it applies, the form hides “%s”.</source>
+      </trans-unit>
+      <trans-unit id="routing.title" resname="routing.title" xml:space="preserve">
+        <source>Routing</source>
+      </trans-unit>
+      <trans-unit id="routing.question" resname="routing.question" xml:space="preserve">
+        <source>Routing question</source>
+      </trans-unit>
+      <trans-unit id="routing.outcome" resname="routing.outcome" xml:space="preserve">
+        <source>Outcome</source>
+      </trans-unit>
+      <trans-unit id="routing.receivers" resname="routing.receivers" xml:space="preserve">
+        <source>Sent to</source>
+      </trans-unit>
+      <trans-unit id="routing.default" resname="routing.default" xml:space="preserve">
+        <source>The decision's default outcome stood in: Jev's answer was missing, below the threshold, or has no outcome value.</source>
+      </trans-unit>
+      <trans-unit id="routing.none" resname="routing.none" xml:space="preserve">
+        <source>The outcome holds no valid address, so the form's own receiver got the mail.</source>
+      </trans-unit>
+      <trans-unit id="state.title" resname="state.title" xml:space="preserve">
+        <source>What Jev read</source>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

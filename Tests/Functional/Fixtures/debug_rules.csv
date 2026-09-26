@@ -1,0 +1,12 @@
+"tx_powermail_domain_model_field",,,,,
+,"uid","pid","title","marker","type"
+,10,0,"How can we reproduce it?","reproduction","textarea"
+,11,0,"Send report","submit","submit"
+"tx_powermailcond_domain_model_condition",,,,,
+,"uid","pid","title","target_field","actions"
+,5,0,"Ask for reproduction steps only for a bug report",10,1
+,6,0,"Hold the send button when there is nothing to answer",11,0
+"tx_powermailcond_domain_model_rule",,,,,
+,"uid","pid","title","conditions","ops"
+,7,0,"is_bug NoulAbove",5,104
+,8,0,"effort ScoreBelow",6,103

@@ -110,6 +110,20 @@ every request to it 404s:
 The site also needs the ``in2code/powermail-cond`` site set, which loads the condition JavaScript
 and defines that page type.
 
+A theme that brings its own Powermail form template has to keep Powermail's hook classes on the
+form: ``powermail_form`` and ``powermail_form_{form.uid}`` on the ``<form>`` tag,
+``powermail_form_uid`` on the hidden form uid, and ``powermail_fieldwrap_{marker}`` around each
+field. powermail_cond's script only starts on a ``.powermail_form``. Without that class nothing
+calls the condition endpoint and every field stays visible: the rules work, but nobody asks them.
+
+Seeing what Jev decided
+=======================
+
+Switch on :confval:`plugin.tx_webconjev.settings.debug <plugin.tx_webconjev.settings.debug>` and
+every form that asks Jev shows a panel with the answers, how sure Jev was, and which rule each one
+turned on or off. The panel reads the same outcome the rules read, so when a field does not appear,
+it says whether Jev answered differently, answered below the threshold, or was not asked at all.
+
 The demo forms
 ==============
 

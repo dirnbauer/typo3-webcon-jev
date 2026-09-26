@@ -5,6 +5,23 @@
 Changelog
 =========
 
+0.2.8 — 2026-09-26
+==================
+
+Added
+-----
+
+*   A frontend debug panel, switched by TypoScript
+    :confval:`plugin.tx_webconjev.settings.debug <plugin.tx_webconjev.settings.debug>` (site set
+    :yaml:`webconsulting/webcon-jev` or static template "Jev decisions"). It shows, for every
+    decision a request asked, what Jev read, each answer with its confidence and distribution,
+    how each powermail_cond rule used it and which field it shows or hides, and where a routed
+    submission went, with model, time, tokens and cost. Under a form it updates as the visitor
+    types; after a submission it sits on the thank-you page. It is one self-contained fragment
+    with no inline style or script, in English and German.
+*   Both Powermail listeners report what stopped them before Jev was asked — a rule without a
+    decision, a decision that was deleted — to that panel, where the run log never sees it.
+
 0.2.7 — 2026-09-25
 ==================
 

@@ -1,0 +1,6 @@
+plugin.tx_webconjev {
+  settings {
+    # cat=plugin.tx_webconjev/debug/10; type=boolean; label=Debug: show what Jev decided next to every Powermail form that asks it, and where a submission was routed. Never on a live site.
+    debug = 0
+  }
+}

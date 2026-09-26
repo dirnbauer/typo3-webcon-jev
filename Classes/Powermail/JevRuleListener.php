@@ -10,6 +10,9 @@ use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
 use Webconsulting\WebconJev\Client\Dto\Answer;
 use Webconsulting\WebconJev\Client\Dto\QuestionType;
+use Webconsulting\WebconJev\Debug\DebugLog;
+use Webconsulting\WebconJev\Debug\DecisionTrace;
+use Webconsulting\WebconJev\Debug\RuleTrace;
 use Webconsulting\WebconJev\Domain\Repository\DecisionRepository;
 use Webconsulting\WebconJev\Service\DecisionOutcome;
 use Webconsulting\WebconJev\Service\DecisionRunner;
@@ -39,6 +42,7 @@ final class JevRuleListener
         private readonly DecisionRunner $runner,
         private readonly FormStateCollector $stateCollector,
         private readonly LoggerInterface $logger,
+        private readonly DebugLog $debugLog,
     ) {}
 
     public function __invoke(EvaluateRuleEvent $event): void
@@ -52,6 +56,7 @@ final class JevRuleListener
         $configuration = $this->ruleConfigurations->forRule(Cast::int($rule->getUid()));
         if ($configuration === null || !$configuration->isComplete()) {
             $this->logger->warning('A Jev rule is not configured.', ['rule' => $rule->getUid()]);
+            $this->debugLog->note(sprintf('Rule %d has no decision or question and never applies.', Cast::int($rule->getUid())));
             $event->setResult(false);
 
             return;
@@ -63,6 +68,11 @@ final class JevRuleListener
                 'rule' => $rule->getUid(),
                 'decision' => $configuration->decisionUid,
             ]);
+            $this->debugLog->note(sprintf(
+                'Rule %d points at decision %d, which is gone; it never applies.',
+                Cast::int($rule->getUid()),
+                $configuration->decisionUid,
+            ));
             $event->setResult(false);
 
             return;
@@ -70,21 +80,37 @@ final class JevRuleListener
 
         $form = $event->getForm();
         $formUid = Cast::int($form->getUid());
-        $outcome = $this->memo[$this->memoKey($decision->uid, $formUid)] ??= $this->runner->run(
-            $decision,
-            $this->stateCollector->collect($form),
-            RunLogger::CONTEXT_CONDITION,
-            sprintf('form %d, rule %d', $formUid, Cast::int($rule->getUid())),
-        );
-
-        $answer = $this->usableAnswer($outcome, $operator, $configuration->questionName);
-        if ($answer === null) {
-            $event->setResult(false);
-
-            return;
+        $memoKey = $this->memoKey($decision->uid, $formUid);
+        if (!isset($this->memo[$memoKey])) {
+            $context = $this->stateCollector->collect($form);
+            $this->memo[$memoKey] = $this->runner->run(
+                $decision,
+                $context,
+                RunLogger::CONTEXT_CONDITION,
+                sprintf('form %d, rule %d', $formUid, Cast::int($rule->getUid())),
+            );
+            $this->debugLog->trace(
+                DecisionTrace::CONDITIONS . ':' . $memoKey,
+                new DecisionTrace(DecisionTrace::CONDITIONS, $this->memo[$memoKey], $context),
+            );
         }
+        $outcome = $this->memo[$memoKey];
 
-        $event->setResult($operator->matches($answer, $configuration->comparisonValue($operator)));
+        $expected = $configuration->comparisonValue($operator);
+        $answer = $this->usableAnswer($outcome, $operator, $configuration->questionName);
+        $result = $answer !== null && $operator->matches($answer, $expected);
+
+        $this->debugLog->find(DecisionTrace::CONDITIONS . ':' . $memoKey)?->addRule(new RuleTrace(
+            ruleUid: Cast::int($rule->getUid()),
+            operator: $operator,
+            question: $configuration->questionName,
+            expected: $expected,
+            answer: $outcome->answer($configuration->questionName),
+            usable: $answer !== null,
+            result: $result,
+        ));
+
+        $event->setResult($result);
     }
 
     private function memoKey(int $decisionUid, int $formUid): string

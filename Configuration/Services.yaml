@@ -9,6 +9,9 @@ services:
     exclude:
       - '../Classes/Backend/RequestPayload.php'
       - '../Classes/Client/Dto/*'
+      - '../Classes/Debug/DecisionTrace.php'
+      - '../Classes/Debug/RoutingTrace.php'
+      - '../Classes/Debug/RuleTrace.php'
       - '../Classes/Domain/Model/*'
       - '../Classes/Editing/Dto/*'
       - '../Classes/Exception/*'
@@ -31,6 +34,10 @@ services:
   Webconsulting\WebconJev\Service\DecisionRunner:
     arguments:
       $cache: '@cache.webcon_jev'
+
+  # The middleware stack is resolved through the container.
+  Webconsulting\WebconJev\Middleware\DebugPanelMiddleware:
+    public: true
 
   # FormEngine resolves an itemsProcFunc through the container, so it has to be reachable.
   # The module and AJAX controllers are made public by their #[AsController] attribute.

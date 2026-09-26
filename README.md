@@ -147,6 +147,24 @@ how sure it was, is written onto the mail record.
 (It is not a powermail *finisher*, although that is the obvious place to look for it: finishers run
 after the mail has already gone out, which is too late to address it.)
 
+## Seeing what Jev decided
+
+Add the site set `webconsulting/webcon-jev` (or the static template "Jev decisions") and switch on
+
+```typoscript
+plugin.tx_webconjev.settings.debug = 1
+```
+
+— as a site setting, a constant, or inside a condition such as `[backend.user.isLoggedIn]`. Every
+form that asks Jev then shows a panel: what Jev read, each answer with its confidence and full
+distribution, whether it cleared the threshold, which field each rule shows or hides, where a
+submission was routed, and model, time, tokens and cost. Under a form it updates while the visitor
+types; after a submission it sits on the thank-you page. Visitors see it too — keep it off on a
+live site.
+
+A theme with its own Powermail form template must keep `powermail_form` on the `<form>` tag:
+powermail_cond's script only starts on that class, and without it the conditions are never asked.
+
 ## Commands
 
 ```bash

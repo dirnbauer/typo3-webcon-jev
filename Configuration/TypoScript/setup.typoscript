@@ -1,0 +1,19 @@
+plugin.tx_webconjev {
+  settings {
+    # 1 shows the debug panel: the state Jev read, every answer with its confidence and
+    # distribution, how each powermail_cond rule used it, and the routing of a submission.
+    # Scope it with a condition rather than switching it on for everyone, for example
+    #   [backend.user.isLoggedIn]
+    #     plugin.tx_webconjev.settings.debug = 1
+    #   [END]
+    debug = {$plugin.tx_webconjev.settings.debug}
+  }
+}
+
+# The script that puts the panel under a form while the visitor types. The panel links its own
+# stylesheet, so nothing else is needed on the page.
+page.includeJSFooter.webconJevDebug = EXT:webcon_jev/Resources/Public/JavaScript/frontend-debug.js
+page.includeJSFooter.webconJevDebug {
+  defer = 1
+  if.isTrue = {$plugin.tx_webconjev.settings.debug}
+}

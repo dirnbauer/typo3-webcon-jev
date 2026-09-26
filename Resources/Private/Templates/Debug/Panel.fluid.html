@@ -1,0 +1,163 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+<f:comment>
+    The frontend debug panel: one self-contained fragment, appended to a page or dropped under a
+    form from the condition endpoint. It links its own stylesheet for that reason, and uses no
+    inline styles or scripts, so a strict Content-Security-Policy has nothing to object to.
+</f:comment>
+<section class="wjd" data-webcon-jev-debug-panel aria-label="{f:translate(key: 'panel.title', domain: 'webcon_jev.debug')}">
+    <link rel="stylesheet" href="{f:uri.resource(path: 'EXT:webcon_jev/Resources/Public/Css/frontend-debug.css')}" />
+
+    <header class="wjd__header">
+        <span class="wjd__mark" aria-hidden="true">J</span>
+        <div>
+            <p class="wjd__title"><f:translate key="panel.title" domain="webcon_jev.debug" /></p>
+            <p class="wjd__hint"><f:translate key="panel.hint" domain="webcon_jev.debug" /></p>
+        </div>
+    </header>
+
+    <f:if condition="{notes}">
+        <div class="wjd__alert" role="status">
+            <p class="wjd__alert-title"><f:translate key="notes.title" domain="webcon_jev.debug" /></p>
+            <ul>
+                <f:for each="{notes}" as="note"><li>{note}</li></f:for>
+            </ul>
+        </div>
+    </f:if>
+
+    <f:for each="{decisions}" as="decision">
+        <article class="wjd__decision wjd__decision--{decision.status}">
+            <header class="wjd__decision-head">
+                <span class="wjd__chip wjd__chip--{decision.kind}"><f:translate key="kind.{decision.kind}" domain="webcon_jev.debug" /></span>
+                <span class="wjd__name">{decision.title}</span>
+                <code class="wjd__code">{decision.identifier}</code>
+                <span class="wjd__status wjd__status--{decision.status}"><f:translate key="status.{decision.status}" domain="webcon_jev.debug" /></span>
+            </header>
+
+            <dl class="wjd__meta">
+                <div><dt><f:translate key="meta.model" domain="webcon_jev.debug" /></dt><dd><code>{decision.model}</code></dd></div>
+                <f:if condition="{decision.duration}"><div><dt><f:translate key="meta.time" domain="webcon_jev.debug" /></dt><dd>{decision.duration}</dd></div></f:if>
+                <f:if condition="{decision.tokens}"><div><dt><f:translate key="meta.tokens" domain="webcon_jev.debug" /></dt><dd>{decision.tokens}</dd></div></f:if>
+                <f:if condition="{decision.cost}"><div><dt><f:translate key="meta.cost" domain="webcon_jev.debug" /></dt><dd>{decision.cost}</dd></div></f:if>
+                <div><dt><f:translate key="meta.threshold" domain="webcon_jev.debug" /></dt><dd>{decision.threshold}</dd></div>
+            </dl>
+
+            <f:if condition="{decision.status} == 'fallback'">
+                <p class="wjd__alert wjd__alert--inline"><f:translate key="fallback.message" domain="webcon_jev.debug" arguments="{0: decision.fallbackReason}" /></p>
+            </f:if>
+
+            <f:if condition="{decision.answers}">
+                <table class="wjd__table">
+                    <caption><f:translate key="answers.title" domain="webcon_jev.debug" /></caption>
+                    <thead>
+                        <tr>
+                            <th scope="col"><f:translate key="answers.question" domain="webcon_jev.debug" /></th>
+                            <th scope="col"><f:translate key="answers.answer" domain="webcon_jev.debug" /></th>
+                            <th scope="col"><f:translate key="answers.confidence" domain="webcon_jev.debug" /></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <f:for each="{decision.answers}" as="answer">
+                            <tr class="{f:if(condition: answer.confident, else: 'is-unsure')}">
+                                <th scope="row">
+                                    <code class="wjd__code">{answer.name}</code>
+                                    <span class="wjd__type">{answer.type}</span>
+                                </th>
+                                <td>
+                                    <strong class="wjd__value">{answer.value}</strong>
+                                    <f:if condition="{answer.options}">
+                                        <ul class="wjd__dist" aria-label="{f:translate(key: 'answers.distribution', domain: 'webcon_jev.debug')}">
+                                            <f:for each="{answer.options}" as="option">
+                                                <li class="{f:if(condition: option.chosen, then: 'is-chosen')}">
+                                                    <span class="wjd__dist-label">{option.label}</span>
+                                                    <meter class="wjd__bar" min="0" max="1" value="{option.probability}">{option.percent}</meter>
+                                                    <span class="wjd__num">{option.percent}</span>
+                                                </li>
+                                            </f:for>
+                                        </ul>
+                                    </f:if>
+                                </td>
+                                <td>
+                                    <span class="wjd__confidence">
+                                        <meter class="wjd__meter" min="0" max="1" low="{decision.thresholdValue}" high="{decision.thresholdValue}" optimum="1" value="{answer.confidence}">{answer.confidencePercent}</meter>
+                                        <span class="wjd__num">{answer.confidencePercent}</span>
+                                    </span>
+                                    <f:if condition="{answer.derived}"><small class="wjd__note"><f:translate key="answers.derived" domain="webcon_jev.debug" /></small></f:if>
+                                    <f:if condition="!{answer.confident}"><small class="wjd__note wjd__note--warn"><f:translate key="answers.unsure" domain="webcon_jev.debug" /></small></f:if>
+                                </td>
+                            </tr>
+                        </f:for>
+                    </tbody>
+                </table>
+            </f:if>
+
+            <f:if condition="{decision.rules}">
+                <p class="wjd__section"><f:translate key="rules.title" domain="webcon_jev.debug" /></p>
+                <ol class="wjd__rules">
+                    <f:for each="{decision.rules}" as="rule">
+                        <li class="wjd__rule {f:if(condition: rule.result, then: 'is-applied', else: 'is-skipped')}">
+                            <span class="wjd__verdict">
+                                <f:if condition="{rule.result}">
+                                    <f:then><f:translate key="rules.applies" domain="webcon_jev.debug" /></f:then>
+                                    <f:else><f:translate key="rules.skips" domain="webcon_jev.debug" /></f:else>
+                                </f:if>
+                            </span>
+                            <div class="wjd__rule-body">
+                                <p class="wjd__rule-title">
+                                    <f:if condition="{rule.condition}">
+                                        <f:then>{rule.condition}</f:then>
+                                        <f:else><f:translate key="rules.rule" domain="webcon_jev.debug" arguments="{0: rule.uid}" /></f:else>
+                                    </f:if>
+                                </p>
+                                <p class="wjd__rule-line">
+                                    <code class="wjd__code">{rule.test}</code>
+                                    <span class="wjd__sep" aria-hidden="true">·</span>
+                                    <span><f:translate key="rules.answer" domain="webcon_jev.debug" /> <code class="wjd__code">{rule.answer}</code></span>
+                                    <span class="wjd__sep" aria-hidden="true">·</span>
+                                    <span class="{f:if(condition: rule.usable, else: 'wjd__warn')}">
+                                        <f:if condition="{rule.answered}">
+                                            <f:then>
+                                                <f:if condition="{rule.gate} == 'rule'">
+                                                    <f:then><f:translate key="rules.gate.rule" domain="webcon_jev.debug" /></f:then>
+                                                    <f:else if="{rule.usable}"><f:translate key="rules.gate.passed" domain="webcon_jev.debug" arguments="{0: rule.confidencePercent, 1: rule.threshold}" /></f:else>
+                                                    <f:else><f:translate key="rules.gate.failed" domain="webcon_jev.debug" arguments="{0: rule.confidencePercent, 1: rule.threshold}" /></f:else>
+                                                </f:if>
+                                            </f:then>
+                                            <f:else><f:translate key="rules.gate.missing" domain="webcon_jev.debug" /></f:else>
+                                        </f:if>
+                                    </span>
+                                </p>
+                                <f:if condition="{rule.target}">
+                                    <p class="wjd__rule-effect">
+                                        <f:if condition="{rule.shows}">
+                                            <f:then><f:translate key="rules.effect.show" domain="webcon_jev.debug" arguments="{0: rule.target}" /></f:then>
+                                            <f:else><f:translate key="rules.effect.hide" domain="webcon_jev.debug" arguments="{0: rule.target}" /></f:else>
+                                        </f:if>
+                                    </p>
+                                </f:if>
+                            </div>
+                        </li>
+                    </f:for>
+                </ol>
+            </f:if>
+
+            <f:if condition="{decision.routing}">
+                <p class="wjd__section"><f:translate key="routing.title" domain="webcon_jev.debug" /></p>
+                <dl class="wjd__routing">
+                    <div><dt><f:translate key="routing.question" domain="webcon_jev.debug" /></dt><dd><code class="wjd__code">{decision.routing.question}</code></dd></div>
+                    <div><dt><f:translate key="routing.outcome" domain="webcon_jev.debug" /></dt><dd><code class="wjd__code">{decision.routing.outcome}</code></dd></div>
+                    <f:if condition="{decision.routing.applied}">
+                        <div><dt><f:translate key="routing.receivers" domain="webcon_jev.debug" /></dt><dd><f:for each="{decision.routing.receivers}" as="receiver" iteration="i"><code class="wjd__code">{receiver}</code><f:if condition="!{i.isLast}">, </f:if></f:for></dd></div>
+                    </f:if>
+                </dl>
+                <f:if condition="{decision.routing.usedDefault}"><p class="wjd__note wjd__note--warn"><f:translate key="routing.default" domain="webcon_jev.debug" /></p></f:if>
+                <f:if condition="!{decision.routing.applied}"><p class="wjd__note wjd__note--warn"><f:translate key="routing.none" domain="webcon_jev.debug" /></p></f:if>
+            </f:if>
+
+            <details class="wjd__state">
+                <summary><f:translate key="state.title" domain="webcon_jev.debug" /></summary>
+                <pre>{decision.state}</pre>
+            </details>
+        </article>
+    </f:for>
+</section>
+</html>
