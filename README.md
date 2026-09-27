@@ -140,9 +140,11 @@ A powermail form gains a **Jev routing** tab: pick a decision and the choice que
 receiver. Each option of that question carries an outcome value, which is the address.
 
 The decision runs the moment the submission is saved and complete, and the answer is applied where
-powermail assembles the receiver list. Below the confidence threshold nothing is replaced and the
-form's own receiver gets the mail, exactly as it would without this extension. What was decided, and
-how sure it was, is written onto the mail record.
+powermail assembles the receiver list. Below the confidence threshold the decision's default outcome
+gets the mail; a decision without one leaves the form's own receiver in place, exactly as it would
+be without this extension. Powermail's own overrides always win: with a development-context address
+(`powermailDevelopContextEmail`) or a TypoScript `receiver.overwrite.email`, Jev does not re-address
+the mail. What was decided, and how sure it was, is written onto the mail record.
 
 (It is not a powermail *finisher*, although that is the obvious place to look for it: finishers run
 after the mail has already gone out, which is too late to address it.)

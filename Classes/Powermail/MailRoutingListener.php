@@ -8,11 +8,15 @@ use In2code\Powermail\Domain\Model\Form;
 use In2code\Powermail\Domain\Model\Mail;
 use In2code\Powermail\Events\FormControllerCreateActionAfterMailDbSavedEvent;
 use In2code\Powermail\Events\ReceiverMailReceiverPropertiesServiceSetReceiverEmailsEvent;
+use In2code\Powermail\Utility\ConfigurationUtility;
+use In2code\Powermail\Utility\TypoScriptUtility;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
+use TYPO3\CMS\Core\TypoScript\FrontendTypoScript;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use Webconsulting\WebconJev\Debug\DebugLog;
 use Webconsulting\WebconJev\Debug\DecisionTrace;
@@ -32,8 +36,9 @@ use Webconsulting\WebconJev\Support\Cast;
  *
  * So the decision runs the moment the submission is saved and complete, and the answer is applied
  * where powermail assembles the receiver list. If Jev cannot answer, or answers below the
- * decision's confidence threshold, nothing is replaced and the form's own receiver gets the mail
- * exactly as it would without this extension.
+ * decision's confidence threshold, the decision's default outcome gets the mail; with no default
+ * outcome nothing is replaced and the form's own receiver gets it, exactly as it would without
+ * this extension. Powermail's own receiver overrides always win.
  */
 final readonly class MailRoutingListener
 {
@@ -122,7 +127,57 @@ final readonly class MailRoutingListener
             return;
         }
 
+        $override = $this->powermailOverride();
+        if ($override !== null) {
+            $this->debugLog->note(sprintf('Powermail\'s %s addressed this mail; Jev\'s answer was not applied.', $override));
+
+            return;
+        }
+
         $event->setEmailArray($this->store->receivers());
+    }
+
+    /**
+     * Powermail's own receiver overrides win. Both exist to keep mail away from the real receivers:
+     * the development-context address sends every mail of a development system to one person, and
+     * a TypoScript receiver.overwrite.email does the same for a site or a page. Powermail applies
+     * them before this event, so replacing the list here would send a staging system's test
+     * submissions to the departments after all.
+     */
+    private function powermailOverride(): ?string
+    {
+        if (ConfigurationUtility::getDevelopmentContextEmail() !== '') {
+            return 'development-context address';
+        }
+
+        $request = $GLOBALS['TYPO3_REQUEST'] ?? null;
+        $typoScript = $request instanceof ServerRequestInterface ? $request->getAttribute('frontend.typoscript') : null;
+        if (!$typoScript instanceof FrontendTypoScript) {
+            return null;
+        }
+        try {
+            $setup = $typoScript->getSetupArray();
+        } catch (RuntimeException) {
+            return null;
+        }
+
+        $overwrite = $setup;
+        foreach (['plugin.', 'tx_powermail.', 'settings.', 'setup.', 'receiver.', 'overwrite.'] as $segment) {
+            $overwrite = Cast::map($overwrite[$segment] ?? null);
+        }
+        if (!isset($overwrite['email']) && !isset($overwrite['email.'])) {
+            return null;
+        }
+
+        // Evaluated the way powermail evaluates it, split the way powermail splits it.
+        $addresses = preg_split('/[\s,;|]+/', TypoScriptUtility::overwriteValueFromTypoScript('', $overwrite, 'email')) ?: [];
+        foreach ($addresses as $address) {
+            if (GeneralUtility::validEmail($address)) {
+                return 'receiver.overwrite.email';
+            }
+        }
+
+        return null;
     }
 
     /**
