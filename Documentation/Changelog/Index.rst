@@ -5,6 +5,36 @@
 Changelog
 =========
 
+0.2.16 — 2026-09-27
+===================
+
+Fixed
+-----
+
+*   Routing leaves Powermail's own receiver overrides alone. With a development-context address
+    (``powermailDevelopContextEmail``) or a TypoScript ``receiver.overwrite.email``, Powermail
+    sends every mail to one place on purpose, usually to keep a staging system's test submissions
+    away from the real receivers, and Jev replaced that list after them. The debug panel says when
+    an override won.
+*   The README and the routing listener said that an unsure answer leaves the form's own receiver
+    in place. The decision's default outcome gets the mail, as the field description in the editor
+    says; only a decision without one leaves the form's receiver alone.
+*   Example 09 holds back obvious spam, as its text says. Its conditions only read how much there
+    is to answer, so a long advertising pitch went through; either rule now closes the gate:
+    nothing to answer, or Jev at least 90 % sure the message is advertising. The seeder writes a
+    condition's conjunction instead of always AND.
+*   Example 10 offers the confidentiality agreement at a probability of 0.6 instead of 0.5, which
+    fired on a coin flip.
+*   A unit test checks the example definitions: one submit field, on the last page; every rule
+    reads a field of its form and a question of its decision with an operator of the question's
+    type; choice rules expect an option the question has; noul rules stay off 0.5; routing names
+    a choice whose options are addresses.
+
+Run ``webcon-jev:examples:seed``, then ``sitepackage:content:translate --site=desiderio``, to
+apply the example changes to forms that exist. Submissions that wait for the condition endpoint,
+answers that cannot overtake each other and a hidden send button that Enter cannot bypass come
+from the powermail_cond fork (``typo3-v14`` d492c56).
+
 0.2.15 — 2026-09-27
 ===================
 
