@@ -5,6 +5,20 @@
 Changelog
 =========
 
+0.2.15 — 2026-09-27
+===================
+
+Fixed
+-----
+
+*   The multi-step examples submit from their last page only. Project enquiry (10) and job
+    application (11) carried a submit field "Continue" on steps 1 and 2; in a multi-step form
+    the step buttons move between pages, so each of those sent the whole form from that step,
+    next to the Next button meant to be pressed. Run ``webcon-jev:examples:seed`` again, then
+    ``sitepackage:content:translate --site=desiderio`` for the Chinese and Hungarian pages, to
+    rewrite forms that exist. Desiderio 4.14.5 and Astryx 2.3.5 no longer render such fields
+    either.
+
 0.2.14 — 2026-09-27
 ===================
 
