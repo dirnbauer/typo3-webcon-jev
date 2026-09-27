@@ -23,7 +23,7 @@ use Webconsulting\WebconJev\Powermail\JevOperator;
  * @phpstan-type Criterion array{id: string, en: string, de: string, outcome: string}
  * @phpstan-type Question array{name: string, type: string, en: string, de: string, criteria: list<Criterion>}
  * @phpstan-type Rule array{start: string, operator: JevOperator, question: string, expect: string, threshold: float}
- * @phpstan-type Condition array{titleEn: string, titleDe: string, target: string, show: bool, rules: list<Rule>}
+ * @phpstan-type Condition array{titleEn: string, titleDe: string, target: string, show: bool, conjunction?: 'AND'|'OR', rules: list<Rule>}
  * @phpstan-type Example array{slug: string, number: string, titleEn: string, titleDe: string, introEn: string, introDe: string, summaryEn: string, summaryDe: string, moresteps: bool, routingQuestion: string, decision: array{identifier: string, titleEn: string, titleDe: string, descriptionEn: string, descriptionDe: string, stateTemplate: string, threshold: float, defaultOutcome: string, questions: list<Question>}, pages: list<ExamplePage>, conditions: list<Condition>}
  */
 final class JevExampleDefinitions
@@ -331,19 +331,23 @@ final class JevExampleDefinitions
                     ],
                 ],
             ],
-            // Both conditions read the SAME rule, and both are the "hide" direction of it, so an
+            // Both conditions read the SAME rules, and both are the "hide" direction of them, so an
             // answer too uncertain to use leaves the button visible and the notice away rather
             // than hiding both. Written as two complementary "show when" conditions instead, a
             // low-confidence answer negates both at once and strands the visitor with no send
             // button and nothing explaining why — which is what this gate must never do.
+            // Either rule closes the gate: nothing to answer, or obvious spam. The spam bar is
+            // high on purpose, because a false positive costs a real enquiry.
             'conditions' => [
                 [
-                    'titleEn' => 'Hold the send button only when there is confidently nothing to answer',
-                    'titleDe' => 'Senden-Button nur zurückhalten, wenn es sicher nichts zu beantworten gibt',
+                    'titleEn' => 'Hold the send button for obvious spam, or when there is confidently nothing to answer',
+                    'titleDe' => 'Senden-Button bei offensichtlichem Spam zurückhalten, oder wenn es sicher nichts zu beantworten gibt',
                     'target' => 'submit',
                     'show' => false,
+                    'conjunction' => 'OR',
                     'rules' => [
                         ['start' => 'message', 'operator' => JevOperator::ScoreBelow, 'question' => 'effort', 'expect' => '', 'threshold' => 1.5],
+                        ['start' => 'message', 'operator' => JevOperator::NoulAbove, 'question' => 'is_spam', 'expect' => '', 'threshold' => 0.9],
                     ],
                 ],
                 [
@@ -351,8 +355,10 @@ final class JevExampleDefinitions
                     'titleDe' => 'Erklären, warum der Button fehlt, wann immer er fehlt',
                     'target' => 'thin',
                     'show' => true,
+                    'conjunction' => 'OR',
                     'rules' => [
                         ['start' => 'message', 'operator' => JevOperator::ScoreBelow, 'question' => 'effort', 'expect' => '', 'threshold' => 1.5],
+                        ['start' => 'message', 'operator' => JevOperator::NoulAbove, 'question' => 'is_spam', 'expect' => '', 'threshold' => 0.9],
                     ],
                 ],
             ],
@@ -506,7 +512,9 @@ final class JevExampleDefinitions
                     'target' => 'nda',
                     'show' => true,
                     'rules' => [
-                        ['start' => 'project', 'operator' => JevOperator::NoulAbove, 'question' => 'needs_nda', 'expect' => '', 'threshold' => 0.5],
+                        // Not 0.5: that fires on a coin flip, and the challenge text promises that an
+                        // unsure answer keeps the block hidden. 0.6 is the bar the other noul rules use.
+                        ['start' => 'project', 'operator' => JevOperator::NoulAbove, 'question' => 'needs_nda', 'expect' => '', 'threshold' => 0.6],
                     ],
                 ],
             ],

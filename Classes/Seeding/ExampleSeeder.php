@@ -472,7 +472,7 @@ final readonly class ExampleSeeder
                 // "Show only when" is an un-hide condition: powermail_cond negates a condition
                 // whose rules do not match, which hides the target again.
                 'actions' => Cast::bool($condition['show'] ?? null) ? 1 : 0,
-                'conjunction' => 'AND',
+                'conjunction' => ($condition['conjunction'] ?? null) === 'OR' ? 'OR' : 'AND',
                 'rules' => count($rules),
                 'sorting' => (Cast::int($index) + 1) * 256,
                 'crdate' => $now,
@@ -676,7 +676,8 @@ final readonly class ExampleSeeder
             ],
             'receiver' => [
                 'settings.flexform.receiver.name' => 'Webconsulting',
-                // Jev replaces this whenever it is sure enough; it is the fallback, not the plan.
+                // Jev replaces this with the department it picks, or with the decision's default
+                // outcome when it is unsure. This address gets mail only from a decision without one.
                 'settings.flexform.receiver.email' => 'office@webconsulting.at',
                 'settings.flexform.receiver.subject' => 'Powermail form submission',
                 'settings.flexform.receiver.body' => '{powermail_all}',
