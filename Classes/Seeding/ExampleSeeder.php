@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webconsulting\WebconJev\Seeding;
 
 use Symfony\Component\Console\Style\SymfonyStyle;
+use TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use Webconsulting\WebconJev\Data\JevExampleDefinitions;
@@ -45,6 +46,7 @@ final readonly class ExampleSeeder
     public function __construct(
         private ConnectionPool $connectionPool,
         private SchemaHelper $schema,
+        private FlexFormTools $flexFormTools,
     ) {}
 
     /**
@@ -655,6 +657,13 @@ final readonly class ExampleSeeder
         ]);
     }
 
+    /**
+     * The plugin's FlexForm as DataHandler stores it when an editor saves the plugin.
+     *
+     * Written by hand, each value sat on its field's line. TYPO3 reads that the same way, but
+     * Powermail's form overview looked for the backend's layout as text and listed no page under
+     * "Used on Page" for the example forms.
+     */
     private function flexform(int $formUid, int $storagePid, bool $moresteps, bool $german = false): string
     {
         $sheets = [
@@ -683,17 +692,14 @@ final readonly class ExampleSeeder
             ],
         ];
 
-        $xml = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\" ?>\n<T3FlexForms>\n    <data>\n";
+        $data = [];
         foreach ($sheets as $sheet => $fields) {
-            $xml .= '        <sheet index="' . $sheet . "\">\n            <language index=\"lDEF\">\n";
             foreach ($fields as $field => $value) {
-                $xml .= '                <field index="' . htmlspecialchars($field, ENT_XML1)
-                    . '"><value index="vDEF">' . htmlspecialchars($value, ENT_XML1) . "</value></field>\n";
+                $data[$sheet]['lDEF'][$field]['vDEF'] = $value;
             }
-            $xml .= "            </language>\n        </sheet>\n";
         }
 
-        return $xml . "    </data>\n</T3FlexForms>";
+        return $this->flexFormTools->flexArray2Xml(['data' => $data]);
     }
 
     /**

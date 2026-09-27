@@ -8,7 +8,9 @@ use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools;
 use TYPO3\CMS\Core\Database\Connection;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 use Webconsulting\WebconJev\Data\JevExampleDefinitions;
 use Webconsulting\WebconJev\Seeding\ExampleSeeder;
@@ -31,7 +33,7 @@ final class ExampleSeederTest extends FunctionalTestCase
     public function theLabPageListsEveryExampleOncePerLanguageAfterAReseed(): void
     {
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/powermail_lab.csv');
-        $seeder = new ExampleSeeder($this->getConnectionPool(), new SchemaHelper($this->getConnectionPool()));
+        $seeder = $this->seeder();
         $io = new SymfonyStyle(new ArrayInput([]), new NullOutput());
 
         $seeder->seed(1, 1, $io);
@@ -70,7 +72,7 @@ final class ExampleSeederTest extends FunctionalTestCase
     public function theGermanElementsOfAnExampleSitOnItsEnglishPage(): void
     {
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/powermail_lab.csv');
-        $seeder = new ExampleSeeder($this->getConnectionPool(), new SchemaHelper($this->getConnectionPool()));
+        $seeder = $this->seeder();
         $seeder->seed(1, 1, new SymfonyStyle(new ArrayInput([]), new NullOutput()));
 
         $pageUids = $this->examplePageUids();
@@ -105,7 +107,7 @@ final class ExampleSeederTest extends FunctionalTestCase
     public function theGermanPluginNamesTheOriginalFormAndThanksInGerman(): void
     {
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/powermail_lab.csv');
-        $seeder = new ExampleSeeder($this->getConnectionPool(), new SchemaHelper($this->getConnectionPool()));
+        $seeder = $this->seeder();
         $seeder->seed(1, 1, new SymfonyStyle(new ArrayInput([]), new NullOutput()));
 
         $query = $this->getConnectionPool()->getQueryBuilderForTable('tt_content');
@@ -117,11 +119,10 @@ final class ExampleSeederTest extends FunctionalTestCase
             ->executeQuery()
             ->fetchAllAssociative();
 
-        $formOf = static fn(array $row): string => (string)(preg_match(
-            '/settings\.flexform\.main\.form"><value index="vDEF">(\d+)</',
-            Cast::string($row['pi_flexform']),
-            $match,
-        ) ? $match[1] : '');
+        $flexFormTools = $this->get(FlexFormTools::class);
+        $formOf = static fn(array $row): string => Cast::string(
+            $flexFormTools->convertFlexFormContentToArray(Cast::string($row['pi_flexform']))['settings']['flexform']['main']['form'] ?? null,
+        );
         $english = [];
         foreach ($plugins as $plugin) {
             if (Cast::int($plugin['sys_language_uid']) === 0) {
@@ -135,8 +136,33 @@ final class ExampleSeederTest extends FunctionalTestCase
             $original = $english[Cast::int($plugin['l18n_parent'])] ?? null;
             self::assertNotNull($original);
             // Powermail compares the posted form uid - always the original's - with the plugin's.
+            self::assertNotSame('', $formOf($plugin));
             self::assertSame($formOf($original), $formOf($plugin));
             self::assertStringContainsString('Vielen Dank für Ihre Nachricht.', Cast::string($plugin['pi_flexform']));
+        }
+    }
+
+    #[Test]
+    public function everyPluginIsStoredAsTheBackendStoresIt(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/powermail_lab.csv');
+        $this->seeder()->seed(1, 1, new SymfonyStyle(new ArrayInput([]), new NullOutput()));
+
+        $query = $this->getConnectionPool()->getQueryBuilderForTable('tt_content');
+        $query->getRestrictions()->removeAll();
+        $flexForms = $query
+            ->select('pi_flexform')
+            ->from('tt_content')
+            ->where($query->expr()->eq('CType', $query->createNamedParameter('powermail_pi1')))
+            ->executeQuery()
+            ->fetchFirstColumn();
+
+        self::assertCount(2 * count(JevExampleDefinitions::all()), $flexForms, 'a plugin per example and language');
+        $flexFormTools = $this->get(FlexFormTools::class);
+        foreach ($flexForms as $flexForm) {
+            // What an editor who opens the plugin and saves it unchanged would store. With each value
+            // on its field's line, Powermail's form overview listed no page for any example form.
+            self::assertSame($flexFormTools->flexArray2Xml(Cast::array(GeneralUtility::xml2array(Cast::string($flexForm)))), $flexForm);
         }
     }
 
@@ -144,7 +170,7 @@ final class ExampleSeederTest extends FunctionalTestCase
     public function everyIntroSaysWhatToTryAndWhatIsHard(): void
     {
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/powermail_lab.csv');
-        $seeder = new ExampleSeeder($this->getConnectionPool(), new SchemaHelper($this->getConnectionPool()));
+        $seeder = $this->seeder();
         $seeder->seed(1, 1, new SymfonyStyle(new ArrayInput([]), new NullOutput()));
 
         $query = $this->getConnectionPool()->getQueryBuilderForTable('tt_content');
@@ -178,6 +204,15 @@ final class ExampleSeederTest extends FunctionalTestCase
                 self::assertStringStartsWith('<p>' . htmlspecialchars(Cast::string($example['intro' . $language] ?? null)) . '</p>', $body);
             }
         }
+    }
+
+    private function seeder(): ExampleSeeder
+    {
+        return new ExampleSeeder(
+            $this->getConnectionPool(),
+            new SchemaHelper($this->getConnectionPool()),
+            $this->get(FlexFormTools::class),
+        );
     }
 
     /**
