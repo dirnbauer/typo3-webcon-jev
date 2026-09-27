@@ -206,6 +206,50 @@ final class ExampleSeederTest extends FunctionalTestCase
         }
     }
 
+    #[Test]
+    public function everyFormSubmitsFromItsLastPageOnly(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/powermail_lab.csv');
+        $this->seeder()->seed(1, 1, new SymfonyStyle(new ArrayInput([]), new NullOutput()));
+
+        $query = $this->getConnectionPool()->getQueryBuilderForTable('tx_powermail_domain_model_page');
+        $query->getRestrictions()->removeAll();
+        $pages = $query
+            ->select('uid', 'form')
+            ->from('tx_powermail_domain_model_page')
+            ->orderBy('form')
+            ->addOrderBy('sorting')
+            ->executeQuery()
+            ->fetchAllAssociative();
+
+        $query = $this->getConnectionPool()->getQueryBuilderForTable('tx_powermail_domain_model_field');
+        $query->getRestrictions()->removeAll();
+        $submitPages = array_map(
+            static fn(mixed $page): int => Cast::int($page),
+            $query
+                ->select('page')
+                ->from('tx_powermail_domain_model_field')
+                ->where($query->expr()->eq('type', $query->createNamedParameter('submit')))
+                ->executeQuery()
+                ->fetchFirstColumn(),
+        );
+
+        $pagesByForm = [];
+        foreach ($pages as $page) {
+            $pagesByForm[Cast::int($page['form'])][] = Cast::int($page['uid']);
+        }
+        // Both languages of every example: each form record has its own pages and fields.
+        self::assertCount(2 * count(JevExampleDefinitions::all()), $pagesByForm);
+        foreach ($pagesByForm as $form => $pageUids) {
+            $lastPage = $pageUids[array_key_last($pageUids)];
+            self::assertSame(
+                [$lastPage],
+                array_values(array_filter($submitPages, static fn(int $page): bool => in_array($page, $pageUids, true))),
+                sprintf('form %d: one submit field, on its last page', $form),
+            );
+        }
+    }
+
     private function seeder(): ExampleSeeder
     {
         return new ExampleSeeder(

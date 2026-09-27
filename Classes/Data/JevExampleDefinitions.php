@@ -14,6 +14,9 @@ use Webconsulting\WebconJev\Powermail\JevOperator;
  * multi-step form on what the first step said. Between them they exercise all three primitives,
  * both integration points, and the confidence gate.
  *
+ * A form has one submit field, on its last page. In a multi-step form the step buttons move
+ * between pages; a submit field on an earlier page would send the form from there.
+ *
  * @phpstan-type Option array{0: string, 1: string, 2: string}
  * @phpstan-type ExampleField array{type: string, marker: string, titleEn: string, titleDe: string, mandatory: bool, validation: int, sender_email: bool, sender_name: bool, placeholderEn: string, placeholderDe: string, prefill: string, options: list<Option>, textEn: string, textDe: string}
  * @phpstan-type ExamplePage array{titleEn: string, titleDe: string, fields: list<ExampleField>}
@@ -449,7 +452,6 @@ final class JevExampleDefinitions
                     'fields' => [
                         self::field('input', 'company', 'Company', 'Unternehmen', ['mandatory' => true]),
                         self::field('textarea', 'project', 'What would you like built?', 'Was möchten Sie umsetzen lassen?', ['mandatory' => true, 'placeholderEn' => 'In your own words — we will work out the rest.', 'placeholderDe' => 'In Ihren eigenen Worten — den Rest klären wir.']),
-                        self::field('submit', 'next1', 'Continue', 'Weiter'),
                     ],
                 ],
                 [
@@ -465,7 +467,6 @@ final class JevExampleDefinitions
                         self::field('input', 'tender', 'Tender or reference number', 'Ausschreibungs- oder Aktenzeichen', ['placeholderEn' => 'If this is a formal procurement.', 'placeholderDe' => 'Falls es eine formale Beschaffung ist.']),
                         self::field('textarea', 'procurement', 'Which formal requirements apply?', 'Welche formalen Anforderungen gelten?', ['placeholderEn' => 'Award criteria, deadlines, required certifications.', 'placeholderDe' => 'Zuschlagskriterien, Fristen, geforderte Zertifikate.']),
                         self::field('check', 'nda', 'Confidentiality', 'Vertraulichkeit', ['options' => [['Please send a confidentiality agreement before we go into detail.', 'Bitte senden Sie vor der Detailklärung eine Geheimhaltungsvereinbarung.', 'yes']]]),
-                        self::field('submit', 'next2', 'Continue', 'Weiter'),
                     ],
                 ],
                 [
@@ -602,7 +603,6 @@ final class JevExampleDefinitions
                     'fields' => [
                         self::field('input', 'position', 'Which position?', 'Welche Position?', ['placeholderEn' => 'Leave empty if you are not sure — we will work it out.', 'placeholderDe' => 'Leer lassen, wenn Sie unsicher sind — wir finden es heraus.']),
                         self::field('textarea', 'letter', 'Tell us about yourself', 'Erzählen Sie von sich', ['mandatory' => true, 'placeholderEn' => 'What you have done, what you want to do next.', 'placeholderDe' => 'Was Sie gemacht haben und was Sie als Nächstes tun möchten.']),
-                        self::field('submit', 'next1', 'Continue', 'Weiter'),
                     ],
                 ],
                 [
@@ -621,7 +621,6 @@ final class JevExampleDefinitions
                             'textEn' => '<p><strong>Before you go further:</strong> most of the team is in Vienna two days a week. Some roles work fully remotely and some do not, and we would rather tell you which is which now than after three interviews. Say where you are based and we will be straight with you.</p>',
                             'textDe' => '<p><strong>Bevor Sie weitermachen:</strong> der größte Teil des Teams ist zwei Tage pro Woche in Wien. Manche Rollen funktionieren vollständig remote, manche nicht, und wir sagen Ihnen das lieber jetzt als nach drei Gesprächen. Schreiben Sie uns, wo Sie sind, dann sind wir ehrlich zu Ihnen.</p>',
                         ]),
-                        self::field('submit', 'next2', 'Continue', 'Weiter'),
                     ],
                 ],
                 [
