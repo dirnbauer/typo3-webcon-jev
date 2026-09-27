@@ -5,6 +5,19 @@
 Changelog
 =========
 
+0.2.14 — 2026-09-27
+===================
+
+Fixed
+-----
+
+*   Powermail's form overview lists the pages that use an example form. "Used on Page" was
+    empty for the five examples: the seeder wrote each plugin's FlexForm by hand, with every
+    value on its field's line, and the overview looked for the layout the backend writes. The
+    seeder now stores the plugin as DataHandler does, through the core's FlexFormTools. Run
+    ``webcon-jev:examples:seed`` again to rewrite the plugins that exist; the Powermail fork
+    14.0.3.7 reads either layout.
+
 0.2.13 — 2026-09-27
 ===================
 
