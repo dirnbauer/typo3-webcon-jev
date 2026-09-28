@@ -96,6 +96,27 @@ final class DebugPanelMiddlewareTest extends TestCase
     }
 
     #[Test]
+    public function aPageWithAFormGetsTheLivePanelScriptOnce(): void
+    {
+        $page = '<html><body><form class="powermail_form"></form></body></html>';
+        $withScript = DebugPanelMiddleware::withScriptTag($page, '/_assets/abc/JavaScript/frontend-debug.js');
+
+        self::assertSame(
+            '<html><body><form class="powermail_form"></form><script src="/_assets/abc/JavaScript/frontend-debug.js" defer></script></body></html>',
+            $withScript,
+        );
+        self::assertSame($withScript, DebugPanelMiddleware::withScriptTag($withScript, '/_assets/abc/JavaScript/frontend-debug.js'));
+    }
+
+    #[Test]
+    public function withTheSwitchOffAPageWithAFormIsLeftAlone(): void
+    {
+        $original = new HtmlResponse('<html><body><form class="powermail_form"></form></body></html>');
+
+        self::assertSame($original, $this->pass($original, debug: false));
+    }
+
+    #[Test]
     public function aBodyThatIsNotJsonOrHtmlIsLeftAlone(): void
     {
         $this->log->note('something to show');

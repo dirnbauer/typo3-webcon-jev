@@ -137,8 +137,8 @@ template "Jev decisions" to a TypoScript record on a site without sets. Both loa
 
     The panel under a form needs powermail_cond's ``powermailcond:processed`` event, which the
     ``typo3-v14`` branch of the fork has from commit ``38eec7d``. The script that listens for it is
-    included through the constant, so a value set only in setup shows the panel after a
-    submission but not while typing.
+    added to every page with a powermail form while the setup value is on, however it was set,
+    so a condition scoping the switch shows the panel while typing too.
 
 A cold cache costs more than the call
 =====================================

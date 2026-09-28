@@ -10,10 +10,5 @@ plugin.tx_webconjev {
   }
 }
 
-# The script that puts the panel under a form while the visitor types. The panel links its own
-# stylesheet, so nothing else is needed on the page.
-page.includeJSFooter.webconJevDebug = EXT:webcon_jev/Resources/Public/JavaScript/frontend-debug.js
-page.includeJSFooter.webconJevDebug {
-  defer = 1
-  if.isTrue = {$plugin.tx_webconjev.settings.debug}
-}
+# The script that puts the panel under a form while the visitor types is added by
+# DebugPanelMiddleware whenever this setup value is on, so a condition scoping it works too.
