@@ -5,6 +5,20 @@
 Changelog
 =========
 
+0.2.17 — 2026-09-28
+===================
+
+Fixed
+-----
+
+*   Example 11's step 2 could be empty. All four of its fields depended on Jev's reading of the
+    covering letter, so a letter that called for none of them (a project manager whose level of
+    experience Jev could not tell) led to a page with only "Back" and "Next". The step now always
+    asks when the applicant could start; the four questions follow the answers as before.
+*   A unit test checks that every page of every example has a field no condition can hide.
+*   The Chinese and Hungarian texts for the new question live in the lab's translation memories.
+    Reseed the examples (``webcon-jev:examples:seed``), then translate the site.
+
 0.2.16 — 2026-09-27
 ===================
 
