@@ -27,9 +27,9 @@ use Webconsulting\WebconJev\Support\Cast;
  * the outcome is memoised for the request, so the visitor's keystroke costs one round trip
  * however many rules read it.
  *
- * A rule whose answer is missing or below the decision's confidence threshold simply does not
- * apply. For hide/show conditions that is the harmless direction — the form stays as the editor
- * built it rather than collapsing around an answer nobody trusts.
+ * A rule whose answer is missing or not certain enough simply does not apply. For hide/show
+ * conditions that is the harmless direction — the form stays as the editor built it rather than
+ * collapsing around an answer nobody trusts.
  */
 final class JevRuleListener
 {
@@ -97,8 +97,10 @@ final class JevRuleListener
         $outcome = $this->memo[$memoKey];
 
         $expected = $configuration->comparisonValue($operator);
-        $answer = $this->usableAnswer($outcome, $operator, $configuration->questionName);
-        $result = $answer !== null && $operator->matches($answer, $expected);
+        $raw = $outcome->answer($configuration->questionName);
+        $likely = $raw === null ? null : $operator->matchesLikelihood($raw, $configuration->expected, $configuration->threshold);
+        $answer = $likely === null ? $this->usableAnswer($outcome, $operator, $configuration->questionName) : $raw;
+        $result = $likely ?? ($answer !== null && $operator->matches($answer, $expected));
 
         $this->debugLog->find(DecisionTrace::CONDITIONS . ':' . $memoKey)?->addRule(new RuleTrace(
             ruleUid: Cast::int($rule->getUid()),
@@ -132,8 +134,10 @@ final class JevRuleListener
     /**
      * The answer, if this rule is allowed to act on it.
      *
-     * Choice and score are gated on the decision's confidence, which is read off how concentrated
-     * their probability distribution is.
+     * A choice rule reads the probability of its own option against its own threshold
+     * ({@see JevOperator::matchesLikelihood()}); only an answer without a distribution by option
+     * falls back to the gate below. Score is gated on the decision's confidence, which is read off
+     * how concentrated its probability distribution is.
      *
      * A noul has no such distribution. Its confidence is derived as |p - 0.5| * 2, so a decision
      * threshold of 0.75 can only ever be cleared by p <= 0.125 or p >= 0.875 — and a rule asking

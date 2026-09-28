@@ -208,8 +208,8 @@
         <target>Schwellwert</target>
       </trans-unit>
       <trans-unit id="rule.threshold.description" xml:space="preserve">
-        <source>The number the answer is compared against — a score level, or a probability between 0 and 1.</source>
-        <target>Die Zahl, mit der die Antwort verglichen wird — eine Bewertungsstufe oder eine Wahrscheinlichkeit zwischen 0 und 1.</target>
+        <source>For a choice: how sure Jev has to be that the answer is the option (is) or is not (is not), between 0 and 1. Otherwise the number the answer is compared against: a score level, or a probability between 0 and 1.</source>
+        <target>Bei einer Auswahl: wie sicher Jev sein muss, dass die Antwort die Option ist (ist) oder nicht ist (ist nicht), zwischen 0 und 1. Sonst die Zahl, mit der die Antwort verglichen wird: eine Bewertungsstufe oder eine Wahrscheinlichkeit zwischen 0 und 1.</target>
       </trans-unit>
       <trans-unit id="form.tab.jev" xml:space="preserve">
         <source>Jev routing</source>

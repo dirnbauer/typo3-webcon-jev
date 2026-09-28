@@ -66,6 +66,26 @@ enum JevOperator: int
     }
 
     /**
+     * Decide a choice rule from how likely the expected option is, not from which option won:
+     * "is not project" is certain when project is unlikely, however the other options split, and
+     * "is large" needs large itself to be likely. Null when the answer carries no distribution by
+     * option to read that off, or this is not a choice operator.
+     */
+    public function matchesLikelihood(Answer $answer, string $expected, float $threshold): ?bool
+    {
+        if (($this !== self::ChoiceIs && $this !== self::ChoiceIsNot) || $answer->type !== QuestionType::Choice) {
+            return null;
+        }
+        if ($answer->probabilities === [] || array_is_list($answer->probabilities)) {
+            return null;
+        }
+
+        $probability = (float)($answer->probabilities[trim($expected)] ?? 0.0);
+
+        return $this === self::ChoiceIs ? $probability >= $threshold : 1.0 - $probability >= $threshold;
+    }
+
+    /**
      * @return list<int>
      */
     public static function values(): array

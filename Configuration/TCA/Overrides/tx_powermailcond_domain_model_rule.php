@@ -12,7 +12,6 @@ if (!isset($GLOBALS['TCA']['tx_powermailcond_domain_model_rule'])) {
 
 $ll = 'webcon_jev.db:';
 $choiceOperators = implode(',', JevOperator::choiceValues());
-$numericOperators = implode(',', JevOperator::numericValues());
 $allOperators = implode(',', JevOperator::values());
 
 $GLOBALS['TCA']['tx_powermailcond_domain_model_rule']['columns']['ops']['config']['items'] = array_merge(
@@ -79,7 +78,7 @@ $GLOBALS['TCA']['tx_powermailcond_domain_model_rule']['columns'] += [
         'exclude' => true,
         'label' => $ll . 'rule.threshold',
         'description' => $ll . 'rule.threshold.description',
-        'displayCond' => 'FIELD:ops:IN:' . $numericOperators,
+        'displayCond' => 'FIELD:ops:IN:' . $allOperators,
         'config' => [
             'type' => 'number',
             'format' => 'decimal',

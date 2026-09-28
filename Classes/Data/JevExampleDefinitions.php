@@ -657,7 +657,8 @@ final class JevExampleDefinitions
                     'target' => 'portfolio',
                     'show' => true,
                     'rules' => [
-                        ['start' => 'letter', 'operator' => JevOperator::ChoiceIsNot, 'question' => 'role', 'expect' => 'project', 'threshold' => 0.6],
+                        // The challenge text promises 75 % certainty about the role.
+                        ['start' => 'letter', 'operator' => JevOperator::ChoiceIsNot, 'question' => 'role', 'expect' => 'project', 'threshold' => 0.75],
                     ],
                 ],
                 [

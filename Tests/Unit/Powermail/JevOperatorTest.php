@@ -51,6 +51,33 @@ final class JevOperatorTest extends TestCase
     }
 
     #[Test]
+    public function aChoiceRuleReadsTheLikelihoodOfItsOwnOption(): void
+    {
+        // Engineering or design, Jev cannot say which, but certainly not project management.
+        $split = Answer::fromResponse('role', QuestionType::Choice, [
+            'choice' => 'engineering',
+            'confidence' => 0.5,
+            'probabilities' => ['engineering' => 0.5, 'design' => 0.48, 'project' => 0.02],
+        ]);
+
+        self::assertTrue(JevOperator::ChoiceIsNot->matchesLikelihood($split, 'project', 0.75));
+        self::assertFalse(JevOperator::ChoiceIs->matchesLikelihood($split, 'engineering', 0.75), 'the winner is not likely enough');
+        self::assertFalse(JevOperator::ChoiceIsNot->matchesLikelihood($split, 'engineering', 0.75));
+        self::assertTrue(JevOperator::ChoiceIs->matchesLikelihood($split, 'engineering', 0.5));
+        self::assertTrue(JevOperator::ChoiceIsNot->matchesLikelihood($split, 'unknown', 0.9), 'an option without probability is unlikely');
+    }
+
+    #[Test]
+    public function withoutADistributionByOptionTheLikelihoodIsUnknown(): void
+    {
+        $bare = Answer::fromResponse('role', QuestionType::Choice, ['choice' => 'design', 'confidence' => 0.9]);
+        $score = Answer::fromResponse('seniority', QuestionType::Score, ['score' => 2.0, 'confidence' => 0.9, 'probabilities' => [0, 0.1, 0.8, 0.1]]);
+
+        self::assertNull(JevOperator::ChoiceIs->matchesLikelihood($bare, 'design', 0.6));
+        self::assertNull(JevOperator::ScoreAtLeast->matchesLikelihood($score, '2', 0.6));
+    }
+
+    #[Test]
     public function anAnswerOfTheWrongTypeNeverMatches(): void
     {
         // A score rule reading a choice, or a noul rule reading a score, is a misconfigured rule;

@@ -103,6 +103,7 @@ final class JevExampleDefinitionsTest extends TestCase
 
                 if ($rule['operator'] === JevOperator::ChoiceIs || $rule['operator'] === JevOperator::ChoiceIsNot) {
                     self::assertContains($rule['expect'], array_column($question['criteria'], 'id'), $label . ' expects an option the question has');
+                    self::assertGreaterThan(0.5, $rule['threshold'], $label . ': a choice rule reads the option\'s probability, and 0.5 is a coin flip');
                 }
                 if ($rule['operator'] === JevOperator::NoulAbove) {
                     self::assertGreaterThan(0.5, $rule['threshold'], $label . ': a noul rule at 0.5 fires on a coin flip');
