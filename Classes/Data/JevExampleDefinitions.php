@@ -534,8 +534,8 @@ final class JevExampleDefinitions
             'number' => '11',
             'titleEn' => 'Powermail 11: Job application, routed by its text',
             'titleDe' => 'Powermail 11: Bewerbung, nach Inhalt zugeordnet',
-            'introEn' => 'Paste what you would put in a covering letter. Jev reads it for the role, the seniority and whether you ask to work remotely. Step two then asks only the questions that follow from those answers. Routing is confidence-gated: below the threshold, a person sorts the application and the run log says so. For a decision about someone\'s career, that is the honest behaviour.',
-            'introDe' => 'Fügen Sie ein, was Sie in ein Anschreiben schreiben würden. Jev liest daraus die Rolle, die Erfahrungsstufe und ob Sie um Remote-Arbeit bitten. Schritt zwei stellt dann nur die Fragen, die sich daraus ergeben. Die Weiterleitung ist konfidenzgesteuert: Unterhalb der Schwelle sichtet ein Mensch die Bewerbung, und das Protokoll sagt das auch. Bei einer Entscheidung über jemandes Laufbahn ist das ehrlich.',
+            'introEn' => 'Paste what you would put in a covering letter. Jev reads it for the role, the seniority and whether you ask to work remotely. Step two asks when you could start, plus only the questions that follow from those answers. Routing is confidence-gated: below the threshold, a person sorts the application and the run log says so. For a decision about someone\'s career, that is the honest behaviour.',
+            'introDe' => 'Fügen Sie ein, was Sie in ein Anschreiben schreiben würden. Jev liest daraus die Rolle, die Erfahrungsstufe und ob Sie um Remote-Arbeit bitten. Schritt zwei fragt, wann Sie anfangen könnten, und stellt nur die Fragen, die sich daraus ergeben. Die Weiterleitung ist konfidenzgesteuert: Unterhalb der Schwelle sichtet ein Mensch die Bewerbung, und das Protokoll sagt das auch. Bei einer Entscheidung über jemandes Laufbahn ist das ehrlich.',
             'tryEn' => [
                 'Write a short covering letter in “Tell us about yourself” on step one, then continue. Step two asks what follows from it.',
                 'Experienced and remote: “I have led backend teams for nine years, most recently a TYPO3 platform for 30 sites. I live in Graz and would like to work fully remotely.” Step two asks for a portfolio and about leading a piece of work, and adds a note on working remotely.',
@@ -617,6 +617,14 @@ final class JevExampleDefinitions
                     'titleEn' => 'A little more',
                     'titleDe' => 'Noch etwas',
                     'fields' => [
+                        // Asked of everyone: every other field of this step depends on Jev's reading
+                        // of the letter, and a letter that fits none of them left the step empty.
+                        self::field('select', 'start', 'When could you start?', 'Wann könnten Sie anfangen?', ['options' => [
+                            ['As soon as possible', 'So bald wie möglich', 'asap'],
+                            ['Within three months', 'Innerhalb von drei Monaten', 'quarter'],
+                            ['Later', 'Später', 'later'],
+                            ['Not decided yet', 'Noch offen', 'open'],
+                        ]]),
                         self::field('input', 'portfolio', 'Portfolio or repository', 'Portfolio oder Repository', ['placeholderEn' => 'A link to something you made.', 'placeholderDe' => 'Ein Link zu etwas, das Sie gemacht haben.']),
                         self::field('textarea', 'leadership', 'Tell us about leading a piece of work', 'Erzählen Sie von einer Arbeit, die Sie geführt haben', ['placeholderEn' => 'Something you owned end to end, and what you would do differently.', 'placeholderDe' => 'Etwas, das Sie von Anfang bis Ende verantwortet haben, und was Sie anders machen würden.']),
                         self::field('select', 'school', 'Where are you studying or training?', 'Wo studieren oder lernen Sie gerade?', ['options' => [

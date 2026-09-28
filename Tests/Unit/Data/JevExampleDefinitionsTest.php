@@ -50,6 +50,27 @@ final class JevExampleDefinitionsTest extends TestCase
     }
 
     /**
+     * Conditions only show what Jev's answers call for, so a page made of conditional fields alone
+     * is empty whenever the answers call for none of them. Example 11's step 2 was, for a letter
+     * from a project manager with an ambiguous level of experience.
+     *
+     * @param Example $example
+     */
+    #[Test]
+    #[DataProvider('examples')]
+    public function everyPageAsksSomethingWhateverJevAnswers(array $example): void
+    {
+        $targets = array_column($example['conditions'], 'target');
+        foreach ($example['pages'] as $index => $page) {
+            $alwaysShown = array_filter(
+                $page['fields'],
+                static fn(array $field): bool => $field['type'] !== 'submit' && !in_array($field['marker'], $targets, true),
+            );
+            self::assertNotSame([], $alwaysShown, sprintf('%s, page %d (%s) has a field no condition hides', $example['slug'], $index + 1, $page['titleEn']));
+        }
+    }
+
+    /**
      * @param Example $example
      */
     #[Test]
