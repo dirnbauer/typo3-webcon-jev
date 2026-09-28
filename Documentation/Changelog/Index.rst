@@ -5,6 +5,49 @@
 Changelog
 =========
 
+0.3.0 — 2026-09-28
+==================
+
+Changed
+-------
+
+*   A choice rule reads how likely its own option is, against its own threshold: "Jev chose
+    *large*" at 0.6 needs *large* at 60 % or more, "Jev did not choose *project*" at 0.75 needs
+    *project* at 25 % or less. It was gated on the decision's confidence in the winning option,
+    and its threshold was never read, so a covering letter Jev could not place between design and
+    engineering failed "not project management" and the job application stopped asking for a
+    portfolio. An answer without a distribution by option falls back to the old gate. The
+    threshold field now shows for choice rules; check existing choice rules, whose stored
+    threshold (default 0.6) now applies. Example 11 uses 0.75, as its text promises.
+
+Added
+-----
+
+*   ``{jev_routing}`` for the thank-you text and the mails: one sentence in the visitor's language
+    (English, German, Chinese, Hungarian) saying where Jev sent the submission and how sure it
+    was, or that the default address got it and why. The lab examples use it as their thank-you
+    text; before, Chinese and Hungarian visitors were thanked in English and nobody saw what Jev
+    decided without opening the backend.
+
+Fixed
+-----
+
+*   Double opt-in keeps its routing: the decision is taken again when the visitor confirms, where
+    the receiver mail goes out. The confirmation request had lost it, and the form's own receiver
+    got the mail.
+*   The routing summary on the mail record names the receiver and whether the default stood in, and
+    is written even when no address resulted.
+*   The live panel under a form follows the setup value of ``plugin.tx_webconjev.settings.debug``,
+    so a condition scoping the switch shows it while typing; ``DebugPanelMiddleware`` adds the
+    script instead of a constant-gated include.
+*   The live state for a decision without a state template leaves out html, text and content
+    fields, which hold what the editor wrote and have no answer in the submitted mail.
+
+Run ``webcon-jev:examples:seed``, then ``sitepackage:content:translate --site=desiderio``, to apply
+the example changes. The starting state rendered with the page, step buttons that wait for the
+answer, and a session that keeps no typed values come from the powermail_cond fork (``typo3-v14``
+5157fdc) with Desiderio 4.15.0 or Astryx 2.4.0.
+
 0.2.17 — 2026-09-28
 ===================
 
