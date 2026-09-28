@@ -40,7 +40,15 @@ final class OptionalIntegrationsTest extends FunctionalTestCase
             $listeners,
         );
         self::assertContains(
+            [\In2code\Powermail\Events\FormControllerCreateActionBeforeRenderViewEvent::class, MailRoutingListener::class, 'decideOnConfirmation'],
+            $listeners,
+        );
+        self::assertContains(
             [\In2code\Powermail\Events\ReceiverMailReceiverPropertiesServiceSetReceiverEmailsEvent::class, MailRoutingListener::class, 'applyReceivers'],
+            $listeners,
+        );
+        self::assertContains(
+            [\In2code\Powermail\Events\MailRepositoryGetVariablesWithMarkersFromMailEvent::class, MailRoutingListener::class, 'provideVariables'],
             $listeners,
         );
     }

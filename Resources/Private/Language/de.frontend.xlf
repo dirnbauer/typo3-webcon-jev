@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="de" datatype="plaintext" original="EXT:webcon_jev/Resources/Private/Language/frontend.xlf" date="2026-09-28T00:00:00Z" product-name="webcon_jev">
+    <header/>
+    <body>
+      <trans-unit id="routing.sent" resname="routing.sent" xml:space="preserve">
+        <source>Jev passed it to %1$s, %2$s sure.</source>
+        <target state="final">Jev hat sie an %1$s weitergeleitet, zu %2$s sicher.</target>
+      </trans-unit>
+      <trans-unit id="routing.unsure" resname="routing.unsure" xml:space="preserve">
+        <source>Jev was only %2$s sure, which is not enough, so it went to the default address, %1$s.</source>
+        <target state="final">Jev war sich nur zu %2$s sicher, das reicht nicht; deshalb ging sie an die Standardadresse %1$s.</target>
+      </trans-unit>
+      <trans-unit id="routing.default" resname="routing.default" xml:space="preserve">
+        <source>It went to the default address, %1$s.</source>
+        <target state="final">Sie ging an die Standardadresse %1$s.</target>
+      </trans-unit>
+      <trans-unit id="routing.fallback" resname="routing.fallback" xml:space="preserve">
+        <source>Jev could not answer, so it went to the default address, %1$s.</source>
+        <target state="final">Jev konnte nicht antworten; deshalb ging sie an die Standardadresse %1$s.</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

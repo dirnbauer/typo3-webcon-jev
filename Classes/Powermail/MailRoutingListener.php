@@ -7,6 +7,8 @@ namespace Webconsulting\WebconJev\Powermail;
 use In2code\Powermail\Domain\Model\Form;
 use In2code\Powermail\Domain\Model\Mail;
 use In2code\Powermail\Events\FormControllerCreateActionAfterMailDbSavedEvent;
+use In2code\Powermail\Events\FormControllerCreateActionBeforeRenderViewEvent;
+use In2code\Powermail\Events\MailRepositoryGetVariablesWithMarkersFromMailEvent;
 use In2code\Powermail\Events\ReceiverMailReceiverPropertiesServiceSetReceiverEmailsEvent;
 use In2code\Powermail\Utility\ConfigurationUtility;
 use In2code\Powermail\Utility\TypoScriptUtility;
@@ -15,6 +17,7 @@ use Psr\Log\LoggerInterface;
 use RuntimeException;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
 use TYPO3\CMS\Core\TypoScript\FrontendTypoScript;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -22,7 +25,6 @@ use Webconsulting\WebconJev\Debug\DebugLog;
 use Webconsulting\WebconJev\Debug\DecisionTrace;
 use Webconsulting\WebconJev\Debug\RoutingTrace;
 use Webconsulting\WebconJev\Domain\Repository\DecisionRepository;
-use Webconsulting\WebconJev\Service\DecisionOutcome;
 use Webconsulting\WebconJev\Service\DecisionRunner;
 use Webconsulting\WebconJev\Service\RunLogger;
 use Webconsulting\WebconJev\Support\Cast;
@@ -44,6 +46,8 @@ final readonly class MailRoutingListener
 {
     private const string FORM_TABLE = 'tx_powermail_domain_model_form';
 
+    private const string LABELS = 'LLL:EXT:webcon_jev/Resources/Private/Language/frontend.xlf';
+
     public function __construct(
         private DecisionRepository $decisions,
         private DecisionRunner $runner,
@@ -52,6 +56,7 @@ final readonly class MailRoutingListener
         private ConnectionPool $connectionPool,
         private LoggerInterface $logger,
         private DebugLog $debugLog,
+        private LanguageServiceFactory $languageServiceFactory,
     ) {}
 
     /**
@@ -59,9 +64,28 @@ final readonly class MailRoutingListener
      */
     public function decide(FormControllerCreateActionAfterMailDbSavedEvent $event): void
     {
+        $this->decideFor($event->getMail());
+    }
+
+    /**
+     * With double opt-in the receiver mail goes out when the visitor confirms, in a later request:
+     * what the submission's request decided is gone by then. So decide again, from the saved mail.
+     * For the same text the answer comes from the decision cache, while that holds it.
+     */
+    public function decideOnConfirmation(FormControllerCreateActionBeforeRenderViewEvent $event): void
+    {
+        // powermail forwards a saved mail with a wrong hash to the form before this event.
+        if ($event->getHash() === '' || $event->getMail()->getUid() === null) {
+            return;
+        }
+
+        $this->decideFor($event->getMail());
+    }
+
+    private function decideFor(Mail $mail): void
+    {
         $this->store->forget();
 
-        $mail = $event->getMail();
         $form = $mail->getForm();
         if (!$form instanceof Form) {
             return;
@@ -107,15 +131,16 @@ final readonly class MailRoutingListener
             question: $questionName,
             outcomeValue: $outcomeValue,
             receivers: $receivers,
-            usedDefault: $this->usedDefault($outcome, $questionName),
+            usedDefault: $outcome->usedDefaultFor($questionName),
         ));
 
+        $summary = $outcome->routingSummary($questionName, $receivers);
+        $this->rememberOnMail(Cast::int($mail->getUid()), $summary);
         if ($receivers === []) {
             return;
         }
 
-        $this->store->remember($outcome, $receivers);
-        $this->rememberOnMail($mail, $outcome->summary());
+        $this->store->remember(new RoutingDecision($outcome, $questionName, $receivers, Cast::int($mail->getUid()), $summary));
     }
 
     /**
@@ -123,18 +148,43 @@ final readonly class MailRoutingListener
      */
     public function applyReceivers(ReceiverMailReceiverPropertiesServiceSetReceiverEmailsEvent $event): void
     {
-        if (!$this->store->hasReceivers()) {
+        $decision = $this->store->decision();
+        if ($decision === null) {
             return;
         }
 
         $override = $this->powermailOverride();
         if ($override !== null) {
             $this->debugLog->note(sprintf('Powermail\'s %s addressed this mail; Jev\'s answer was not applied.', $override));
+            $this->rememberOnMail($decision->mailUid, sprintf('%s (not applied: powermail\'s %s addressed the mail)', $decision->summary, $override));
 
             return;
         }
 
-        $event->setEmailArray($this->store->receivers());
+        $event->setEmailArray($decision->receivers);
+    }
+
+    /**
+     * {jev_routing} for the thank-you text and the mails: where Jev sent the submission and how
+     * sure it was, in the visitor's language. Empty for a mail routing did not address.
+     */
+    public function provideVariables(MailRepositoryGetVariablesWithMarkersFromMailEvent $event): void
+    {
+        $decision = $this->store->decision();
+        if ($decision === null || $decision->mailUid !== Cast::int($event->getMail()->getUid())) {
+            return;
+        }
+
+        $request = $GLOBALS['TYPO3_REQUEST'] ?? null;
+        $language = $request instanceof ServerRequestInterface ? $request->getAttribute('language') : null;
+        if (!$language instanceof SiteLanguage) {
+            return;
+        }
+
+        $sentence = $this->languageServiceFactory->createFromSiteLanguage($language)->sL(self::LABELS . ':' . $decision->messageKey());
+        $variables = $event->getVariables();
+        $variables['jev_routing'] = sprintf($sentence, implode(', ', $decision->receivers), $decision->confidence((string)$language->getLocale()));
+        $event->setVariables($variables);
     }
 
     /**
@@ -178,18 +228,6 @@ final readonly class MailRoutingListener
         }
 
         return null;
-    }
-
-    /**
-     * Whether the decision's default outcome stood in for an answer — missing, unsure, or an option
-     * the editor gave no outcome value.
-     */
-    private function usedDefault(DecisionOutcome $outcome, string $questionName): bool
-    {
-        $choice = $outcome->confidentAnswer($questionName)?->choice;
-
-        return !is_string($choice)
-            || $outcome->decision->question($questionName)?->outcomeValueFor($choice) === null;
     }
 
     /**
@@ -241,10 +279,9 @@ final readonly class MailRoutingListener
      * Leave the reasoning on the record, so the mail and the backend both show why it went where
      * it went rather than only where.
      */
-    private function rememberOnMail(Mail $mail, string $summary): void
+    private function rememberOnMail(int $uid, string $summary): void
     {
-        $uid = $mail->getUid();
-        if ($uid === null || $uid <= 0) {
+        if ($uid <= 0) {
             return;
         }
 

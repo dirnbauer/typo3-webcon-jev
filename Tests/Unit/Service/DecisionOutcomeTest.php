@@ -73,6 +73,20 @@ final class DecisionOutcomeTest extends TestCase
         self::assertSame('department=accounting (0.20), is_bug=0.95 (0.90)', $outcome->summary());
     }
 
+    #[Test]
+    public function theRoutingSummarySaysWhereTheMailWent(): void
+    {
+        $confident = self::outcome(0.6, ['department' => self::choice('accounting', 0.95)]);
+        self::assertFalse($confident->usedDefaultFor('department'));
+        self::assertSame('department=accounting (0.95) → accounting@example.com', $confident->routingSummary('department', ['accounting@example.com']));
+
+        $unsure = self::outcome(0.6, ['department' => self::choice('accounting', 0.4)]);
+        self::assertTrue($unsure->usedDefaultFor('department'));
+        self::assertSame('department=accounting (0.40) → default outcome office@example.com', $unsure->routingSummary('department', ['office@example.com']));
+
+        self::assertSame("department=accounting (0.40) → the form's own receiver", $unsure->routingSummary('department', []));
+    }
+
     /**
      * @param array<string, Answer> $answers
      */

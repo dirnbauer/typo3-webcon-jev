@@ -21,10 +21,10 @@ installed, a rule gains six operators:
         -   Compares against
     *   -   Jev chose
         -   a choice
-        -   an option of that question
+        -   an option of that question, and how likely it has to be
     *   -   Jev did not choose
         -   a choice
-        -   an option of that question
+        -   an option of that question, and how unlikely it has to be
     *   -   Jev scored at least
         -   a score
         -   a level, which may be fractional
@@ -54,9 +54,15 @@ One call, however many rules
 Several rules reading the same decision cost one call: the outcome is memoised for the request. Six
 rules branching off one routing question is one round trip per keystroke, not six.
 
-A choice or score rule whose answer is missing, or below the decision's confidence threshold, simply
-does not apply. For a show/hide condition that is the harmless direction: the form stays as the
-editor built it rather than collapsing around an answer nobody trusts.
+A **choice** rule reads how likely its own option is and compares that with its own threshold:
+"Jev chose *large*" at 0.6 needs *large* at 60 % or more, "Jev did not choose *project*" at 0.75
+needs *project* at 25 % or less. Which option won does not matter, so a letter Jev cannot place
+between design and engineering still counts as certainly not project management. An answer without
+a distribution by option falls back to the winning option and the decision's threshold.
+
+A **score** rule whose answer is missing, or below the decision's confidence threshold, simply does
+not apply. For a show/hide condition that is the harmless direction: the form stays as the editor
+built it rather than collapsing around an answer nobody trusts.
 
 A **noul** rule is judged on its own threshold instead — see the warning under
 :ref:`introduction`. Gating a derived confidence on top of the probability the rule already tests
@@ -79,9 +85,19 @@ names the receiver; each option of that question carries an outcome value, which
 outcome may hold several addresses separated by commas or newlines.
 
 The decision runs the moment the submission is saved and complete, and the answer is applied where
-powermail assembles its receiver list. Below the threshold nothing is replaced and the form's own
-receiver gets the mail, exactly as it would without this extension. What was decided, and how sure
-it was, is written onto the mail record and visible in :guilabel:`Powermail > Mails`.
+powermail assembles its receiver list. Below the threshold the decision's default outcome gets the
+mail; a decision without one leaves the form's own receiver in place, exactly as it would be without
+this extension. Powermail's development-context address and a TypoScript
+``receiver.overwrite.email`` always win. What was decided, how sure it was and where the mail went
+is written onto the mail record and visible in :guilabel:`Powermail > Mails`.
+
+With double opt-in the receiver mail goes out when the visitor confirms, in a later request; the
+decision is taken again there, from the saved mail (from the cache while it holds the answer).
+
+The thank-you text and the mails can say where the submission went: ``{jev_routing}`` is one
+sentence in the visitor's language (English, German, Chinese, Hungarian), for example "Jev passed it
+to accounting@example.com, 97% sure." It also says when Jev was not sure enough and the default
+address got it. The lab examples use it as their whole thank-you text.
 
 ..  note::
 

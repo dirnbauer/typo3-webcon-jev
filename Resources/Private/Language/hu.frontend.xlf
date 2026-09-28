@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="hu" datatype="plaintext" original="EXT:webcon_jev/Resources/Private/Language/frontend.xlf" date="2026-09-28T00:00:00Z" product-name="webcon_jev">
+    <header/>
+    <body>
+      <trans-unit id="routing.sent" resname="routing.sent" xml:space="preserve">
+        <source>Jev passed it to %1$s, %2$s sure.</source>
+        <target state="final">A Jev továbbította ide: %1$s, %2$s biztonsággal.</target>
+      </trans-unit>
+      <trans-unit id="routing.unsure" resname="routing.unsure" xml:space="preserve">
+        <source>Jev was only %2$s sure, which is not enough, so it went to the default address, %1$s.</source>
+        <target state="final">A Jev csak %2$s biztonsággal döntött, ez nem elég, ezért az alapértelmezett címre ment: %1$s.</target>
+      </trans-unit>
+      <trans-unit id="routing.default" resname="routing.default" xml:space="preserve">
+        <source>It went to the default address, %1$s.</source>
+        <target state="final">Az alapértelmezett címre ment: %1$s.</target>
+      </trans-unit>
+      <trans-unit id="routing.fallback" resname="routing.fallback" xml:space="preserve">
+        <source>Jev could not answer, so it went to the default address, %1$s.</source>
+        <target state="final">A Jev nem tudott válaszolni, ezért az alapértelmezett címre ment: %1$s.</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

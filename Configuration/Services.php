@@ -44,9 +44,19 @@ return static function (ContainerConfigurator $configurator): void {
                 'method' => 'decide',
             ])
             ->tag('event.listener', [
+                'identifier' => 'webcon-jev/powermail/decide-receiver-on-confirmation',
+                'event' => \In2code\Powermail\Events\FormControllerCreateActionBeforeRenderViewEvent::class,
+                'method' => 'decideOnConfirmation',
+            ])
+            ->tag('event.listener', [
                 'identifier' => 'webcon-jev/powermail/apply-receiver',
                 'event' => \In2code\Powermail\Events\ReceiverMailReceiverPropertiesServiceSetReceiverEmailsEvent::class,
                 'method' => 'applyReceivers',
+            ])
+            ->tag('event.listener', [
+                'identifier' => 'webcon-jev/powermail/routing-variable',
+                'event' => \In2code\Powermail\Events\MailRepositoryGetVariablesWithMarkersFromMailEvent::class,
+                'method' => 'provideVariables',
             ]);
     }
 };

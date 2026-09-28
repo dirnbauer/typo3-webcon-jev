@@ -54,6 +54,34 @@ final readonly class DecisionOutcome
         return $this->decision->defaultOutcome;
     }
 
+    /**
+     * Whether the default outcome stood in for an answer: missing, not certain enough, or an
+     * option the editor gave no outcome value.
+     */
+    public function usedDefaultFor(string $question): bool
+    {
+        $choice = $this->confidentAnswer($question)?->choice;
+
+        return !is_string($choice) || $this->decision->question($question)?->outcomeValueFor($choice) === null;
+    }
+
+    /**
+     * What was decided and where the mail went because of it, the line an editor reads on the
+     * submission.
+     *
+     * @param list<string> $receivers
+     */
+    public function routingSummary(string $question, array $receivers): string
+    {
+        $destination = match (true) {
+            $receivers === [] => "the form's own receiver",
+            $this->usedDefaultFor($question) => 'default outcome ' . implode(', ', $receivers),
+            default => implode(', ', $receivers),
+        };
+
+        return $this->summary() . ' → ' . $destination;
+    }
+
     public function isFallback(): bool
     {
         return $this->result->isFallback;

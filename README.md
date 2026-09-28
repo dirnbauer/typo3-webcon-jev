@@ -144,7 +144,8 @@ powermail assembles the receiver list. Below the confidence threshold the decisi
 gets the mail; a decision without one leaves the form's own receiver in place, exactly as it would
 be without this extension. Powermail's own overrides always win: with a development-context address
 (`powermailDevelopContextEmail`) or a TypoScript `receiver.overwrite.email`, Jev does not re-address
-the mail. What was decided, and how sure it was, is written onto the mail record.
+the mail. What was decided, how sure it was and where the mail went is written onto the mail record,
+and `{jev_routing}` says the same in one sentence for the thank-you text and the mails.
 
 (It is not a powermail *finisher*, although that is the obvious place to look for it: finishers run
 after the mail has already gone out, which is too late to address it.)

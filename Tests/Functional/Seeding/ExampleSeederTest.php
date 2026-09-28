@@ -138,7 +138,7 @@ final class ExampleSeederTest extends FunctionalTestCase
             // Powermail compares the posted form uid - always the original's - with the plugin's.
             self::assertNotSame('', $formOf($plugin));
             self::assertSame($formOf($original), $formOf($plugin));
-            self::assertStringContainsString('Vielen Dank für Ihre Nachricht.', Cast::string($plugin['pi_flexform']));
+            self::assertStringContainsString('{jev_routing}', Cast::string($plugin['pi_flexform']));
         }
     }
 

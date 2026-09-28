@@ -688,8 +688,11 @@ final readonly class ExampleSeeder
                 'settings.flexform.sender.subject' => $german ? 'Vielen Dank für Ihre Anfrage' : 'Thank you for your request',
                 'settings.flexform.sender.body' => $german ? 'Danke, wir haben Ihre Anfrage erhalten.' : 'Thank you. We received your request.',
             ],
+            // Where Jev sent the submission and how sure it was, as {jev_routing} writes it in the
+            // visitor's language. The FlexForm is the same in every language this way: the site's
+            // translator copies plugins but does not translate their FlexForm texts.
             'thx' => [
-                'settings.flexform.thx.body' => $german ? 'Vielen Dank für Ihre Nachricht.' : 'Thank you for your submission.',
+                'settings.flexform.thx.body' => '<p>{jev_routing}</p>',
             ],
         ];
 
