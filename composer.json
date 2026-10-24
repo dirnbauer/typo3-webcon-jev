@@ -79,13 +79,14 @@
         }
     ],
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.95",
+        "friendsofphp/php-cs-fixer": "^3.95.27",
         "in2code/powermail": "^14.0",
         "in2code/powermail_cond": "dev-typo3-v14",
-        "phpstan/phpstan": "^2.2",
-        "phpstan/phpstan-phpunit": "^2.0",
-        "phpunit/phpunit": "^13.3",
+        "phpstan/phpstan": "^2.3.1",
+        "phpstan/phpstan-phpunit": "^2.1.1",
+        "phpunit/phpunit": "^13.4.3",
         "saschaegerer/phpstan-typo3": "^3.1",
+        "typo3/cms-install": "^14.3",
         "typo3/coding-standards": "^0.9",
         "typo3/testing-framework": "^9.7"
     },
