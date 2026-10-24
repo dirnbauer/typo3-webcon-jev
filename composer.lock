@@ -7205,12 +7205,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/dirnbauer/powermail_cond.git",
-                "reference": "76461d32ad5621a4b30251a668ef41ceff16dfde"
+                "reference": "004f0bfefbafe2334eb9ef3453e36db52233c4d5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dirnbauer/powermail_cond/zipball/76461d32ad5621a4b30251a668ef41ceff16dfde",
-                "reference": "76461d32ad5621a4b30251a668ef41ceff16dfde",
+                "url": "https://api.github.com/repos/dirnbauer/powermail_cond/zipball/004f0bfefbafe2334eb9ef3453e36db52233c4d5",
+                "reference": "004f0bfefbafe2334eb9ef3453e36db52233c4d5",
                 "shasum": ""
             },
             "require": {
@@ -7298,7 +7298,7 @@
                 "issues": "https://github.com/dirnbauer/powermail_cond/issues",
                 "source": "https://github.com/dirnbauer/powermail_cond"
             },
-            "time": "2026-10-24T03:56:12+00:00"
+            "time": "2026-10-24T04:06:11+00:00"
         },
         {
             "name": "maennchen/zipstream-php",
