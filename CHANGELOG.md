@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.2 — 2026-11-05
+
+### Changed
+
+- Shorter English sentences in the example pages (Powermail 07, 09, 10 and 11): the routing examples, the four-step scale, the procurement explanation and the application threshold are split so no sentence runs past 25 words. The German texts are unchanged.
+
 ## 0.3.1 — 2026-10-24
 
 ### Changed
